@@ -1,4 +1,4 @@
-export abstract class AnyType <T> {
+abstract class AnyType <T> {
   _type: T | undefined | T[]
 }
 
@@ -10,22 +10,24 @@ type AnyString = {
 
 type AnyArray = {
   _type: any[]
+  _inner: any
 }
 
 type AnyOptional = {
   _type: any | undefined
 }
 
-type GTypeAny = {
+type AnyObject = {
   _shape: any
 }
 
-export type Infer <T extends AnyXType> = T extends GTypeAny ? {
+export type Infer <T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
-} : T extends AnyString ? T['_type'] : T extends AnyArray ? T['_type'] : T extends AnyOptional ? Infer<T['_type']> | undefined : never
+} : T extends AnyString ? T['_type'] : T extends AnyArray ? Infer<T['_inner']>[] : T extends AnyOptional ? Infer<T['_type']> | undefined : never
 
 class ZArray <T extends AnyXType> extends AnyType<T> {
-  _type: Infer<T>[]
+  _type: T[]
+  _inner: T
 
   constructor () {
     super()
@@ -33,6 +35,10 @@ class ZArray <T extends AnyXType> extends AnyType<T> {
 
   optional () {
     return new ZOptional<this>()
+  }
+
+  array () {
+    return new ZArray<this>()
   }
 }
 
@@ -42,6 +48,10 @@ class ZOptional <T> extends AnyType<T> {
   constructor () {
     super()
   }
+
+  array () {
+    return new ZArray<this>()
+  }
 }
 
 class ZObject <T> extends AnyType<T> {
@@ -49,6 +59,14 @@ class ZObject <T> extends AnyType<T> {
 
   constructor () {
     super()
+  }
+
+  optional () {
+    return new ZOptional<this>()
+  }
+
+  array () {
+    return new ZArray<this>()
   }
 }
 
