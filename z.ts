@@ -27,19 +27,19 @@ export type Infer <T extends AnyXType> = T extends GTypeAny ? {
 class ZArray <T extends AnyXType> extends AnyType<T> {
   _type: Infer<T>[]
 
-  constructor (t) {
+  constructor () {
     super()
   }
 
   optional () {
-    return new ZOptional<this>(this)
+    return new ZOptional<this>()
   }
 }
 
 class ZOptional <T> extends AnyType<T> {
   _type: T | undefined
 
-  constructor (t) {
+  constructor () {
     super()
   }
 }
@@ -56,11 +56,11 @@ class ZString extends AnyType<string> {
   _type: string
 
   optional () {
-    return new ZOptional<this>(this)
+    return new ZOptional<this>()
   }
 
   array () {
-    return new ZArray<this>(this)
+    return new ZArray<this>()
   }
 }
 
@@ -72,6 +72,6 @@ export const z = {
     return new ZString ()
   },
   array <T extends AnyXType> (shape: T) {
-    return new ZArray<T>(shape)
+    return new ZArray<T>()
   }
 }
