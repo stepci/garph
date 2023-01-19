@@ -1,5 +1,5 @@
 abstract class AnyType <T> {
-  _type: T | undefined | T[]
+  _type: T
 }
 
 type AnyXType = AnyType<any>
@@ -19,6 +19,10 @@ type AnyOptional = {
 
 type AnyObject = {
   _shape: any
+}
+
+type ObjectType = {
+  [key: string]: AnyXType
 }
 
 export type Infer <T extends AnyXType> = T extends AnyObject ? {
@@ -95,7 +99,7 @@ class ZBoolean extends AnyType<boolean> {
 }
 
 export const z = {
-  object <T> (shape: T) {
+  object <T extends ObjectType> (shape: T) {
     return new ZObject<T>()
   },
   string () {
