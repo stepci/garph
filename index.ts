@@ -1,12 +1,7 @@
 import { z, Infer } from './z'
 
 const x = z.object({
-  name: z.boolean().array().optional(),
-  test: z.object({
-    name: z.object({
-      last: z.string()
-    })
-  })
+  name: z.string().description('d').optional()
 })
 
-type u = Infer<typeof x>
+type y = Infer<typeof x>

@@ -25,6 +25,13 @@ type ObjectType = {
   [key: string]: AnyXType
 }
 
+type TypeDefinition = {
+  type: string
+  description?: string
+  isOptional?: boolean
+  isArray?: boolean
+}
+
 export type Infer <T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 } : T extends AnyThing ? T['_type'] : T extends AnyArray ? Infer<T['_inner']>[] : T extends AnyOptional ? Infer<T['_inner']> | undefined : never
@@ -32,83 +39,97 @@ export type Infer <T extends AnyXType> = T extends AnyObject ? {
 class ZArray <T extends AnyXType> extends AnyType<T[]> {
   _type: T[]
   _inner: T
+  typeDef: TypeDefinition
 
-  constructor () {
+  constructor (shape: any) {
     super()
+    this.typeDef = shape.typeDef
+    this.typeDef.isArray = true
   }
 
   optional () {
-    return new ZOptional<this>()
-  }
-
-  array () {
-    return new ZArray<this>()
+    return new ZOptional<this>(this)
   }
 }
 
 class ZOptional <T> extends AnyType<T> {
   _inner: T
+  typeDef: TypeDefinition
 
-  constructor () {
+  constructor (shape: any) {
     super()
+    this.typeDef = shape.typeDef
+    this.typeDef.isOptional = true
   }
 
   array () {
-    return new ZArray<this>()
+    return new ZArray<this>(this)
+  }
+
+  description (text: string) {
+    this.typeDef.description = text
+    return this
   }
 }
 
 class ZObject <T> extends AnyType<T> {
   _shape: T
+  shape: any
+  typeDef: TypeDefinition
 
-  constructor () {
+  constructor (shape) {
     super()
+    this.shape = shape
+    this.typeDef = { type: 'type' }
   }
 
   optional () {
-    return new ZOptional<this>()
+    return new ZOptional<this>(this)
   }
 
   array () {
-    return new ZArray<this>()
+    return new ZArray<this>(this)
+  }
+
+  description (text: string) {
+    this.typeDef.description = text
+    return this
   }
 }
 
 class ZString extends AnyType<string> {
   _type: string
+  typeDef: TypeDefinition
+
+  constructor () {
+    super()
+    this.typeDef = {
+      type: 'string'
+    }
+  }
 
   optional () {
-    return new ZOptional<this>()
+    return new ZOptional<this>(this)
   }
 
   array () {
-    return new ZArray<this>()
-  }
-}
-
-class ZBoolean extends AnyType<boolean> {
-  _type: boolean
-
-  optional () {
-    return new ZOptional<this>()
+    return new ZArray<this>(this)
   }
 
-  array () {
-    return new ZArray<this>()
+  description (text: string) {
+    this.typeDef.description = text
+    return this
   }
 }
 
 export const z = {
   object <T extends ObjectType> (shape: T) {
-    return new ZObject<T>()
+    return new ZObject<T>(shape)
   },
   string () {
     return new ZString()
   },
   array <T extends AnyXType> (shape: T) {
-    return new ZArray<T>()
-  },
-  boolean () {
-    return new ZBoolean()
+    return new ZArray<T>(shape)
   }
 }
