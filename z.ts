@@ -1,5 +1,6 @@
 abstract class AnyType <T> {
   _type: T
+  typeDef: TypeDefinition<T>
 }
 
 type AnyXType = AnyType<any>
@@ -25,11 +26,13 @@ type ObjectType = {
   [key: string]: AnyXType
 }
 
-type TypeDefinition = {
+type TypeDefinition <T> = {
   type: string
+  shape?: T
   description?: string
   isOptional?: boolean
   isArray?: boolean
+  isOptionalArray?: boolean
 }
 
 export type Infer <T extends AnyXType> = T extends AnyObject ? {
@@ -39,27 +42,29 @@ export type Infer <T extends AnyXType> = T extends AnyObject ? {
 class ZArray <T extends AnyXType> extends AnyType<T[]> {
   _type: T[]
   _inner: T
-  typeDef: TypeDefinition
+  typeDef: TypeDefinition<T[]>
 
-  constructor (shape: any) {
+  constructor (shape: AnyXType) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isArray = true
   }
 
   optional () {
-    return new ZOptional<this>(this)
+    return new ZOptional<this>(this, true)
   }
 }
 
 class ZOptional <T> extends AnyType<T> {
   _inner: T
-  typeDef: TypeDefinition
+  typeDef: TypeDefinition<T>
 
-  constructor (shape: any) {
+  constructor (shape: AnyXType, isOptionalArray?: boolean) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isOptional = true
+
+    if (isOptionalArray) this.typeDef.isOptionalArray = true
   }
 
   array () {
@@ -74,13 +79,14 @@ class ZOptional <T> extends AnyType<T> {
 
 class ZObject <T> extends AnyType<T> {
   _shape: T
-  shape: any
-  typeDef: TypeDefinition
+  typeDef: TypeDefinition<T>
 
-  constructor (shape) {
+  constructor (shape: T) {
     super()
-    this.shape = shape
-    this.typeDef = { type: 'type' }
+    this.typeDef = {
+      type: 'object',
+      shape
+    }
   }
 
   optional () {
@@ -99,7 +105,7 @@ class ZObject <T> extends AnyType<T> {
 
 class ZString extends AnyType<string> {
   _type: string
-  typeDef: TypeDefinition
+  typeDef: TypeDefinition<string>
 
   constructor () {
     super()
