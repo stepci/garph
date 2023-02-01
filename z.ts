@@ -5,9 +5,9 @@ abstract class AnyType <T> {
 
 type AnyXType = AnyType<any>
 
-type AnyThing = {
-  _type: string | boolean
-}
+type AnyString = AnyType<string>
+
+type AnyBoolean = AnyType<boolean>
 
 type AnyArray = {
   _type: any[]
@@ -41,7 +41,12 @@ type TypeDefinition <T> = {
 
 export type Infer <T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
-} : T extends AnyThing ? T['_type'] : T extends AnyArray ? Infer<T['_inner']>[] : T extends AnyOptional ? Infer<T['_inner']> | undefined : T extends AnyUnion ? Infer<T['_union']> : never
+} : T extends AnyString ? T['_type'] :
+  T extends AnyBoolean ? T['_type'] :
+  T extends AnyArray ? Infer<T['_inner']>[] :
+  T extends AnyOptional ? Infer<T['_inner']> | undefined :
+  T extends AnyUnion ? Infer<T['_union']> :
+  never
 
 class ZArray <T extends AnyXType> extends AnyType<T[]> {
   _type: T[]
