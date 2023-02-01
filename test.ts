@@ -4,11 +4,16 @@ const x = z.object({
   name: z.string().description('d').optional()
 })
 
+const t = z.object({
+  m: z.string().description('d')
+})
+
 const o = z.object({
-  last: z.string().description('d').optional()
+  last: z.string().description('d'),
+  mish: z.union(x, t).array().optional()
 })
 
 const w = z.union(x, o)
-type u = Infer<typeof w>
+type u = Infer<typeof o>
 
 console.log(w)

@@ -139,11 +139,23 @@ class ZUnion <T extends AnyXType[]> extends AnyType<T> {
 
   constructor (shape: T) {
     super()
-
     this.typeDef = {
       type: 'union',
       shape
     }
+  }
+
+  optional () {
+    return new ZOptional<this>(this)
+  }
+
+  array () {
+    return new ZArray<this>(this)
+  }
+
+  description (text: string) {
+    this.typeDef.description = text
+    return this
   }
 }
 
