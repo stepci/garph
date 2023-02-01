@@ -14,6 +14,10 @@ type AnyArray = {
   _inner: any
 }
 
+type AnyUnion = {
+  _union: any[number]
+}
+
 type AnyOptional = {
   _inner: any
 }
@@ -37,7 +41,7 @@ type TypeDefinition <T> = {
 
 export type Infer <T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
-} : T extends AnyThing ? T['_type'] : T extends AnyArray ? Infer<T['_inner']>[] : T extends AnyOptional ? Infer<T['_inner']> | undefined : never
+} : T extends AnyThing ? T['_type'] : T extends AnyArray ? Infer<T['_inner']>[] : T extends AnyOptional ? Infer<T['_inner']> | undefined : T extends AnyUnion ? T['_union'] : never
 
 class ZArray <T extends AnyXType> extends AnyType<T[]> {
   _type: T[]
@@ -128,6 +132,23 @@ class ZString extends AnyType<string> {
   }
 }
 
+class ZUnion <T extends AnyXType[]> extends AnyType<T> {
+  _type: T
+  _union: Infer<T[number]>
+  typeDef: TypeDefinition<T>
+
+  constructor (shape: T) {
+    super()
+
+    this.typeDef = {
+      type: 'union',
+      shape
+    }
+  }
+}
+
+export type UnionOptions = [AnyXType, AnyXType, ...AnyXType[]]
+
 export const z = {
   object <T extends ObjectType> (shape: T) {
     return new ZObject<T>(shape)
@@ -137,5 +158,8 @@ export const z = {
   },
   array <T extends AnyXType> (shape: T) {
     return new ZArray<T>(shape)
+  },
+  union <T extends AnyXType[]> (...args: T) {
+    return new ZUnion<T>(args)
   }
 }
