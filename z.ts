@@ -119,10 +119,10 @@ class ZString extends AnyType<string> {
   _type: string
   typeDef: TypeDefinition<string>
 
-  constructor () {
+  constructor (type: 'string' | 'id' = 'string') {
     super()
     this.typeDef = {
-      type: 'string'
+      type
     }
   }
 
@@ -240,5 +240,8 @@ export const z = {
   },
   float () {
     return new ZNumber('float')
+  },
+  id () {
+    return new ZString('id')
   }
 }
