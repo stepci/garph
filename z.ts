@@ -9,6 +9,8 @@ type AnyString = AnyType<string>
 
 type AnyBoolean = AnyType<boolean>
 
+type AnyNumber = AnyType<number>
+
 type AnyArray = {
   _type: any[]
   _inner: any
@@ -43,6 +45,7 @@ export type Infer <T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 } : T extends AnyString ? T['_type'] :
   T extends AnyBoolean ? T['_type'] :
+  T extends AnyNumber ? T['_type'] :
   T extends AnyArray ? Infer<T['_inner']>[] :
   T extends AnyOptional ? Infer<T['_inner']> | undefined :
   T extends AnyUnion ? Infer<T['_union']> :
@@ -137,6 +140,31 @@ class ZString extends AnyType<string> {
   }
 }
 
+class ZNumber extends AnyType<number> {
+  _type: number
+  typeDef: TypeDefinition<number>
+
+  constructor (type: 'int' | 'float' = 'int') {
+    super()
+    this.typeDef = {
+      type
+    }
+  }
+
+  optional () {
+    return new ZOptional<this>(this)
+  }
+
+  array () {
+    return new ZArray<this>(this)
+  }
+
+  description (text: string) {
+    this.typeDef.description = text
+    return this
+  }
+}
+
 class ZBoolean extends AnyType<boolean> {
   _type: boolean
   typeDef: TypeDefinition<boolean>
@@ -206,5 +234,11 @@ export const z = {
   },
   boolean () {
     return new ZBoolean()
+  },
+  int () {
+    return new ZNumber('int')
+  },
+  float () {
+    return new ZNumber('float')
   }
 }

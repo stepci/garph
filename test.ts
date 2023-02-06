@@ -6,7 +6,7 @@ const x = z.object({
 })
 
 const t = z.object({
-  m: z.string().description('d')
+  m: z.int().description('d')
 })
 
 const o = z.object({
