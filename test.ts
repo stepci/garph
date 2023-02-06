@@ -1,20 +1,23 @@
-import { z, Infer } from './z'
+import { z, Infer, InferArgs } from './z'
+
+// const x = z.object({
+//   name: z.string().description('d').args(a => ({
+//     fd: a.string()
+//   }))
+// })
 
 const x = z.object({
-  name: z.string().description('d').optional(),
-  isCool: z.boolean()
+  name: z.string().description('d')
+  .args({
+    fd: z.int().array()
+  })
+  .resolve((d) => {
+
+  })
 })
 
-const t = z.object({
-  m: z.int().description('d')
-})
+type xType = Infer<typeof x>
 
-const o = z.object({
-  last: z.string().description('d'),
-  mish: z.union(x, t).array().optional()
-})
+type xArgs = InferArgs<typeof x>
 
-const w = z.union(x, o)
-type u = Infer<typeof o>
-
-console.log(w)
+console.log(x)

@@ -1,6 +1,7 @@
 abstract class AnyType <T> {
   _type: T
   typeDef: TypeDefinition<T>
+  _args: AnyArgs
 }
 
 type AnyXType = AnyType<any>
@@ -48,6 +49,7 @@ export type Infer <T extends AnyXType> = T extends AnyObject ? {
   T extends AnyNumber ? T['_type'] :
   T extends AnyArray ? Infer<T['_inner']>[] :
   T extends AnyOptional ? Infer<T['_inner']> | undefined :
+  T extends AnyXArgs ? Infer<T['_type']> :
   T extends AnyUnion ? Infer<T['_union']> :
   never
 
@@ -138,6 +140,44 @@ class ZString extends AnyType<string> {
     this.typeDef.description = text
     return this
   }
+
+  args <X extends AnyArgs> (x: X) {
+    return new ZArgs<this, X>(this, x)
+  }
+}
+
+type InferArg <X extends AnyArgs> = {
+  [K in keyof X]: Infer<X[K]>
+}
+
+class ZArgs <T extends AnyXType, X extends AnyArgs> {
+  _type: T
+  _args: X
+  typeDef: TypeDefinition<T>
+
+  constructor (type: T, fn: AnyArgs) {
+    this._type = type
+  }
+
+  resolve (fn: (x: InferArg<X>) => void) {
+    return this
+  }
+}
+
+export type InferArgs <T extends AnyXType> = T extends AnyObject ? {
+  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
+    [Z in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][Z]>
+  } : never
+} : never
+
+type AnyArgs = {
+  [key: string]: AnyXType
+}
+
+type AnyXArgs = ZArgs<any, any>
+
+type ZArgType = {
+  string: () => AnyString
 }
 
 class ZNumber extends AnyType<number> {
