@@ -1,7 +1,8 @@
 import { z, Infer } from './z'
 
 const x = z.object({
-  name: z.string().description('d').optional()
+  name: z.string().description('d').optional(),
+  isCool: z.boolean()
 })
 
 const t = z.object({

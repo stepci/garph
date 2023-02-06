@@ -137,6 +137,31 @@ class ZString extends AnyType<string> {
   }
 }
 
+class ZBoolean extends AnyType<boolean> {
+  _type: boolean
+  typeDef: TypeDefinition<boolean>
+
+  constructor () {
+    super()
+    this.typeDef = {
+      type: 'boolean'
+    }
+  }
+
+  optional () {
+    return new ZOptional<this>(this)
+  }
+
+  array () {
+    return new ZArray<this>(this)
+  }
+
+  description (text: string) {
+    this.typeDef.description = text
+    return this
+  }
+}
+
 class ZUnion <T extends AnyXType[]> extends AnyType<T> {
   _type: T
   _union: T[number]
@@ -178,5 +203,8 @@ export const z = {
   },
   union <T extends AnyXType[]> (...args: T) {
     return new ZUnion<T>(args)
+  },
+  boolean () {
+    return new ZBoolean()
   }
 }
