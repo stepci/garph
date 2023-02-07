@@ -39,6 +39,7 @@ type ObjectType = {
 }
 
 type TypeDefinition <T> = {
+  name?: string
   type: string
   shape?: T
   description?: string
@@ -102,9 +103,10 @@ class ZObject <T> extends AnyType<T> {
   _shape: T
   typeDef: TypeDefinition<T>
 
-  constructor (shape: T) {
+  constructor (name: string, shape: T) {
     super()
     this.typeDef = {
+      name,
       type: 'object',
       shape
     }
@@ -162,11 +164,11 @@ class ZArgs <T extends AnyXType, X extends AnyArgs> {
   _args: X
   typeDef: TypeDefinition<T>
 
-  constructor (type: T, fn: AnyArgs) {
+  constructor (type: T, fn: X) {
     this._type = type
   }
 
-  resolve (fn: (x: InferArg<X>) => void) {
+  resolve (fn: (parent: any, args: InferArg<X>, context: any, info: any) => void) {
     return this
   }
 }
@@ -238,9 +240,10 @@ class ZUnion <T extends AnyXType[]> extends AnyType<T> {
   _union: T[number]
   typeDef: TypeDefinition<T>
 
-  constructor (shape: T) {
+  constructor (name: string, shape: T) {
     super()
     this.typeDef = {
+      name,
       type: 'union',
       shape
     }
@@ -291,9 +294,10 @@ class ZEnum <T extends string> extends AnyType<T[]> {
   _enum: T
   typeDef: TypeDefinition<T[]>
 
-  constructor (shape: T[]) {
+  constructor (name: string, shape: T[]) {
     super()
     this.typeDef = {
+      name,
       type: 'enum',
       shape
     }
@@ -306,8 +310,8 @@ class ZEnum <T extends string> extends AnyType<T[]> {
 }
 
 export const z = {
-  object <T extends ObjectType> (shape: T) {
-    return new ZObject<T>(shape)
+  type <T extends ObjectType> (name: string, shape: T) {
+    return new ZObject<T>(name, shape)
   },
   string () {
     return new ZString()
@@ -315,11 +319,11 @@ export const z = {
   array <T extends AnyXType> (shape: T) {
     return new ZArray<T>(shape)
   },
-  union <T extends AnyXType[]> (...args: T) {
-    return new ZUnion<T>(args)
+  union <T extends AnyXType[]> (name: string, ...args: T) {
+    return new ZUnion<T>(name, args)
   },
-  enum <T extends string> (args: T[]) {
-    return new ZEnum<T>(args)
+  enum <T extends string> (name: string, args: T[]) {
+    return new ZEnum<T>(name, args)
   },
   boolean () {
     return new ZBoolean()
@@ -333,7 +337,7 @@ export const z = {
   id () {
     return new ZString('id')
   },
-  field  <T extends AnyXType> (t: T) {
+  field <T extends AnyXType> (t: T) {
     return new ZField<T>(t)
   }
 }

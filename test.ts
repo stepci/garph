@@ -6,22 +6,27 @@ import { z, Infer, InferArgs } from './z'
 //   }))
 // })
 
-const x = z.object({
+const w = z.type('W', {
+  name: z.string().optional()
+})
+
+const x = z.type('Z', {
   name: z.string()
   .args({
-    fd: z.enum(['a', 'b', 'c'])
+    fd: z.enum('d', ['a', 'b', 'c']),
+    o: z.field(w)
   })
-  .resolve((d) => {
-    console.log(d.fd)
+  .resolve((parent, args) => {
+    console.log(args.fd)
   })
 })
 
-const y = z.object({
+const y = z.type('X', {
   x: z.field(x).optional()
 })
 
-type xType = Infer<typeof y>
+type xType = Infer<typeof x>
 
 type xArgs = InferArgs<typeof x>
 
-console.log(x)
+type yType = Infer<typeof y>
