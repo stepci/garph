@@ -1,4 +1,4 @@
-abstract class AnyType <T> {
+abstract class AnyType<T> {
   _type: T
   typeDef: TypeDefinition<T>
 }
@@ -38,7 +38,7 @@ type ObjectType = {
   [key: string]: AnyXType
 }
 
-type TypeDefinition <T> = {
+type TypeDefinition<T> = {
   name?: string
   type: string
   shape?: T
@@ -48,7 +48,7 @@ type TypeDefinition <T> = {
   isOptionalArray?: boolean
 }
 
-export type Infer <T extends AnyXType> = T extends AnyObject ? {
+export type Infer<T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 } : T extends AnyString ? T['_type'] :
   T extends AnyBoolean ? T['_type'] :
@@ -61,27 +61,27 @@ export type Infer <T extends AnyXType> = T extends AnyObject ? {
   T extends AnyField ? Infer<T['_type']> :
   never
 
-class ZArray <T extends AnyXType> extends AnyType<T[]> {
+class ZArray<T extends AnyXType> extends AnyType<T[]> {
   _type: T[]
   _inner: T
   typeDef: TypeDefinition<T[]>
 
-  constructor (shape: AnyXType) {
+  constructor(shape: AnyXType) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isArray = true
   }
 
-  optional () {
+  optional() {
     return new ZOptional<this>(this, true)
   }
 }
 
-class ZOptional <T> extends AnyType<T> {
+class ZOptional<T> extends AnyType<T> {
   _inner: T
   typeDef: TypeDefinition<T>
 
-  constructor (shape: AnyXType, isOptionalArray?: boolean) {
+  constructor(shape: AnyXType, isOptionalArray?: boolean) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isOptional = true
@@ -89,21 +89,21 @@ class ZOptional <T> extends AnyType<T> {
     if (isOptionalArray) this.typeDef.isOptionalArray = true
   }
 
-  array () {
+  array() {
     return new ZArray<this>(this)
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
 }
 
-class ZObject <T> extends AnyType<T> {
+class ZObject<T> extends AnyType<T> {
   _shape: T
   typeDef: TypeDefinition<T>
 
-  constructor (name: string, shape: T) {
+  constructor(name: string, shape: T) {
     super()
     this.typeDef = {
       name,
@@ -112,15 +112,15 @@ class ZObject <T> extends AnyType<T> {
     }
   }
 
-  optional () {
+  optional() {
     return new ZOptional<this>(this)
   }
 
-  array () {
+  array() {
     return new ZArray<this>(this)
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
@@ -130,50 +130,50 @@ class ZString extends AnyType<string> {
   _type: string
   typeDef: TypeDefinition<string>
 
-  constructor (type: 'string' | 'id' = 'string') {
+  constructor(type: 'string' | 'id' = 'string') {
     super()
     this.typeDef = {
       type
     }
   }
 
-  optional () {
+  optional() {
     return new ZOptional<this>(this)
   }
 
-  array () {
+  array() {
     return new ZArray<this>(this)
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
 
-  args <X extends AnyArgs> (x: X) {
+  args<X extends AnyArgs>(x: X) {
     return new ZArgs<this, X>(this, x)
   }
 }
 
-type InferArg <X extends AnyArgs> = {
+type InferArg<X extends AnyArgs> = {
   [K in keyof X]: Infer<X[K]>
 }
 
-class ZArgs <T extends AnyXType, X extends AnyArgs> {
+class ZArgs<T extends AnyXType, X extends AnyArgs> {
   _type: T
   _args: X
   typeDef: TypeDefinition<T>
 
-  constructor (type: T, fn: X) {
+  constructor(type: T, fn: X) {
     this._type = type
   }
 
-  resolve (fn: (parent: any, args: InferArg<X>, context: any, info: any) => void) {
+  resolve(fn: (parent: any, args: InferArg<X>, context: any, info: any) => void) {
     return this
   }
 }
 
-export type InferArgs <T extends AnyXType> = T extends AnyObject ? {
+export type InferArgs<T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
     [Z in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][Z]>
   } : never
@@ -189,22 +189,22 @@ class ZNumber extends AnyType<number> {
   _type: number
   typeDef: TypeDefinition<number>
 
-  constructor (type: 'int' | 'float' = 'int') {
+  constructor(type: 'int' | 'float' = 'int') {
     super()
     this.typeDef = {
       type
     }
   }
 
-  optional () {
+  optional() {
     return new ZOptional<this>(this)
   }
 
-  array () {
+  array() {
     return new ZArray<this>(this)
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
@@ -214,33 +214,33 @@ class ZBoolean extends AnyType<boolean> {
   _type: boolean
   typeDef: TypeDefinition<boolean>
 
-  constructor () {
+  constructor() {
     super()
     this.typeDef = {
       type: 'boolean'
     }
   }
 
-  optional () {
+  optional() {
     return new ZOptional<this>(this)
   }
 
-  array () {
+  array() {
     return new ZArray<this>(this)
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
 }
 
-class ZUnion <T extends AnyXType[]> extends AnyType<T> {
+class ZUnion<T extends AnyXType[]> extends AnyType<T> {
   _type: T
   _union: T[number]
   typeDef: TypeDefinition<T>
 
-  constructor (name: string, shape: T) {
+  constructor(name: string, shape: T) {
     super()
     this.typeDef = {
       name,
@@ -249,25 +249,25 @@ class ZUnion <T extends AnyXType[]> extends AnyType<T> {
     }
   }
 
-  optional () {
+  optional() {
     return new ZOptional<this>(this)
   }
 
-  array () {
+  array() {
     return new ZArray<this>(this)
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
 }
 
-class ZField <T extends AnyXType> extends AnyType<T> {
+class ZField<T extends AnyXType> extends AnyType<T> {
   _type: T
   typeDef: TypeDefinition<T>
 
-  constructor (shape: T) {
+  constructor(shape: T) {
     super()
     this.typeDef = {
       type: 'field',
@@ -275,26 +275,26 @@ class ZField <T extends AnyXType> extends AnyType<T> {
     }
   }
 
-  optional () {
+  optional() {
     return new ZOptional<this>(this)
   }
 
-  array () {
+  array() {
     return new ZArray<this>(this)
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
 }
 
-class ZEnum <T extends string> extends AnyType<T[]> {
+class ZEnum<T extends string> extends AnyType<T[]> {
   _type: T[]
   _enum: T
   typeDef: TypeDefinition<T[]>
 
-  constructor (name: string, shape: T[]) {
+  constructor(name: string, shape: T[]) {
     super()
     this.typeDef = {
       name,
@@ -303,41 +303,41 @@ class ZEnum <T extends string> extends AnyType<T[]> {
     }
   }
 
-  description (text: string) {
+  description(text: string) {
     this.typeDef.description = text
     return this
   }
 }
 
 export const z = {
-  type <T extends ObjectType> (name: string, shape: T) {
+  type<T extends ObjectType>(name: string, shape: T) {
     return new ZObject<T>(name, shape)
   },
-  string () {
+  string() {
     return new ZString()
   },
-  array <T extends AnyXType> (shape: T) {
+  array<T extends AnyXType>(shape: T) {
     return new ZArray<T>(shape)
   },
-  union <T extends AnyXType[]> (name: string, ...args: T) {
+  union<T extends AnyXType[]>(name: string, ...args: T) {
     return new ZUnion<T>(name, args)
   },
-  enum <T extends string> (name: string, args: T[]) {
+  enum<T extends string>(name: string, args: T[]) {
     return new ZEnum<T>(name, args)
   },
-  boolean () {
+  boolean() {
     return new ZBoolean()
   },
-  int () {
+  int() {
     return new ZNumber('int')
   },
-  float () {
+  float() {
     return new ZNumber('float')
   },
-  id () {
+  id() {
     return new ZString('id')
   },
-  field <T extends AnyXType> (t: T) {
+  field<T extends AnyXType>(t: T) {
     return new ZField<T>(t)
   }
 }
