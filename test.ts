@@ -7,16 +7,20 @@ import { z, Infer, InferArgs } from './z'
 // })
 
 const x = z.object({
-  name: z.string().description('d')
+  name: z.string()
   .args({
-    fd: z.int().array()
+    fd: z.enum(['a', 'b', 'c'])
   })
   .resolve((d) => {
-
+    console.log(d.fd)
   })
 })
 
-type xType = Infer<typeof x>
+const y = z.object({
+  x: z.field(x).optional()
+})
+
+type xType = Infer<typeof y>
 
 type xArgs = InferArgs<typeof x>
 

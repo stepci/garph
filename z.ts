@@ -1,7 +1,6 @@
 abstract class AnyType <T> {
   _type: T
   typeDef: TypeDefinition<T>
-  _args: AnyArgs
 }
 
 type AnyXType = AnyType<any>
@@ -12,6 +11,8 @@ type AnyBoolean = AnyType<boolean>
 
 type AnyNumber = AnyType<number>
 
+type AnyField = AnyType<any>
+
 type AnyArray = {
   _type: any[]
   _inner: any
@@ -19,6 +20,10 @@ type AnyArray = {
 
 type AnyUnion = {
   _union: any[number]
+}
+
+type AnyEnum = {
+  _enum: string[number]
 }
 
 type AnyOptional = {
@@ -51,6 +56,8 @@ export type Infer <T extends AnyXType> = T extends AnyObject ? {
   T extends AnyOptional ? Infer<T['_inner']> | undefined :
   T extends AnyXArgs ? Infer<T['_type']> :
   T extends AnyUnion ? Infer<T['_union']> :
+  T extends AnyEnum ? T['_enum'] :
+  T extends AnyField ? Infer<T['_type']> :
   never
 
 class ZArray <T extends AnyXType> extends AnyType<T[]> {
@@ -176,10 +183,6 @@ type AnyArgs = {
 
 type AnyXArgs = ZArgs<any, any>
 
-type ZArgType = {
-  string: () => AnyString
-}
-
 class ZNumber extends AnyType<number> {
   _type: number
   typeDef: TypeDefinition<number>
@@ -257,7 +260,50 @@ class ZUnion <T extends AnyXType[]> extends AnyType<T> {
   }
 }
 
-export type UnionOptions = [AnyXType, AnyXType, ...AnyXType[]]
+class ZField <T extends AnyXType> extends AnyType<T> {
+  _type: T
+  typeDef: TypeDefinition<T>
+
+  constructor (shape: T) {
+    super()
+    this.typeDef = {
+      type: 'field',
+      shape
+    }
+  }
+
+  optional () {
+    return new ZOptional<this>(this)
+  }
+
+  array () {
+    return new ZArray<this>(this)
+  }
+
+  description (text: string) {
+    this.typeDef.description = text
+    return this
+  }
+}
+
+class ZEnum <T extends string> extends AnyType<T[]> {
+  _type: T[]
+  _enum: T
+  typeDef: TypeDefinition<T[]>
+
+  constructor (shape: T[]) {
+    super()
+    this.typeDef = {
+      type: 'enum',
+      shape
+    }
+  }
+
+  description (text: string) {
+    this.typeDef.description = text
+    return this
+  }
+}
 
 export const z = {
   object <T extends ObjectType> (shape: T) {
@@ -272,6 +318,9 @@ export const z = {
   union <T extends AnyXType[]> (...args: T) {
     return new ZUnion<T>(args)
   },
+  enum <T extends string> (args: T[]) {
+    return new ZEnum<T>(args)
+  },
   boolean () {
     return new ZBoolean()
   },
@@ -283,5 +332,8 @@ export const z = {
   },
   id () {
     return new ZString('id')
+  },
+  field  <T extends AnyXType> (t: T) {
+    return new ZField<T>(t)
   }
 }
