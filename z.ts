@@ -50,6 +50,7 @@ type TypeDefinition<T> = {
 
 export type InferResolverConfig = {
   context?: any
+  info?: any
 }
 
 export type Infer<T extends AnyXType> = T extends AnyObject ? {
@@ -62,18 +63,17 @@ export type Infer<T extends AnyXType> = T extends AnyObject ? {
   T extends AnyXArgs ? Infer<T['_type']> :
   T extends AnyUnion ? Infer<T['_union']> :
   T extends AnyEnum ? T['_enum'] :
-  T extends AnyField ? Infer<T['_type']> :
-  never
+  T extends AnyField ? Infer<T['_type']> : never
 
 export type InferResolvers <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]?: {
-    [Z in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: any) => Infer<T[K]>[Z]
+    [Z in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: X['info']) => Infer<T[K]>[Z]
   }
 }
 
 export type InferResolversStrict <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [Z in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: any) => Infer<T[K]>[Z]
+    [Z in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: X['info']) => Infer<T[K]>[Z]
   }
 }
 

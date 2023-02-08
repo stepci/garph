@@ -13,17 +13,11 @@ const x = z.type('Z', {
     })
 })
 
-const y = z.type('X', {
-  x: z.field(x).optional()
-})
-
 type xType = Infer<typeof x>
 
 type xArgs = InferArgs<typeof x>
 
-type yType = Infer<typeof y>
-
-type x = { Query: typeof w, X: typeof x, Y: typeof y }
+type x = { Query: typeof w, X: typeof x }
 
 const resolvers: InferResolvers<x, { context: string }> = {
   Query: {
@@ -34,4 +28,6 @@ const resolvers: InferResolvers<x, { context: string }> = {
   }
 }
 
-type QueryType = InferResolversStrict<{ Query: typeof x }, {}>['Query']
+type QueryResolver = InferResolversStrict<{ Query: typeof x }, {}>['Query']['name']
+
+const resolver: QueryResolver = (parent, args) => `Hello, ${args.input.name}`
