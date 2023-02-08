@@ -1,4 +1,4 @@
-import { g, Infer, InferArgs, InferResolvers, InferResolversStrict } from './z'
+import { g, Infer, InferArgs, InferResolvers } from './index'
 
 const w = g.type('Query', {
   name: g.string(),
