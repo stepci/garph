@@ -1,4 +1,4 @@
-import { z, Infer, InferArgs, InferResolvers } from './z'
+import { z, Infer, InferArgs, InferResolvers, InferResolversStrict } from './z'
 
 const w = z.type('Query', {
   name: z.string(),
@@ -10,10 +10,6 @@ const x = z.type('Z', {
     .args({
       fd: z.enum('d', ['a', 'b', 'c']),
       input: z.field(w)
-    })
-    .resolve((_parent, args) => {
-      console.log(args.input)
-      return ''
     })
 })
 
@@ -29,7 +25,7 @@ type yType = Infer<typeof y>
 
 type x = { Query: typeof w, X: typeof x, Y: typeof y }
 
-const resolvers: InferResolvers<x> = {
+const resolvers: InferResolvers<x, { context: string }> = {
   Query: {
     name: () => 'hello'
   },
@@ -37,3 +33,5 @@ const resolvers: InferResolvers<x> = {
     name: (parent, args) => `Hello, ${args.input.name}`
   }
 }
+
+type QueryType = InferResolversStrict<{ Query: typeof x }, {}>['Query']

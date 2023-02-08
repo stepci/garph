@@ -48,6 +48,10 @@ type TypeDefinition<T> = {
   isOptionalArray?: boolean
 }
 
+export type InferResolverConfig = {
+  context?: any
+}
+
 export type Infer<T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 } : T extends AnyString ? T['_type'] :
@@ -61,9 +65,15 @@ export type Infer<T extends AnyXType> = T extends AnyObject ? {
   T extends AnyField ? Infer<T['_type']> :
   never
 
-export type InferResolvers <T extends ObjectType> = {
+export type InferResolvers <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]?: {
-    [Z in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[Z], context: any, info: any) => Infer<T[K]>[Z]
+    [Z in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: any) => Infer<T[K]>[Z]
+  }
+}
+
+export type InferResolversStrict <T extends ObjectType, X extends InferResolverConfig> = {
+  [K in keyof T]: {
+    [Z in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: any) => Infer<T[K]>[Z]
   }
 }
 
@@ -174,9 +184,9 @@ class ZArgs<T extends AnyXType, X extends AnyArgs> {
     this._type = type
   }
 
-  resolve(fn: (parent: any, args: InferArg<X>, context: any, info: any) => Infer<T>) {
-    return this
-  }
+  // resolve(fn: (parent: any, args: InferArg<X>, context: any, info: any) => Infer<T>) {
+  //   return this
+  // }
 }
 
 export type InferArgs<T extends AnyXType> = T extends AnyObject ? {
