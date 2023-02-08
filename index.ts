@@ -13,7 +13,7 @@ type AnyNumber = AnyType<number>
 
 type AnyField = AnyType<any>
 
-type AnyArray = {
+type AnyList = {
   _type: any[]
   _inner: any
 }
@@ -39,6 +39,12 @@ type AnyScalar = {
   _output: any
 }
 
+type AnyArgs = {
+  [key: string]: AnyXType
+}
+
+type AnyXArgs = GArgs<any, any>
+
 type ObjectType = {
   [key: string]: AnyXType
 }
@@ -50,8 +56,8 @@ type TypeDefinition<T> = {
   args?: AnyArgs
   description?: string
   isOptional?: boolean
-  isArray?: boolean
-  isOptionalArray?: boolean
+  isList?: boolean
+  isOptionalList?: boolean
 }
 
 export type InferResolverConfig = {
@@ -64,16 +70,23 @@ export type Infer<T extends AnyXType> = T extends AnyObject ? {
 } : T extends AnyString ? T['_type'] :
   T extends AnyBoolean ? T['_type'] :
   T extends AnyNumber ? T['_type'] :
-  T extends AnyArray ? Infer<T['_inner']>[] :
-  T extends AnyOptional ? Infer<T['_inner']> | undefined :
+  T extends AnyList ? Infer<T['_inner']>[] :
+  T extends AnyOptional ? Infer<T['_inner']> | null :
   T extends AnyXArgs ? Infer<T['_type']> :
   T extends AnyUnion ? Infer<T['_union']> :
   T extends AnyEnum ? T['_enum'] :
   T extends AnyScalar ? T['_input']:
-  T extends AnyField ? Infer<T['_type']> : never
+  T extends AnyField ? Infer<T['_type']> :
+never
+
+export type InferArgs<T extends AnyXType> = T extends AnyObject ? {
+  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
+    [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
+  } : never
+} : never
 
 export type InferResolvers <T extends ObjectType, X extends InferResolverConfig> = {
-  [K in keyof T]?: {
+  [K in keyof T]: {
     [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
   }
 }
@@ -84,36 +97,51 @@ export type InferResolversStrict <T extends ObjectType, X extends InferResolverC
   }
 }
 
-class GArray<T extends AnyXType> extends AnyType<T[]> {
+class GList<T extends AnyXType, X extends AnyArgs> extends AnyType<T[]> {
   _type: T[]
   _inner: T
+  _args: X
   typeDef: TypeDefinition<T[]>
 
   constructor(shape: AnyXType) {
     super()
     this.typeDef = shape.typeDef
-    this.typeDef.isArray = true
+    this.typeDef.isList = true
   }
 
-  optional() {
-    return new GOptional<this>(this, true)
+  nullable() {
+    return new GOptional<this, X>(this, true)
   }
+
+  args<X extends AnyArgs>(x: X) {
+    return new GArgs<this, X>(this, x)
+  }
+
+  description(text: string) {
+    this.typeDef.description = text
+    return this
+  }
+
+  // list() {
+  //   return new GList<this, X>(this)
+  // }
 }
 
-class GOptional<T> extends AnyType<T> {
+class GOptional<T extends AnyXType, X extends AnyArgs> extends AnyType<T> {
   _inner: T
+  _args: X
   typeDef: TypeDefinition<T>
 
-  constructor(shape: AnyXType, isOptionalArray?: boolean) {
+  constructor(shape: AnyXType, isOptionalList?: boolean) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isOptional = true
 
-    if (isOptionalArray) this.typeDef.isOptionalArray = true
+    if (isOptionalList) this.typeDef.isOptionalList = true
   }
 
-  array() {
-    return new GArray<this>(this)
+  list() {
+    return new GList<this, never>(this)
   }
 
   description(text: string) {
@@ -122,7 +150,7 @@ class GOptional<T> extends AnyType<T> {
   }
 }
 
-class GObject<T> extends AnyType<T> {
+class GObject<T extends ObjectType> extends AnyType<T> {
   _shape: T
   typeDef: TypeDefinition<T>
 
@@ -135,12 +163,12 @@ class GObject<T> extends AnyType<T> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GOptional<this, never>(this)
   }
 
-  array() {
-    return new GArray<this>(this)
+  list() {
+    return new GList<this, never>(this)
   }
 
   description(text: string) {
@@ -160,12 +188,12 @@ class GString extends AnyType<string> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GOptional<this, never>(this)
   }
 
-  array() {
-    return new GArray<this>(this)
+  list() {
+    return new GList<this, never>(this)
   }
 
   description(text: string) {
@@ -178,10 +206,6 @@ class GString extends AnyType<string> {
   }
 }
 
-type InferArg<X extends AnyArgs> = {
-  [K in keyof X]: Infer<X[K]>
-}
-
 class GArgs<T extends AnyXType, X extends AnyArgs> {
   _type: T
   _args: X
@@ -192,22 +216,14 @@ class GArgs<T extends AnyXType, X extends AnyArgs> {
     this.typeDef.args = args
   }
 
-  // resolve(fn: (parent: any, args: InferArg<X>, context: any, info: any) => Infer<T>) {
-  //   return this
-  // }
+  list() {
+    return new GList<this, X>(this)
+  }
+
+  nullable() {
+    return new GOptional<this, X>(this)
+  }
 }
-
-export type InferArgs<T extends AnyXType> = T extends AnyObject ? {
-  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
-    [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
-  } : never
-} : never
-
-type AnyArgs = {
-  [key: string]: AnyXType
-}
-
-type AnyXArgs = GArgs<any, any>
 
 class GNumber extends AnyType<number> {
   _type: number
@@ -220,12 +236,12 @@ class GNumber extends AnyType<number> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GOptional<this, never>(this)
   }
 
-  array() {
-    return new GArray<this>(this)
+  list() {
+    return new GList<this, never>(this)
   }
 
   description(text: string) {
@@ -245,12 +261,12 @@ class GBoolean extends AnyType<boolean> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GOptional<this, never>(this)
   }
 
-  array() {
-    return new GArray<this>(this)
+  list() {
+    return new GList<this, never>(this)
   }
 
   description(text: string) {
@@ -273,12 +289,12 @@ class GUnion<T extends AnyXType[]> extends AnyType<T> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GOptional<this, never>(this)
   }
 
-  array() {
-    return new GArray<this>(this)
+  list() {
+    return new GList<this, never>(this)
   }
 
   description(text: string) {
@@ -299,12 +315,12 @@ class GField<T extends AnyXType> extends AnyType<T> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GOptional<this, never>(this)
   }
 
-  array() {
-    return new GArray<this>(this)
+  list() {
+    return new GList<this, never>(this)
   }
 
   description(text: string) {
@@ -359,8 +375,8 @@ export const g = {
   string() {
     return new GString()
   },
-  array<T extends AnyXType>(shape: T) {
-    return new GArray<T>(shape)
+  list<T extends AnyXType>(shape: T) {
+    return new GList<T, any>(shape)
   },
   union<T extends AnyXType[]>(name: string, ...args: T) {
     return new GUnion<T>(name, args)
