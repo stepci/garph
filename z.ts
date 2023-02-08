@@ -42,6 +42,7 @@ type TypeDefinition<T> = {
   name?: string
   type: string
   shape?: T
+  args?: AnyArgs
   description?: string
   isOptional?: boolean
   isArray?: boolean
@@ -180,8 +181,9 @@ class ZArgs<T extends AnyXType, X extends AnyArgs> {
   _args: X
   typeDef: TypeDefinition<T>
 
-  constructor(type: T, fn: X) {
-    this._type = type
+  constructor(shape: T, args: X) {
+    this.typeDef = shape.typeDef
+    this.typeDef.args = args
   }
 
   // resolve(fn: (parent: any, args: InferArg<X>, context: any, info: any) => Infer<T>) {

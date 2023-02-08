@@ -8,8 +8,7 @@ const w = z.type('Query', {
 const x = z.type('Z', {
   name: z.string()
     .args({
-      fd: z.enum('d', ['a', 'b', 'c']),
-      input: z.field(w)
+      alphabet: z.enum('d', ['a', 'b', 'c'])
     })
 })
 
@@ -19,15 +18,17 @@ type xArgs = InferArgs<typeof x>
 
 type x = { Query: typeof w, X: typeof x }
 
-const resolvers: InferResolvers<x, { context: string }> = {
+const resolvers: InferResolvers<x, {}> = {
   Query: {
-    name: () => 'hello'
+    name: () => 'hello',
+    age: () => 10
   },
   X: {
-    name: (parent, args) => `Hello, ${args.input.name}`
+    name: (parent, args) => {
+      return args.alphabet
+    }
   }
 }
 
-type QueryResolver = InferResolversStrict<{ Query: typeof x }, {}>['Query']['name']
-
-const resolver: QueryResolver = (parent, args) => `Hello, ${args.input.name}`
+// const api = buildSchema([x, w], resolvers)
+console.log(x)
