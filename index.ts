@@ -58,6 +58,13 @@ type TypeDefinition<T> = {
   isOptional?: boolean
   isList?: boolean
   isOptionalList?: boolean
+  scalarOptions?: ScalarOptions<any, any>
+}
+
+type ScalarOptions<I, O> = {
+  serialize: (value: I) => O
+  parseValue: (value: O) => I
+  parseLiteral?: (ast: any) => I
 }
 
 export type InferResolverConfig = {
@@ -87,13 +94,13 @@ export type InferArgs<T extends AnyXType> = T extends AnyObject ? {
 
 export type InferResolvers <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
+    [G in keyof Infer<T[K]>]?: (parent: unknown, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
   }
 }
 
 export type InferResolversStrict <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
+    [G in keyof Infer<T[K]>]: (parent: unknown, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
   }
 }
 
@@ -354,11 +361,12 @@ class GScalar<I, O> extends AnyType<I> {
   _output: O
   typeDef: TypeDefinition<I>
 
-  constructor(name: string, options) {
+  constructor(name: string, scalarOptions: ScalarOptions<I, O>) {
     super()
     this.typeDef = {
       name,
-      type: 'scalar'
+      type: 'scalar',
+      scalarOptions
     }
   }
 
@@ -377,6 +385,9 @@ export const g = {
   },
   list<T extends AnyXType>(shape: T) {
     return new GList<T, any>(shape)
+  },
+  optional<T extends AnyXType>(shape: T) {
+    return new GOptional<T, any>(shape)
   },
   union<T extends AnyXType[]>(name: string, ...args: T) {
     return new GUnion<T>(name, args)
@@ -399,7 +410,7 @@ export const g = {
   field<T extends AnyXType>(t: T) {
     return new GField<T>(t)
   },
-  scalar<I, O>(name: string, options: { serialize: (value: I) => O, parseValue: (value: O) => I, parseLiteral?: (ast: any) => I }) {
+  scalar<I, O>(name: string, options: ScalarOptions<I, O>) {
     return new GScalar<I, O>(name, options)
   }
 }
