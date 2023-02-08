@@ -34,6 +34,11 @@ type AnyObject = {
   _shape: any
 }
 
+type AnyScalar = {
+  _input: any
+  _output: any
+}
+
 type ObjectType = {
   [key: string]: AnyXType
 }
@@ -64,21 +69,22 @@ export type Infer<T extends AnyXType> = T extends AnyObject ? {
   T extends AnyXArgs ? Infer<T['_type']> :
   T extends AnyUnion ? Infer<T['_union']> :
   T extends AnyEnum ? T['_enum'] :
+  T extends AnyScalar ? T['_input']:
   T extends AnyField ? Infer<T['_type']> : never
 
 export type InferResolvers <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]?: {
-    [Z in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: X['info']) => Infer<T[K]>[Z]
+    [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
   }
 }
 
 export type InferResolversStrict <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [Z in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[Z], context: X['context'], info: X['info']) => Infer<T[K]>[Z]
+    [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
   }
 }
 
-class ZArray<T extends AnyXType> extends AnyType<T[]> {
+class GArray<T extends AnyXType> extends AnyType<T[]> {
   _type: T[]
   _inner: T
   typeDef: TypeDefinition<T[]>
@@ -90,11 +96,11 @@ class ZArray<T extends AnyXType> extends AnyType<T[]> {
   }
 
   optional() {
-    return new ZOptional<this>(this, true)
+    return new GOptional<this>(this, true)
   }
 }
 
-class ZOptional<T> extends AnyType<T> {
+class GOptional<T> extends AnyType<T> {
   _inner: T
   typeDef: TypeDefinition<T>
 
@@ -107,7 +113,7 @@ class ZOptional<T> extends AnyType<T> {
   }
 
   array() {
-    return new ZArray<this>(this)
+    return new GArray<this>(this)
   }
 
   description(text: string) {
@@ -116,7 +122,7 @@ class ZOptional<T> extends AnyType<T> {
   }
 }
 
-class ZObject<T> extends AnyType<T> {
+class GObject<T> extends AnyType<T> {
   _shape: T
   typeDef: TypeDefinition<T>
 
@@ -130,11 +136,11 @@ class ZObject<T> extends AnyType<T> {
   }
 
   optional() {
-    return new ZOptional<this>(this)
+    return new GOptional<this>(this)
   }
 
   array() {
-    return new ZArray<this>(this)
+    return new GArray<this>(this)
   }
 
   description(text: string) {
@@ -143,7 +149,7 @@ class ZObject<T> extends AnyType<T> {
   }
 }
 
-class ZString extends AnyType<string> {
+class GString extends AnyType<string> {
   _type: string
   typeDef: TypeDefinition<string>
 
@@ -155,11 +161,11 @@ class ZString extends AnyType<string> {
   }
 
   optional() {
-    return new ZOptional<this>(this)
+    return new GOptional<this>(this)
   }
 
   array() {
-    return new ZArray<this>(this)
+    return new GArray<this>(this)
   }
 
   description(text: string) {
@@ -168,7 +174,7 @@ class ZString extends AnyType<string> {
   }
 
   args<X extends AnyArgs>(x: X) {
-    return new ZArgs<this, X>(this, x)
+    return new GArgs<this, X>(this, x)
   }
 }
 
@@ -176,7 +182,7 @@ type InferArg<X extends AnyArgs> = {
   [K in keyof X]: Infer<X[K]>
 }
 
-class ZArgs<T extends AnyXType, X extends AnyArgs> {
+class GArgs<T extends AnyXType, X extends AnyArgs> {
   _type: T
   _args: X
   typeDef: TypeDefinition<T>
@@ -193,7 +199,7 @@ class ZArgs<T extends AnyXType, X extends AnyArgs> {
 
 export type InferArgs<T extends AnyXType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
-    [Z in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][Z]>
+    [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
 
@@ -201,9 +207,9 @@ type AnyArgs = {
   [key: string]: AnyXType
 }
 
-type AnyXArgs = ZArgs<any, any>
+type AnyXArgs = GArgs<any, any>
 
-class ZNumber extends AnyType<number> {
+class GNumber extends AnyType<number> {
   _type: number
   typeDef: TypeDefinition<number>
 
@@ -215,11 +221,11 @@ class ZNumber extends AnyType<number> {
   }
 
   optional() {
-    return new ZOptional<this>(this)
+    return new GOptional<this>(this)
   }
 
   array() {
-    return new ZArray<this>(this)
+    return new GArray<this>(this)
   }
 
   description(text: string) {
@@ -228,7 +234,7 @@ class ZNumber extends AnyType<number> {
   }
 }
 
-class ZBoolean extends AnyType<boolean> {
+class GBoolean extends AnyType<boolean> {
   _type: boolean
   typeDef: TypeDefinition<boolean>
 
@@ -240,11 +246,11 @@ class ZBoolean extends AnyType<boolean> {
   }
 
   optional() {
-    return new ZOptional<this>(this)
+    return new GOptional<this>(this)
   }
 
   array() {
-    return new ZArray<this>(this)
+    return new GArray<this>(this)
   }
 
   description(text: string) {
@@ -253,7 +259,7 @@ class ZBoolean extends AnyType<boolean> {
   }
 }
 
-class ZUnion<T extends AnyXType[]> extends AnyType<T> {
+class GUnion<T extends AnyXType[]> extends AnyType<T> {
   _type: T
   _union: T[number]
   typeDef: TypeDefinition<T>
@@ -268,11 +274,11 @@ class ZUnion<T extends AnyXType[]> extends AnyType<T> {
   }
 
   optional() {
-    return new ZOptional<this>(this)
+    return new GOptional<this>(this)
   }
 
   array() {
-    return new ZArray<this>(this)
+    return new GArray<this>(this)
   }
 
   description(text: string) {
@@ -281,7 +287,7 @@ class ZUnion<T extends AnyXType[]> extends AnyType<T> {
   }
 }
 
-class ZField<T extends AnyXType> extends AnyType<T> {
+class GField<T extends AnyXType> extends AnyType<T> {
   _type: T
   typeDef: TypeDefinition<T>
 
@@ -294,11 +300,11 @@ class ZField<T extends AnyXType> extends AnyType<T> {
   }
 
   optional() {
-    return new ZOptional<this>(this)
+    return new GOptional<this>(this)
   }
 
   array() {
-    return new ZArray<this>(this)
+    return new GArray<this>(this)
   }
 
   description(text: string) {
@@ -307,7 +313,7 @@ class ZField<T extends AnyXType> extends AnyType<T> {
   }
 }
 
-class ZEnum<T extends string> extends AnyType<T[]> {
+class GEnum<T extends string> extends AnyType<T[]> {
   _type: T[]
   _enum: T
   typeDef: TypeDefinition<T[]>
@@ -327,35 +333,57 @@ class ZEnum<T extends string> extends AnyType<T[]> {
   }
 }
 
-export const z = {
+class GScalar<I, O> extends AnyType<I> {
+  _input: I
+  _output: O
+  typeDef: TypeDefinition<I>
+
+  constructor(name: string, options) {
+    super()
+    this.typeDef = {
+      name,
+      type: 'scalar'
+    }
+  }
+
+  description(text: string) {
+    this.typeDef.description = text
+    return this
+  }
+}
+
+export const g = {
   type<T extends ObjectType>(name: string, shape: T) {
-    return new ZObject<T>(name, shape)
+    return new GObject<T>(name, shape)
   },
   string() {
-    return new ZString()
+    return new GString()
   },
   array<T extends AnyXType>(shape: T) {
-    return new ZArray<T>(shape)
+    return new GArray<T>(shape)
   },
   union<T extends AnyXType[]>(name: string, ...args: T) {
-    return new ZUnion<T>(name, args)
+    return new GUnion<T>(name, args)
   },
   enum<T extends string>(name: string, args: T[]) {
-    return new ZEnum<T>(name, args)
+    return new GEnum<T>(name, args)
   },
   boolean() {
-    return new ZBoolean()
+    return new GBoolean()
   },
   int() {
-    return new ZNumber('int')
+    return new GNumber('int')
   },
   float() {
-    return new ZNumber('float')
+    return new GNumber('float')
   },
   id() {
-    return new ZString('id')
+    return new GString('id')
   },
   field<T extends AnyXType>(t: T) {
-    return new ZField<T>(t)
+    return new GField<T>(t)
+  },
+  scalar<I, O>(name: string, options: { serialize: (value: I) => O, parseValue: (value: O) => I, parseLiteral?: (ast: any) => I }) {
+    return new GScalar<I, O>(name, options)
   }
 }

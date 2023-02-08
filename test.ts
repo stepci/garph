@@ -1,15 +1,21 @@
-import { z, Infer, InferArgs, InferResolvers, InferResolversStrict } from './z'
+import { g, Infer, InferArgs, InferResolvers, InferResolversStrict } from './z'
 
-const w = z.type('Query', {
-  name: z.string(),
-  age: z.int()
+const w = g.type('Query', {
+  name: g.string(),
+  age: g.int()
 })
 
-const x = z.type('Z', {
-  name: z.string()
+const s = g.scalar<Date, number>('Date', {
+  parseValue: (value) => new Date(value),
+  serialize: (value) => value.getTime()
+})
+
+const x = g.type('Z', {
+  name: g.string()
     .args({
-      alphabet: z.enum('d', ['a', 'b', 'c'])
-    })
+      alphabet: g.enum('d', ['a', 'b', 'c'])
+    }),
+  date: g.field(s)
 })
 
 type xType = Infer<typeof x>
