@@ -1,4 +1,4 @@
-abstract class AnyType<T> {
+abstract class Type<T> {
   _type: T
   typeDef: TypeDefinition<T>
 }
@@ -13,17 +13,18 @@ type TypeDefinition<T> = {
   isList?: boolean
   isOptionalList?: boolean
   scalarOptions?: ScalarOptions<any, any>
+  resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
-type AnyXType = AnyType<any>
+type AnyType = Type<any>
 
-type AnyString = AnyType<string>
+type AnyString = Type<string>
 
-type AnyBoolean = AnyType<boolean>
+type AnyBoolean = Type<boolean>
 
-type AnyNumber = AnyType<number>
+type AnyNumber = Type<number>
 
-type AnyField = AnyType<any>
+type AnyField = Type<any>
 
 type AnyList = {
   _type: any[]
@@ -52,11 +53,11 @@ type AnyScalar = {
 }
 
 type AnyArgs = {
-  [key: string]: AnyXType
+  [key: string]: AnyType
 }
 
 type ObjectType = {
-  [key: string]: AnyXType
+  [key: string]: AnyType
 }
 
 type ScalarOptions<I, O> = {
@@ -70,7 +71,7 @@ export type InferResolverConfig = {
   info?: any
 }
 
-export type Infer<T extends AnyXType> = T extends AnyObject ? {
+export type Infer<T extends AnyType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 } : T extends AnyString ? T['_type'] :
   T extends AnyBoolean ? T['_type'] :
@@ -84,11 +85,20 @@ export type Infer<T extends AnyXType> = T extends AnyObject ? {
   T extends AnyField ? Infer<T['_type']> :
 never
 
-export type InferArgs<T extends AnyXType> = T extends AnyObject ? {
+export type InferArgs<T extends AnyType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
+
+// Work in progress
+// export type InferArgsDeep<T extends AnyType> = T extends AnyObject ? {
+//   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
+//     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
+//   } : {
+//     [Z in keyof Infer<T['_shape'][K]>]: T['_shape'][K]['_type']['_shape'] extends AnyArgs ? InferArgs<T['_shape'][K]['_type']>[Z]: InferArgsDeep<T['_shape'][K]['_type']['_shape']>
+//   }
+// } : never
 
 export type InferResolvers <T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
@@ -102,7 +112,11 @@ export type InferResolversStrict <T extends ObjectType, X extends InferResolverC
   }
 }
 
-class GType<T extends ObjectType> extends AnyType<T> {
+type InferArg <T extends AnyArgs> = {
+  [K in keyof T]: Infer<T[K]>
+}
+
+class GType<T extends ObjectType> extends Type<T> {
   _shape: T
   typeDef: TypeDefinition<T>
 
@@ -121,7 +135,7 @@ class GType<T extends ObjectType> extends AnyType<T> {
   }
 }
 
-class GString extends AnyType<string> {
+class GString extends Type<string> {
   _type: string
   typeDef: TypeDefinition<string>
 
@@ -132,7 +146,7 @@ class GString extends AnyType<string> {
     }
   }
 
-  nullable() {
+  optional() {
     return new GOptional<this, never>(this)
   }
 
@@ -150,7 +164,7 @@ class GString extends AnyType<string> {
   }
 }
 
-class GNumber extends AnyType<number> {
+class GNumber extends Type<number> {
   _type: number
   typeDef: TypeDefinition<number>
 
@@ -161,7 +175,7 @@ class GNumber extends AnyType<number> {
     }
   }
 
-  nullable() {
+  optional() {
     return new GOptional<this, never>(this)
   }
 
@@ -175,7 +189,7 @@ class GNumber extends AnyType<number> {
   }
 }
 
-class GBoolean extends AnyType<boolean> {
+class GBoolean extends Type<boolean> {
   _type: boolean
   typeDef: TypeDefinition<boolean>
 
@@ -186,7 +200,7 @@ class GBoolean extends AnyType<boolean> {
     }
   }
 
-  nullable() {
+  optional() {
     return new GOptional<this, never>(this)
   }
 
@@ -200,7 +214,7 @@ class GBoolean extends AnyType<boolean> {
   }
 }
 
-class GEnum<T extends string> extends AnyType<T[]> {
+class GEnum<T extends string> extends Type<T[]> {
   _type: T[]
   _enum: T
   typeDef: TypeDefinition<T[]>
@@ -220,7 +234,7 @@ class GEnum<T extends string> extends AnyType<T[]> {
   }
 }
 
-class GUnion<T extends AnyXType[]> extends AnyType<T> {
+class GUnion<T extends AnyType[]> extends Type<T> {
   _type: T
   _union: T[number]
   typeDef: TypeDefinition<T>
@@ -234,7 +248,7 @@ class GUnion<T extends AnyXType[]> extends AnyType<T> {
     }
   }
 
-  nullable() {
+  optional() {
     return new GOptional<this, never>(this)
   }
 
@@ -248,7 +262,7 @@ class GUnion<T extends AnyXType[]> extends AnyType<T> {
   }
 }
 
-class GField<T extends AnyXType> extends AnyType<T> {
+class GField<T extends AnyType> extends Type<T> {
   _type: T
   typeDef: TypeDefinition<T>
 
@@ -260,7 +274,7 @@ class GField<T extends AnyXType> extends AnyType<T> {
     }
   }
 
-  nullable() {
+  optional() {
     return new GOptional<this, never>(this)
   }
 
@@ -272,9 +286,13 @@ class GField<T extends AnyXType> extends AnyType<T> {
     this.typeDef.description = text
     return this
   }
+
+  args<X extends AnyArgs>(x: X) {
+    return new GArgs<this, X>(this, x)
+  }
 }
 
-class GScalar<I, O> extends AnyType<I> {
+class GScalar<I, O> extends Type<I> {
   _input: I
   _output: O
   typeDef: TypeDefinition<I>
@@ -294,20 +312,19 @@ class GScalar<I, O> extends AnyType<I> {
   }
 }
 
-
-class GList<T extends AnyXType, X extends AnyArgs> extends AnyType<T[]> {
+class GList<T extends AnyType, X extends AnyArgs> extends Type<T[]> {
   _type: T[]
   _inner: T
   _args: X
   typeDef: TypeDefinition<T[]>
 
-  constructor(shape: AnyXType) {
+  constructor(shape: AnyType) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isList = true
   }
 
-  nullable() {
+  optional() {
     return new GOptional<this, X>(this, true)
   }
 
@@ -325,7 +342,7 @@ class GList<T extends AnyXType, X extends AnyArgs> extends AnyType<T[]> {
   // }
 }
 
-class GOptional<T extends AnyXType, X extends AnyArgs> extends AnyType<T> {
+class GOptional<T extends AnyType, X extends AnyArgs> extends Type<T> {
   _inner: T
   _args: X
   typeDef: TypeDefinition<T>
@@ -348,7 +365,7 @@ class GOptional<T extends AnyXType, X extends AnyArgs> extends AnyType<T> {
   }
 }
 
-class GArgs<T extends AnyXType, X extends AnyArgs> {
+class GArgs<T extends AnyType, X extends AnyArgs> {
   _type: T
   _args: X
   typeDef: TypeDefinition<T>
@@ -362,9 +379,15 @@ class GArgs<T extends AnyXType, X extends AnyArgs> {
     return new GList<this, X>(this)
   }
 
-  nullable() {
+  optional() {
     return new GOptional<this, X>(this)
   }
+
+  // For future reference
+  // resolve (fn: (parent: unknown, args: InferArg<X>, context: unknown, info: unknown) => Infer<T>) {
+  //   this.typeDef.resolverFunction = fn
+  //   return this
+  // }
 }
 
 export const g = {
@@ -389,19 +412,19 @@ export const g = {
   enum<T extends string>(name: string, args: T[]) {
     return new GEnum<T>(name, args)
   },
-  union<T extends AnyXType[]>(name: string, ...args: T) {
+  union<T extends AnyType[]>(name: string, ...args: T) {
     return new GUnion<T>(name, args)
   },
-  field<T extends AnyXType>(shape: T) {
+  field<T extends AnyType>(shape: T) {
     return new GField<T>(shape)
   },
   scalar<I, O>(name: string, options: ScalarOptions<I, O>) {
     return new GScalar<I, O>(name, options)
   },
-  list<T extends AnyXType>(shape: T) {
+  list<T extends AnyType>(shape: T) {
     return new GList<T, any>(shape)
   },
-  optional<T extends AnyXType>(shape: T) {
+  optional<T extends AnyType>(shape: T) {
     return new GOptional<T, any>(shape)
   }
 }

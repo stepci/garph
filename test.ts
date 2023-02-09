@@ -1,8 +1,17 @@
 import { g, Infer, InferArgs, InferResolvers } from './index'
 
 const w = g.type('Query', {
-  name: g.string(),
+  name: g.string().args({
+    includeLastName: g.boolean()
+  }),
   age: g.int()
+})
+
+const u = g.type('User', {
+  username: g.field(w),
+  // name: g.string().args({
+  //   includeLastName: g.boolean()
+  // })
 })
 
 const s = g.scalar<Date, number>('Date', {
@@ -15,7 +24,7 @@ const x = g.type('Z', {
     .args({
       alphabet: g.enum('d', ['a', 'b', 'c'])
     }),
-  date: g.field(s)
+  user: g.field(u)
 })
 
 type xType = Infer<typeof x>
