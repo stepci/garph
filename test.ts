@@ -24,7 +24,7 @@ const x = g.type('Z', {
     .args({
       alphabet: g.enum('d', ['a', 'b', 'c'])
     }),
-  user: g.field(u)
+  user: g.union('User', [u, w])
 })
 
 type xType = Infer<typeof x>

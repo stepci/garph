@@ -1,5 +1,5 @@
 abstract class Type<T> {
-  _type: T
+  _shape: T
   typeDef: TypeDefinition<T>
 }
 
@@ -26,31 +26,17 @@ type AnyNumber = Type<number>
 
 type AnyField = Type<any>
 
-type AnyList = {
-  _type: any[]
-  _inner: any
-}
+type AnyList = InstanceType<typeof GList>
 
-type AnyUnion = {
-  _union: any[number]
-}
+type AnyUnion = InstanceType<typeof GUnion>
 
-type AnyEnum = {
-  _enum: string[number]
-}
+type AnyEnum = InstanceType<typeof GEnum>
 
-type AnyOptional = {
-  _inner: any
-}
+type AnyOptional = InstanceType<typeof GOptional>
 
-type AnyObject = {
-  _shape: any
-}
+type AnyObject =  InstanceType<typeof GType>
 
-type AnyScalar = {
-  _input: any
-  _output: any
-}
+type AnyScalar = InstanceType<typeof GScalar>
 
 type AnyArgs = {
   [key: string]: AnyType
@@ -73,16 +59,16 @@ export type InferResolverConfig = {
 
 export type Infer<T extends AnyType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
-} : T extends AnyString ? T['_type'] :
-  T extends AnyBoolean ? T['_type'] :
-  T extends AnyNumber ? T['_type'] :
-  T extends AnyList ? Infer<T['_inner']>[] :
-  T extends AnyOptional ? Infer<T['_inner']> | null :
-  T extends AnyArgs ? Infer<T['_type']> :
-  T extends AnyUnion ? Infer<T['_union']> :
-  T extends AnyEnum ? T['_enum'] :
+} : T extends AnyString ? T['_shape'] :
+  T extends AnyBoolean ? T['_shape'] :
+  T extends AnyNumber ? T['_shape'] :
+  T extends AnyList ? Infer<T['_shape']>[] :
+  T extends AnyOptional ? Infer<T['_shape']> | null :
+  T extends AnyArgs ? Infer<T['_shape']> :
+  T extends AnyUnion ? Infer<T['_inner']> :
+  T extends AnyEnum ? T['_inner'] :
   T extends AnyScalar ? T['_input'] :
-  T extends AnyField ? Infer<T['_type']> :
+  T extends AnyField ? Infer<T['_shape']> :
   never
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
@@ -90,15 +76,6 @@ export type InferArgs<T extends AnyType> = T extends AnyObject ? {
     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
-
-// Work in progress
-// export type InferArgsDeep<T extends AnyType> = T extends AnyObject ? {
-//   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
-//     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
-//   } : {
-//     [Z in keyof Infer<T['_shape'][K]>]: T['_shape'][K]['_type']['_shape'] extends AnyArgs ? InferArgs<T['_shape'][K]['_type']>[Z]: InferArgsDeep<T['_shape'][K]['_type']['_shape']>
-//   }
-// } : never
 
 export type InferResolvers<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
@@ -136,7 +113,7 @@ class GType<T extends ObjectType> extends Type<T> {
 }
 
 class GString extends Type<string> {
-  _type: string
+  _shape: string
   typeDef: TypeDefinition<string>
 
   constructor(type: 'string' | 'id' = 'string') {
@@ -165,7 +142,7 @@ class GString extends Type<string> {
 }
 
 class GNumber extends Type<number> {
-  _type: number
+  _shape: number
   typeDef: TypeDefinition<number>
 
   constructor(type: 'int' | 'float' = 'int') {
@@ -190,7 +167,7 @@ class GNumber extends Type<number> {
 }
 
 class GBoolean extends Type<boolean> {
-  _type: boolean
+  _shape: boolean
   typeDef: TypeDefinition<boolean>
 
   constructor() {
@@ -215,8 +192,8 @@ class GBoolean extends Type<boolean> {
 }
 
 class GEnum<T extends string> extends Type<T[]> {
-  _type: T[]
-  _enum: T
+  _shape: T[]
+  _inner: T
   typeDef: TypeDefinition<T[]>
 
   constructor(name: string, shape: T[]) {
@@ -234,12 +211,12 @@ class GEnum<T extends string> extends Type<T[]> {
   }
 }
 
-class GUnion<T extends AnyType[]> extends Type<T> {
-  _type: T
-  _union: T[number]
-  typeDef: TypeDefinition<T>
+class GUnion<T extends AnyType> extends Type<T[]> {
+  _shape: T[]
+  _inner: T
+  typeDef: TypeDefinition<T[]>
 
-  constructor(name: string, shape: T) {
+  constructor(name: string, shape: T[]) {
     super()
     this.typeDef = {
       name,
@@ -263,7 +240,7 @@ class GUnion<T extends AnyType[]> extends Type<T> {
 }
 
 class GField<T extends AnyType> extends Type<T> {
-  _type: T
+  _shape: T
   typeDef: TypeDefinition<T>
 
   constructor(shape: T) {
@@ -313,8 +290,7 @@ class GScalar<I, O> extends Type<I> {
 }
 
 class GList<T extends AnyType, X extends AnyArgs> extends Type<T[]> {
-  _type: T[]
-  _inner: T
+  _shape: T[]
   _args: X
   typeDef: TypeDefinition<T[]>
 
@@ -343,7 +319,7 @@ class GList<T extends AnyType, X extends AnyArgs> extends Type<T[]> {
 }
 
 class GOptional<T extends AnyType, X extends AnyArgs> extends Type<T> {
-  _inner: T
+  _shape: T
   _args: X
   typeDef: TypeDefinition<T>
 
@@ -365,12 +341,13 @@ class GOptional<T extends AnyType, X extends AnyArgs> extends Type<T> {
   }
 }
 
-class GArgs<T extends AnyType, X extends AnyArgs> {
-  _type: T
+class GArgs<T extends AnyType, X extends AnyArgs> extends Type<T> {
+  _shape: T
   _args: X
   typeDef: TypeDefinition<T>
 
   constructor(shape: T, args: X) {
+    super()
     this.typeDef = shape.typeDef
     this.typeDef.args = args
   }
@@ -412,7 +389,7 @@ export const g = {
   enum<T extends string>(name: string, args: T[]) {
     return new GEnum<T>(name, args)
   },
-  union<T extends AnyType[]>(name: string, ...args: T) {
+  union<T extends AnyType>(name: string, args: T[]) {
     return new GUnion<T>(name, args)
   },
   field<T extends AnyType>(shape: T) {
