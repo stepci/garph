@@ -7,7 +7,7 @@ type TypeDefinition<T> = {
   name?: string
   type: string
   shape?: T
-  args?: AnyArgs
+  args?: Args
   description?: string
   isOptional?: boolean
   isList?: boolean
@@ -38,7 +38,9 @@ type AnyObject =  InstanceType<typeof GType>
 
 type AnyScalar = InstanceType<typeof GScalar>
 
-type AnyArgs = {
+type AnyArgs = InstanceType<typeof GArgs>
+
+type Args = {
   [key: string]: AnyType
 }
 
@@ -64,15 +66,15 @@ export type Infer<T extends AnyType> = T extends AnyObject ? {
   T extends AnyNumber ? T['_shape'] :
   T extends AnyList ? Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null :
-  T extends AnyArgs ? Infer<T['_shape']> :
+  T extends AnyArgs ? Infer<T['_inner']> :
   T extends AnyUnion ? Infer<T['_inner']> :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyScalar ? T['_input'] :
+  T extends AnyScalar ? T['_shape'] :
   T extends AnyField ? Infer<T['_shape']> :
   never
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
-  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
+  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? {
     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
@@ -89,7 +91,7 @@ export type InferResolversStrict<T extends ObjectType, X extends InferResolverCo
   }
 }
 
-type InferArg<T extends AnyArgs> = {
+type InferArg<T extends Args> = {
   [K in keyof T]: Infer<T[K]>
 }
 
@@ -136,7 +138,7 @@ class GString extends Type<string> {
     return this
   }
 
-  args<X extends AnyArgs>(args: X) {
+  args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
 }
@@ -264,13 +266,13 @@ class GField<T extends AnyType> extends Type<T> {
     return this
   }
 
-  args<X extends AnyArgs>(x: X) {
+  args<X extends Args>(x: X) {
     return new GArgs<this, X>(this, x)
   }
 }
 
 class GScalar<I, O> extends Type<I> {
-  _input: I
+  _shape: I
   _output: O
   typeDef: TypeDefinition<I>
 
@@ -289,7 +291,7 @@ class GScalar<I, O> extends Type<I> {
   }
 }
 
-class GList<T extends AnyType, X extends AnyArgs> extends Type<T[]> {
+class GList<T extends AnyType, X extends Args> extends Type<T[]> {
   _shape: T[]
   _args: X
   typeDef: TypeDefinition<T[]>
@@ -304,7 +306,7 @@ class GList<T extends AnyType, X extends AnyArgs> extends Type<T[]> {
     return new GOptional<this, X>(this, true)
   }
 
-  args<X extends AnyArgs>(x: X) {
+  args<X extends Args>(x: X) {
     return new GArgs<this, X>(this, x)
   }
 
@@ -318,7 +320,7 @@ class GList<T extends AnyType, X extends AnyArgs> extends Type<T[]> {
   // }
 }
 
-class GOptional<T extends AnyType, X extends AnyArgs> extends Type<T> {
+class GOptional<T extends AnyType, X extends Args> extends Type<T> {
   _shape: T
   _args: X
   typeDef: TypeDefinition<T>
@@ -341,8 +343,8 @@ class GOptional<T extends AnyType, X extends AnyArgs> extends Type<T> {
   }
 }
 
-class GArgs<T extends AnyType, X extends AnyArgs> extends Type<T> {
-  _shape: T
+class GArgs<T extends AnyType, X extends Args> extends Type<T> {
+  _inner: T
   _args: X
   typeDef: TypeDefinition<T>
 
