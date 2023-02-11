@@ -12,12 +12,12 @@ type Blog = {
 
 const w = g.type('Blog', {
   title: g.string(),
-  authors: g.ref<typeof u>('User').list(),
+  authors: g.ref<typeof u>('User').list()
 })
 
 const u = g.type('User', {
   username: g.string(),
-  blogs: g.ref<Blog>('Blog').list()
+  blogs: g.ref<Blog[]>('Blog').list()
 })
 
 const s = g.scalar<Date, number>('Date', {

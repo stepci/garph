@@ -250,7 +250,8 @@ class GRef<T> extends Type<T> {
   }
 
   list() {
-    return new GList<this, never>(this)
+    this.typeDef.isList = true
+    return this
   }
 
   description(text: string) {
