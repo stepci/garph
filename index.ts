@@ -13,7 +13,7 @@ type TypeDefinition<T> = {
   isList?: boolean
   isOptionalList?: boolean
   scalarOptions?: ScalarOptions<any, any>
-  resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
+  resolverFunction?: (parent: T | any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
 type AnyType = Type<any>
@@ -34,7 +34,7 @@ type AnyEnum = InstanceType<typeof GEnum>
 
 type AnyOptional = InstanceType<typeof GOptional>
 
-type AnyObject =  InstanceType<typeof GType>
+type AnyObject = InstanceType<typeof GType>
 
 type AnyScalar = InstanceType<typeof GScalar>
 
@@ -81,13 +81,13 @@ export type InferArgs<T extends AnyType> = T extends AnyObject ? {
 
 export type InferResolvers<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]>]?: (parent: Infer<T[K]>, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
 export type InferResolversStrict<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]>]: (parent: Infer<T[K]>, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 

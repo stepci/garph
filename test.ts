@@ -29,10 +29,16 @@ type xType = Infer<typeof w>
 
 type xArgs = InferArgs<typeof w>
 
-// const resolvers: InferResolvers<{ user: typeof u }, { context: any, info: any }> = {
-//   user: {
-//     username: (parent, args, context, info) => {
-//       return parent.username
-//     }
-//   }
-// }
+const resolvers: InferResolvers<{ user: typeof u }, { context: any, info: any }> = {
+  user: {
+    username: (parent, args, context, info) => {
+      return parent.username
+    },
+    blogs(parent, args, context, info) {
+      return [{
+        title: '',
+        authors: []
+      }]
+    }
+  }
+}
