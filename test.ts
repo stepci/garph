@@ -2,12 +2,12 @@ import { g, Infer, InferArgs, InferResolvers } from './index'
 
 type User = {
   username: string
-  blog: Blog
+  blogs: Blog[]
 }
 
 type Blog = {
   title: string
-  author: User
+  authors: User[]
 }
 
 const w = g.type('Blog', {
@@ -17,7 +17,7 @@ const w = g.type('Blog', {
 
 const u = g.type('User', {
   username: g.string(),
-  blogs: g.ref<Blog[]>('Blog').list()
+  blogs: g.ref<Blog>('Blog').list()
 })
 
 const s = g.scalar<Date, number>('Date', {
