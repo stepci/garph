@@ -64,7 +64,7 @@ export type Infer<T> = T extends AnyObject ? {
 } : T extends AnyString ? T['_shape'] :
   T extends AnyBoolean ? T['_shape'] :
   T extends AnyNumber ? T['_shape'] :
-  T extends AnyList ? Infer<T['_shape']>[] :
+  T extends AnyList ? readonly Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null :
   T extends AnyArgs ? Infer<T['_inner']> :
   T extends AnyUnion ? Infer<T['_inner']> :
