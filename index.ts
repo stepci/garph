@@ -291,10 +291,10 @@ class GScalar<I, O> extends Type<I> {
   }
 }
 
-class GList<T extends AnyType, X extends Args> extends Type<T[]> {
-  _shape: T[]
+class GList<T extends AnyType, X extends Args> extends Type<T> {
+  _shape: T
   _args: X
-  typeDef: TypeDefinition<T[]>
+  typeDef: TypeDefinition<T>
 
   constructor(shape: AnyType) {
     super()

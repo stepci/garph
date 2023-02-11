@@ -17,7 +17,7 @@ const w = g.type('Blog', {
 
 const u = g.type('User', {
   username: g.string(),
-  blog: g.ref<Blog>('Blog')
+  blog: g.ref<Blog>('Blog').optional().list()
 })
 
 const s = g.scalar<Date, number>('Date', {
@@ -26,6 +26,7 @@ const s = g.scalar<Date, number>('Date', {
 })
 
 type xType = Infer<typeof w>
+
 type xArgs = InferArgs<typeof w>
 
 const resolvers: InferResolvers<{ user: typeof u }, { context: any, info: any }> = {
