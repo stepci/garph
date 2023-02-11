@@ -59,7 +59,7 @@ export type InferResolverConfig = {
   info?: any
 }
 
-export type Infer<T extends AnyType> = T extends AnyObject ? {
+export type Infer<T> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 } : T extends AnyString ? T['_shape'] :
   T extends AnyBoolean ? T['_shape'] :
@@ -71,7 +71,7 @@ export type Infer<T extends AnyType> = T extends AnyObject ? {
   T extends AnyEnum ? T['_inner'] :
   T extends AnyScalar ? T['_shape'] :
   T extends AnyRef ? Infer<T['_ref']> :
-  never
+  T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? {
@@ -81,13 +81,13 @@ export type InferArgs<T extends AnyType> = T extends AnyObject ? {
 
 export type InferResolvers<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]?: (parent: unknown, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
+    [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
   }
 }
 
 export type InferResolversStrict<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]: (parent: unknown, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
+    [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
   }
 }
 
@@ -241,7 +241,7 @@ class GUnion<T extends AnyType> extends Type<T[]> {
   }
 }
 
-class GRef<T extends AnyType> extends Type<T> {
+class GRef<T> extends Type<T> {
   _ref: T
   typeDef: TypeDefinition<T>
 
@@ -403,7 +403,7 @@ export const g = {
   optional<T extends AnyType>(shape: T) {
     return new GOptional<T, any>(shape)
   },
-  ref<T extends AnyType>(name: string) {
+  ref<T>(name: string) {
     return new GRef<T>(name)
   }
 }
