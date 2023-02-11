@@ -227,14 +227,6 @@ class GUnion<T extends AnyType> extends Type<T[]> {
     }
   }
 
-  optional() {
-    return new GOptional<this, never>(this)
-  }
-
-  list() {
-    return new GList<this, never>(this)
-  }
-
   description(text: string) {
     this.typeDef.description = text
     return this
