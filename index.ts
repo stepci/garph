@@ -81,13 +81,13 @@ export type InferArgs<T extends AnyType> = T extends AnyObject ? {
 
 export type InferResolvers<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
+    [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
 export type InferResolversStrict<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G]
+    [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
