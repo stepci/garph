@@ -24,7 +24,7 @@ type AnyBoolean = Type<boolean>
 
 type AnyNumber = Type<number>
 
-type AnyField = Type<any>
+type AnyRef = InstanceType<typeof GRef>
 
 type AnyList = InstanceType<typeof GList>
 
@@ -70,7 +70,7 @@ export type Infer<T extends AnyType> = T extends AnyObject ? {
   T extends AnyUnion ? Infer<T['_inner']> :
   T extends AnyEnum ? T['_inner'] :
   T extends AnyScalar ? T['_shape'] :
-  T extends AnyField ? Infer<T['_shape']> :
+  T extends AnyRef ? Infer<T['_ref']> :
   never
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
@@ -241,15 +241,15 @@ class GUnion<T extends AnyType> extends Type<T[]> {
   }
 }
 
-class GField<T extends AnyType> extends Type<T> {
-  _shape: T
+class GRef<T extends AnyType> extends Type<T> {
+  _ref: T
   typeDef: TypeDefinition<T>
 
-  constructor(shape: T) {
+  constructor(name: string) {
     super()
     this.typeDef = {
-      type: 'field',
-      shape
+      name,
+      type: 'ref'
     }
   }
 
@@ -394,9 +394,6 @@ export const g = {
   union<T extends AnyType>(name: string, args: T[]) {
     return new GUnion<T>(name, args)
   },
-  field<T extends AnyType>(shape: T) {
-    return new GField<T>(shape)
-  },
   scalar<I, O>(name: string, options: ScalarOptions<I, O>) {
     return new GScalar<I, O>(name, options)
   },
@@ -405,5 +402,8 @@ export const g = {
   },
   optional<T extends AnyType>(shape: T) {
     return new GOptional<T, any>(shape)
+  },
+  ref<T extends AnyType>(name: string) {
+    return new GRef<T>(name)
   }
 }
