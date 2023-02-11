@@ -15,24 +15,24 @@ const w = g.type('Blog', {
   authors: g.ref<typeof u>('User').list()
 })
 
-const u = g.type('User', {
-  username: g.string(),
-  blogs: g.ref<Blog>('Blog').list()
-})
-
 const s = g.scalar<Date, number>('Date', {
   parseValue: (value) => new Date(value),
   serialize: (value) => value.getTime()
+})
+
+const u = g.type('User', {
+  username: g.string(),
+  blogs: g.ref<Blog>('Blog').list()
 })
 
 type xType = Infer<typeof w>
 
 type xArgs = InferArgs<typeof w>
 
-const resolvers: InferResolvers<{ user: typeof u }, { context: any, info: any }> = {
-  user: {
-    username: (parent, args, context, info) => {
-      return parent.username
-    }
-  }
-}
+// const resolvers: InferResolvers<{ user: typeof u }, { context: any, info: any }> = {
+//   user: {
+//     username: (parent, args, context, info) => {
+//       return parent.username
+//     }
+//   }
+// }

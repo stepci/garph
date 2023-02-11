@@ -237,10 +237,10 @@ class GRef<T> extends Type<T> {
   _ref: T
   typeDef: TypeDefinition<T>
 
-  constructor(name: string) {
+  constructor(ref: string | T) {
     super()
     this.typeDef = {
-      name,
+      name: typeof ref === 'string' ? ref : (ref as AnyType).typeDef.name,
       type: 'ref'
     }
   }
@@ -395,7 +395,7 @@ export const g = {
   optional<T extends AnyType>(shape: T) {
     return new GOptional<T, any>(shape)
   },
-  ref<T>(name: string) {
-    return new GRef<T>(name)
+  ref<T>(ref: string | T) {
+    return new GRef<T>(ref)
   }
 }
