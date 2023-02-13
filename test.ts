@@ -37,3 +37,5 @@ const resolvers: InferResolvers<{ user: typeof u }, { context: any, info: any }>
     }
   }
 }
+
+console.log(u)

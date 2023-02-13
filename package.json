@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "bun-types": "^0.5.6",
+    "graphql": "^16.6.0",
+    "graphql-yoga": "^3.5.1"
+  }
+}
