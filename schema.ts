@@ -5,6 +5,7 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLNonNull,
+  GraphQLBoolean,
 } from 'graphql'
 
 import { g, InferResolvers, Infer } from './index'
@@ -17,7 +18,9 @@ const userType = g.type('User', {
 })
 
 const queryType = g.type('Query', {
-  user: g.ref(userType)
+  user: g.ref(userType).args({
+    includeX: g.boolean()
+  })
 })
 
 const userSchema = new GraphQLSchema({
@@ -42,10 +45,16 @@ const userSchema = new GraphQLSchema({
             }
           }
         })),
-        resolve() {
+        args: {
+          includeX: {
+            type: new GraphQLNonNull(GraphQLBoolean)
+          }
+        },
+        resolve(parent, args, context, info) {
+          console.log(args)
           return {
             username: 'Mish Ushakov',
-            age: 20
+            age: 22
           }
         }
       }
@@ -64,7 +73,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType, User: typeof userType
     user(parent, args, context, info) {
       return {
         username: 'Mish Ushakov',
-        age: 20
+        age: 22
       }
     }
   },
