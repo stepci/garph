@@ -5,13 +5,11 @@ abstract class Type<T> {
 
 type TypeDefinition<T> = {
   name?: string
-  type: string
+  type: 'string' | 'int' | 'float' | 'boolean' | 'id' | 'type' | 'ref' | 'list' | 'union' | 'enum' | 'scalar'
   shape?: T
   args?: Args
   description?: string
   isOptional?: boolean
-  isList?: boolean
-  isOptionalList?: boolean
   scalarOptions?: ScalarOptions<any, any>
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
@@ -103,7 +101,7 @@ class GType<T extends ObjectType> extends Type<T> {
     super()
     this.typeDef = {
       name,
-      type: 'object',
+      type: 'type',
       shape
     }
   }
@@ -166,6 +164,10 @@ class GNumber extends Type<number> {
     this.typeDef.description = text
     return this
   }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
+  }
 }
 
 class GBoolean extends Type<boolean> {
@@ -191,6 +193,10 @@ class GBoolean extends Type<boolean> {
     this.typeDef.description = text
     return this
   }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
+  }
 }
 
 class GEnum<T extends string> extends Type<T[]> {
@@ -207,9 +213,21 @@ class GEnum<T extends string> extends Type<T[]> {
     }
   }
 
+  optional() {
+    return new GOptional<this, never>(this)
+  }
+
+  list() {
+    return new GList<this, never>(this)
+  }
+
   description(text: string) {
     this.typeDef.description = text
     return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -227,9 +245,21 @@ class GUnion<T extends AnyType> extends Type<T[]> {
     }
   }
 
+  optional() {
+    return new GOptional<this, never>(this)
+  }
+
+  list() {
+    return new GList<this, never>(this)
+  }
+
   description(text: string) {
     this.typeDef.description = text
     return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -288,18 +318,17 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
   _args: X
   typeDef: TypeDefinition<T>
 
-  constructor(shape: AnyType) {
+  constructor(shape: T) {
     super()
-    this.typeDef = shape.typeDef
-    this.typeDef.isList = true
+    this.typeDef = {
+      name: shape.typeDef.name,
+      type: 'list',
+      shape
+    }
   }
 
   optional() {
-    return new GOptional<this, X>(this, true)
-  }
-
-  args<X extends Args>(x: X) {
-    return new GArgs<this, X>(this, x)
+    return new GOptional<this, never>(this)
   }
 
   description(text: string) {
@@ -307,9 +336,13 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
     return this
   }
 
-  // list() {
-  //   return new GList<this, X>(this)
-  // }
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
+  }
+
+  list() {
+    return new GList<this, X>(this)
+  }
 }
 
 class GOptional<T extends AnyType, X extends Args> extends Type<T> {
@@ -317,12 +350,10 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
   _args: X
   typeDef: TypeDefinition<T>
 
-  constructor(shape: T, isOptionalList?: boolean) {
+  constructor(shape: T) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isOptional = true
-
-    if (isOptionalList) this.typeDef.isOptionalList = true
   }
 
   list() {
@@ -332,6 +363,10 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
   description(text: string) {
     this.typeDef.description = text
     return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -346,12 +381,17 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
     this.typeDef.args = args
   }
 
-  list() {
-    return new GList<this, X>(this)
+   optional() {
+    return new GOptional<this, never>(this)
   }
 
-  optional() {
-    return new GOptional<this, X>(this)
+  list() {
+    return new GList<this, never>(this)
+  }
+
+  description(text: string) {
+    this.typeDef.description = text
+    return this
   }
 
   // For future reference
@@ -380,11 +420,17 @@ export const g = {
   id() {
     return new GString('id')
   },
-  enum<T extends string>(name: string, args: T[]) {
+  enumType<T extends string>(name: string, args: T[]) {
     return new GEnum<T>(name, args)
   },
-  union<T extends AnyType>(name: string, args: T[]) {
+  unionType<T extends AnyType>(name: string, args: T[]) {
     return new GUnion<T>(name, args)
+  },
+  enum<T extends string>(args: T[]) {
+    return new GEnum<T>('', args)
+  },
+  union<T extends AnyType>(args: T[]) {
+    return new GUnion<T>('', args)
   },
   scalar<I, O>(name: string, options: ScalarOptions<I, O>) {
     return new GScalar<I, O>(name, options)
