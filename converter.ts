@@ -16,19 +16,19 @@ import {
   GraphQLInputObjectType
 } from 'graphql'
 
-export function convertSchema({ types }: { types: AnyType[] }, config: { defaultRequired: boolean }) {
+export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: { defaultRequired?: boolean }) {
   const queryType = types.find(type => type.typeDef.name === 'Query')
   const mutationType = types.find(type => type.typeDef.name === 'Mutation')
   const subscriptionType = types.find(type => type.typeDef.name === 'Subscription')
-  const otherTypes = types
-    .filter(type => type.typeDef.name !== 'Query' && type.typeDef.name !== 'Mutation' && type.typeDef.name !== 'Subscription')
-    .map(type => convertToGraphqlType(type, config))
+  // const otherTypes = types
+  //   .filter(type => type.typeDef.name !== 'Query' && type.typeDef.name !== 'Mutation' && type.typeDef.name !== 'Subscription')
+  //   .map(type => convertToGraphqlType(type, config, resolvers))
 
   return new GraphQLSchema({
-    query: convertToGraphqlType(queryType, config),
+    query: convertToGraphqlType(queryType, config, resolvers),
     // mutation: convertToGraphqlType(mutationType),
     // subscription: convertToGraphqlType(subscriptionType),
-    types: otherTypes
+    // types: otherTypes
   })
 }
 
@@ -67,7 +67,7 @@ function iterateFields (type: AnyType, name: string, config) {
   }
 }
 
-function convertToGraphqlType(type: AnyType, config): GraphQLObjectType {
+function convertToGraphqlType(type: AnyType, config, resolvers): GraphQLObjectType {
   return new GraphQLObjectType({
     name: type.typeDef.name,
     fields: () => {
@@ -77,7 +77,8 @@ function convertToGraphqlType(type: AnyType, config): GraphQLObjectType {
         fields[fieldName] = {
           type: iterateFields(field, fieldName, config),
           description: field.typeDef.description,
-          args: parseArgs(field.typeDef.args, config)
+          args: parseArgs(field.typeDef.args, config),
+          resolve: resolvers[type.typeDef.name][fieldName]
         }
       })
 
