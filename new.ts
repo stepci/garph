@@ -3,19 +3,24 @@ import { g, InferResolvers, Infer } from './index'
 import { createYoga } from 'graphql-yoga'
 
 const user = g.type('User', {
-  id: g.id()
+  id: g.id().required(),
+  name: g.string().required(),
+  age: g.int()
 })
 
 const queryType = g.type('Query', {
-  test: g.id().args({
-    includeX: g.boolean().optional().description('wows')
-  }),
-  user: user.optional()
+  // Edge-case: Schema must contain uniquely named types but contains multiple types named "User".
+  getUser:
+    g.boolean().args({
+      id: g.id().required()
+    })
+    .list()
 })
-.description('The root query type.')
+
+type x = Infer<typeof queryType>
 
 const schema = convertSchema({
-  types: [queryType]
+  types: [queryType, user]
 }, { defaultRequired: true })
 
 const yoga = createYoga({ schema })

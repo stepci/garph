@@ -12,62 +12,62 @@ import {
   GraphQLFloat,
   GraphQLID,
   GraphQLEnumType,
-  GraphQLList
+  GraphQLList,
+  GraphQLInputObjectType
 } from 'graphql'
 
-export function convertSchema({ types }: { types: AnyType[] }) {
+export function convertSchema({ types }: { types: AnyType[] }, config: { defaultRequired: boolean }) {
   const queryType = types.find(type => type.typeDef.name === 'Query')
   const mutationType = types.find(type => type.typeDef.name === 'Mutation')
   const subscriptionType = types.find(type => type.typeDef.name === 'Subscription')
   const otherTypes = types
     .filter(type => type.typeDef.name !== 'Query' && type.typeDef.name !== 'Mutation' && type.typeDef.name !== 'Subscription')
-    .map(type => convertToGraphqlType(type))
+    .map(type => convertToGraphqlType(type, config))
 
   return new GraphQLSchema({
-    query: convertToGraphqlType(queryType),
+    query: convertToGraphqlType(queryType, config),
     // mutation: convertToGraphqlType(mutationType),
     // subscription: convertToGraphqlType(subscriptionType),
     types: otherTypes
   })
 }
 
-function iterateFields (type: AnyType, name: string) {
+function iterateFields (type: AnyType, name: string, config) {
   switch (type.typeDef.type) {
-    case 'type':
-      const objectType = new GraphQLObjectType({
-        name: type.typeDef.name,
-        fields: () => {
-          const fields: any = {}
-          Object.keys(type.typeDef.shape).forEach(fieldName => {
-            const field = type.typeDef.shape[fieldName]
-            fields[fieldName] = {
-              type: iterateFields(field, fieldName),
-              description: field.typeDef.description,
-              args: iterateArgs(field.typeDef.args)
-            }
-          })
+    // case 'type':
+    //   const objectType = new GraphQLObjectType({
+    //     name: type.typeDef.name + 'Type',
+    //     fields: () => {
+    //       const fields: any = {}
+    //       Object.keys(type.typeDef.shape).forEach(fieldName => {
+    //         const field = type.typeDef.shape[fieldName]
+    //         fields[fieldName] = {
+    //           type: iterateFields(field, fieldName, config),
+    //           description: field.typeDef.description,
+    //         }
+    //       })
 
-          return fields
-        }
-      })
+    //       return fields
+    //     }
+    //   })
 
-      return type.typeDef.isOptional ? objectType : new GraphQLNonNull(objectType)
+    //   return type.typeDef.isRequired ? new GraphQLNonNull(objectType) : objectType
     case 'string':
-      return type.typeDef.isOptional ? GraphQLString : new GraphQLNonNull(GraphQLString)
+      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLString) : GraphQLString
     case 'int':
-      return type.typeDef.isOptional ? GraphQLInt : new GraphQLNonNull(GraphQLInt)
+      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLInt) : GraphQLInt
     case 'float':
-      return type.typeDef.isOptional ? GraphQLFloat : new GraphQLNonNull(GraphQLFloat)
+      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLFloat) : GraphQLFloat
     case 'boolean':
-      return type.typeDef.isOptional ? GraphQLBoolean : new GraphQLNonNull(GraphQLBoolean)
+      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLBoolean) : GraphQLBoolean
     case 'id':
-      return type.typeDef.isOptional ? GraphQLID : new GraphQLNonNull(GraphQLID)
+      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLID) : GraphQLID
     case 'list':
-      return type.typeDef.isOptional ? new GraphQLList(iterateFields(type.typeDef.shape, name)) : new GraphQLNonNull(new GraphQLList(iterateFields(type.typeDef.shape, name)))
+      return type.typeDef.isRequired ? new GraphQLNonNull(new GraphQLList(iterateFields(type.typeDef.shape, name, config))) : new GraphQLList(iterateFields(type.typeDef.shape, name, config))
   }
 }
 
-function convertToGraphqlType(type: AnyType): GraphQLObjectType {
+function convertToGraphqlType(type: AnyType, config): GraphQLObjectType {
   return new GraphQLObjectType({
     name: type.typeDef.name,
     fields: () => {
@@ -75,9 +75,9 @@ function convertToGraphqlType(type: AnyType): GraphQLObjectType {
       Object.keys(type.typeDef.shape).forEach(fieldName => {
         const field = type.typeDef.shape[fieldName]
         fields[fieldName] = {
-          type: iterateFields(field, fieldName),
+          type: iterateFields(field, fieldName, config),
           description: field.typeDef.description,
-          args: iterateArgs(field.typeDef.args)
+          args: parseArgs(field.typeDef.args, config)
         }
       })
 
@@ -86,14 +86,14 @@ function convertToGraphqlType(type: AnyType): GraphQLObjectType {
   })
 }
 
-function iterateArgs (anyargs) {
+function parseArgs (anyargs, config) {
   if (!anyargs) return
 
   const args: any = {}
   Object.keys(anyargs).forEach(argName => {
     const arg = anyargs[argName]
     args[argName] = {
-      type: iterateFields(arg, argName),
+      type: iterateFields(arg, argName, config),
       description: arg.typeDef.description
     }
   })

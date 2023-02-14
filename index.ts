@@ -10,6 +10,7 @@ type TypeDefinition<T> = {
   args?: Args
   description?: string
   isOptional?: boolean
+  isRequired?: boolean
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
@@ -111,6 +112,11 @@ class GType<T extends ObjectType> extends Type<T> {
     return new GOptional<this, never>(this)
   }
 
+  required() {
+    this.typeDef.isRequired = true
+    return this
+  }
+
   list() {
     return new GList<this, never>(this)
   }
@@ -138,6 +144,11 @@ class GString extends Type<string> {
 
   optional() {
     return new GOptional<this, never>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
   }
 
   list() {
@@ -174,6 +185,11 @@ class GNumber extends Type<number> {
     return new GOptional<this, never>(this)
   }
 
+  required() {
+    this.typeDef.isRequired = true
+    return this
+  }
+
   list() {
     return new GList<this, never>(this)
   }
@@ -206,6 +222,11 @@ class GBoolean extends Type<boolean> {
 
   optional() {
     return new GOptional<this, never>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
   }
 
   list() {
@@ -245,6 +266,11 @@ class GEnum<T extends string> extends Type<T[]> {
     return new GOptional<this, never>(this)
   }
 
+  required() {
+    this.typeDef.isRequired = true
+    return this
+  }
+
   list() {
     return new GList<this, never>(this)
   }
@@ -282,6 +308,11 @@ class GUnion<T extends AnyType> extends Type<T[]> {
     return new GOptional<this, never>(this)
   }
 
+  required() {
+    this.typeDef.isRequired = true
+    return this
+  }
+
   list() {
     return new GList<this, never>(this)
   }
@@ -310,6 +341,11 @@ class GRef<T> extends Type<T> {
 
   optional() {
     return new GOptional<this, never>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
   }
 
   list() {
@@ -356,12 +392,18 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
     this.typeDef = {
       name: shape.typeDef.name,
       type: 'list',
-      shape
+      shape,
+      args: shape.typeDef.args
     }
   }
 
   optional() {
     return new GOptional<this, never>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
   }
 
   description(text: string) {
@@ -387,6 +429,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isOptional = true
+    this.typeDef.isRequired = false
   }
 
   list() {
@@ -414,8 +457,13 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
     this.typeDef.args = args
   }
 
-   optional() {
+  optional() {
     return new GOptional<this, never>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
   }
 
   list() {
