@@ -107,9 +107,21 @@ class GType<T extends ObjectType> extends Type<T> {
     }
   }
 
+  optional() {
+    return new GOptional<this, never>(this)
+  }
+
+  list() {
+    return new GList<this, never>(this)
+  }
+
   description(text: string) {
     this.typeDef.description = text
     return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 

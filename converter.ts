@@ -34,22 +34,24 @@ export function convertSchema({ types }: { types: AnyType[] }) {
 function iterateFields (type: AnyType, name: string) {
   switch (type.typeDef.type) {
     case 'type':
-      return new GraphQLObjectType({
+      const objectType = new GraphQLObjectType({
         name: type.typeDef.name,
         fields: () => {
           const fields: any = {}
           Object.keys(type.typeDef.shape).forEach(fieldName => {
             const field = type.typeDef.shape[fieldName]
             fields[fieldName] = {
-              type: convertToGraphqlType(field),
+              type: iterateFields(field, fieldName),
               description: field.typeDef.description,
-              // args: convertToGraphqlArgs(field)
+              args: iterateArgs(field.typeDef.args)
             }
           })
 
           return fields
         }
       })
+
+      return type.typeDef.isOptional ? objectType : new GraphQLNonNull(objectType)
     case 'string':
       return type.typeDef.isOptional ? GraphQLString : new GraphQLNonNull(GraphQLString)
     case 'int':
@@ -75,10 +77,26 @@ function convertToGraphqlType(type: AnyType): GraphQLObjectType {
         fields[fieldName] = {
           type: iterateFields(field, fieldName),
           description: field.typeDef.description,
+          args: iterateArgs(field.typeDef.args)
         }
       })
 
       return fields
     }
   })
+}
+
+function iterateArgs (anyargs) {
+  if (!anyargs) return
+
+  const args: any = {}
+  Object.keys(anyargs).forEach(argName => {
+    const arg = anyargs[argName]
+    args[argName] = {
+      type: iterateFields(arg, argName),
+      description: arg.typeDef.description
+    }
+  })
+
+  return args
 }
