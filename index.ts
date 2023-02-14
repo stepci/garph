@@ -11,6 +11,7 @@ type TypeDefinition<T> = {
   description?: string
   isOptional?: boolean
   scalarOptions?: ScalarOptions<any, any>
+  defaultValue?: any
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
@@ -139,6 +140,11 @@ class GString extends Type<string> {
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
+
+  default(value: string) {
+    this.typeDef.defaultValue = value
+    return this
+  }
 }
 
 class GNumber extends Type<number> {
@@ -168,6 +174,11 @@ class GNumber extends Type<number> {
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
+
+  default(value: number) {
+    this.typeDef.defaultValue = value
+    return this
+  }
 }
 
 class GBoolean extends Type<boolean> {
@@ -196,6 +207,11 @@ class GBoolean extends Type<boolean> {
 
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
+  }
+
+  default(value: boolean) {
+    this.typeDef.defaultValue = value
+    return this
   }
 }
 
@@ -228,6 +244,11 @@ class GEnum<T extends string> extends Type<T[]> {
 
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
+  }
+
+  default(value: string) {
+    this.typeDef.defaultValue = value
+    return this
   }
 }
 

@@ -68,7 +68,9 @@ const yoga = createYoga({ schema: userSchema })
 // Pass it into a server to hook into request handlers.
 Bun.serve(yoga)
 
-const resolvers: InferResolvers<{ Query: typeof queryType, User: typeof userType }, {}> = {
+type MyTypes = { Query: typeof queryType, User: typeof userType }
+
+const resolvers: InferResolvers<MyTypes, {}> = {
   Query: {
     user(parent, args, context, info) {
       return {
