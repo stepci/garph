@@ -1,14 +1,20 @@
+import { convertSchema } from './converter'
 import { g, InferResolvers, Infer } from './index'
+import { createYoga } from 'graphql-yoga'
 
-const userType = g.type('User', {
-  username: g.string().list().optional(),
-  age: g.int()
+const user = g.type('User', {
+  id: g.id(),
+  name: g.string()
 })
 
 const queryType = g.type('Query', {
-  user: g.ref(userType).args({
-    includeX: g.boolean()
-  })
+  test: g.id()
+})
+.description('The root query type.')
+
+const schema = convertSchema({
+  types: [queryType, user]
 })
 
-type InferredUserType = Infer<typeof userType>
+const yoga = createYoga({ schema })
+Bun.serve(yoga)

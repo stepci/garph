@@ -15,7 +15,7 @@ type TypeDefinition<T> = {
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
-type AnyType = Type<any>
+export type AnyType = Type<any>
 
 type AnyString = Type<string>
 
@@ -292,7 +292,7 @@ class GRef<T> extends Type<T> {
     super()
     this.typeDef = {
       name: typeof ref === 'string' ? ref : (ref as AnyType).typeDef.name,
-      type: 'ref'
+      type: 'ref',
     }
   }
 

@@ -32,16 +32,10 @@ const userSchema = new GraphQLSchema({
           name: 'User',
           fields: {
             username: {
-              type: new GraphQLNonNull(GraphQLString),
-              resolve(parent, args, context, info) {
-                return parent.username
-              }
+              type: new GraphQLNonNull(GraphQLString)
             },
             age: {
-              type: new GraphQLNonNull(GraphQLInt),
-              resolve(parent, args, context, info) {
-                return parent.age
-              }
+              type: new GraphQLNonNull(GraphQLInt)
             }
           }
         })),
@@ -68,7 +62,7 @@ const yoga = createYoga({ schema: userSchema })
 // Pass it into a server to hook into request handlers.
 Bun.serve(yoga)
 
-type MyTypes = { Query: typeof queryType, User: typeof userType }
+type MyTypes = { Query: typeof queryType }
 
 const resolvers: InferResolvers<MyTypes, {}> = {
   Query: {
@@ -77,14 +71,6 @@ const resolvers: InferResolvers<MyTypes, {}> = {
         username: 'Mish Ushakov',
         age: 22
       }
-    }
-  },
-  User: {
-    username(parent: Infer<typeof userType>, args, context, info) {
-      return parent.username
-    },
-    age(parent: Infer<typeof userType>, args, context, info) {
-      return parent.age
     }
   }
 }
