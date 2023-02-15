@@ -108,26 +108,9 @@ class GType<T extends ObjectType> extends Type<T> {
     }
   }
 
-  optional() {
-    return new GOptional<this, never>(this)
-  }
-
-  required() {
-    this.typeDef.isRequired = true
-    return this
-  }
-
-  list() {
-    return new GList<this, never>(this)
-  }
-
   description(text: string) {
     this.typeDef.description = text
     return this
-  }
-
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -335,7 +318,7 @@ class GRef<T> extends Type<T> {
     super()
     this.typeDef = {
       name: typeof ref === 'string' ? ref : (ref as AnyType).typeDef.name,
-      type: 'ref',
+      type: 'ref'
     }
   }
 

@@ -1,90 +1,53 @@
 import { AnyType } from './index'
+import { makeExecutableSchema } from '@graphql-tools/schema'
 
-import {
-  graphql,
-  GraphQLSchema,
-  GraphQLObjectType,
-  GraphQLString,
-  GraphQLInt,
-  GraphQLNonNull,
-  GraphQLBoolean,
-  GraphQLScalarType,
-  GraphQLFloat,
-  GraphQLID,
-  GraphQLEnumType,
-  GraphQLList,
-  GraphQLInputObjectType
-} from 'graphql'
+import { schemaComposer, ObjectTypeComposerFieldConfigMapDefinition } from 'graphql-compose'
 
 export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: { defaultRequired?: boolean }) {
-  const queryType = types.find(type => type.typeDef.name === 'Query')
-  const mutationType = types.find(type => type.typeDef.name === 'Mutation')
-  const subscriptionType = types.find(type => type.typeDef.name === 'Subscription')
-  // const otherTypes = types
-  //   .filter(type => type.typeDef.name !== 'Query' && type.typeDef.name !== 'Mutation' && type.typeDef.name !== 'Subscription')
-  //   .map(type => convertToGraphqlType(type, config, resolvers))
-
-  return new GraphQLSchema({
-    query: convertToGraphqlType(queryType, config, resolvers),
-    // mutation: convertToGraphqlType(mutationType),
-    // subscription: convertToGraphqlType(subscriptionType),
-    // types: otherTypes
-  })
+  const convertedTypes = types.map(type => convertToGraphqlType(type, config, resolvers))
+  return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
 }
 
 function iterateFields (type: AnyType, name: string, config) {
   switch (type.typeDef.type) {
-    // case 'type':
-    //   const objectType = new GraphQLObjectType({
-    //     name: type.typeDef.name + 'Type',
-    //     fields: () => {
-    //       const fields: any = {}
-    //       Object.keys(type.typeDef.shape).forEach(fieldName => {
-    //         const field = type.typeDef.shape[fieldName]
-    //         fields[fieldName] = {
-    //           type: iterateFields(field, fieldName, config),
-    //           description: field.typeDef.description,
-    //         }
-    //       })
-
-    //       return fields
-    //     }
-    //   })
-
-    //   return type.typeDef.isRequired ? new GraphQLNonNull(objectType) : objectType
     case 'string':
-      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLString) : GraphQLString
+      return type.typeDef.isRequired ? 'String!' : 'String'
     case 'int':
-      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLInt) : GraphQLInt
+      return type.typeDef.isRequired ? 'Int!' : 'Int'
     case 'float':
-      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLFloat) : GraphQLFloat
+      return type.typeDef.isRequired ? 'Float!' : 'Float'
     case 'boolean':
-      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLBoolean) : GraphQLBoolean
+      return type.typeDef.isRequired ? 'Boolean!' : 'Boolean'
     case 'id':
-      return type.typeDef.isRequired ? new GraphQLNonNull(GraphQLID) : GraphQLID
+      return type.typeDef.isRequired ? 'ID!' : 'ID'
     case 'list':
-      return type.typeDef.isRequired ? new GraphQLNonNull(new GraphQLList(iterateFields(type.typeDef.shape, name, config))) : new GraphQLList(iterateFields(type.typeDef.shape, name, config))
+      return type.typeDef.isRequired ? `[${iterateFields(type.typeDef.shape, name, config)}]!` : `[${iterateFields(type.typeDef.shape, name, config)}]`
+    case 'ref':
+      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
   }
 }
 
-function convertToGraphqlType(type: AnyType, config, resolvers): GraphQLObjectType {
-  return new GraphQLObjectType({
+function convertToGraphqlType(type: AnyType, config, resolvers) {
+  const x = schemaComposer.createObjectTC({
     name: type.typeDef.name,
-    fields: () => {
-      const fields: any = {}
-      Object.keys(type.typeDef.shape).forEach(fieldName => {
-        const field = type.typeDef.shape[fieldName]
-        fields[fieldName] = {
-          type: iterateFields(field, fieldName, config),
-          description: field.typeDef.description,
-          args: parseArgs(field.typeDef.args, config),
-          resolve: resolvers[type.typeDef.name][fieldName]
-        }
-      })
+    fields: parseFields(type.typeDef.shape, config, resolvers),
+  })
 
-      return fields
+  return x
+}
+
+function parseFields(fields, config, resolvers) {
+  const fieldsObj: ObjectTypeComposerFieldConfigMapDefinition<any, any> = {}
+  Object.keys(fields).forEach(fieldName => {
+    const field = fields[fieldName]
+    fieldsObj[fieldName] = {
+      type: iterateFields(field, fieldName, config),
+      args: parseArgs(field.typeDef.args, config),
+      description: field.typeDef.description,
     }
   })
+
+  return fieldsObj
 }
 
 function parseArgs (anyargs, config) {
