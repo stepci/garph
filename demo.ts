@@ -1,5 +1,5 @@
 import { convertSchema } from './converter'
-import { g, InferResolvers, Infer } from './index'
+import { g, InferResolvers, Infer, InferArgs } from './index'
 import { createYoga } from 'graphql-yoga'
 
 type Blog = {
@@ -29,7 +29,7 @@ const inputType = g.inputType('UserInput', {
 
 const queryType = g.type('Query', {
   greet: g.string().args({
-    test: g.ref(scalarType).list().description('The test')
+    test: g.ref(inputType).description('The test').list().default({ name: 'test', age: 10 }),
   }).description('The greet query'),
 })
 

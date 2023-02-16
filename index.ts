@@ -86,9 +86,6 @@ type InferArg<T extends Args> = {
 }
 
 class GType<T extends ObjectType> extends Type<T> {
-  _shape: T
-  typeDef: TypeDefinition<T>
-
   constructor(name: string, shape: T, type: 'type' | 'input' = 'type') {
     super()
     this.typeDef = {
@@ -110,9 +107,6 @@ class GType<T extends ObjectType> extends Type<T> {
 }
 
 class GString extends Type<string> {
-  _shape: string
-  typeDef: TypeDefinition<string>
-
   constructor(type: 'string' | 'id' = 'string') {
     super()
     this.typeDef = {
@@ -154,9 +148,6 @@ class GString extends Type<string> {
 }
 
 class GNumber extends Type<number> {
-  _shape: number
-  typeDef: TypeDefinition<number>
-
   constructor(type: 'int' | 'float' = 'int') {
     super()
     this.typeDef = {
@@ -198,9 +189,6 @@ class GNumber extends Type<number> {
 }
 
 class GBoolean extends Type<boolean> {
-  _shape: boolean
-  typeDef: TypeDefinition<boolean>
-
   constructor() {
     super()
     this.typeDef = {
@@ -242,9 +230,7 @@ class GBoolean extends Type<boolean> {
 }
 
 class GEnum<T extends string> extends Type<T[]> {
-  _shape: T[]
   _inner: T
-  typeDef: TypeDefinition<T[]>
 
   constructor(name: string, shape: T[]) {
     super()
@@ -267,9 +253,7 @@ class GEnum<T extends string> extends Type<T[]> {
 }
 
 class GUnion<T extends AnyType> extends Type<T[]> {
-  _shape: T[]
   _inner: T
-  typeDef: TypeDefinition<T[]>
 
   constructor(name: string, shape: T[]) {
     super()
@@ -293,7 +277,6 @@ class GUnion<T extends AnyType> extends Type<T[]> {
 
 class GRef<T> extends Type<T> {
   _ref: T
-  typeDef: TypeDefinition<T>
 
   constructor(ref: string | T) {
     super()
@@ -321,7 +304,7 @@ class GRef<T> extends Type<T> {
     return this
   }
 
-  default(value) {
+  default(value: Infer<T>) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -337,9 +320,7 @@ class GRef<T> extends Type<T> {
 }
 
 class GScalar<I, O> extends Type<I> {
-  _shape: I
   _output: O
-  typeDef: TypeDefinition<I>
 
   constructor(name: string, scalarOptions: ScalarOptions<I, O>) {
     super()
@@ -362,9 +343,7 @@ class GScalar<I, O> extends Type<I> {
 }
 
 class GList<T extends AnyType, X extends Args> extends Type<T> {
-  _shape: T
   _args: X
-  typeDef: TypeDefinition<T>
 
   constructor(shape: T) {
     super()
@@ -414,9 +393,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
 }
 
 class GOptional<T extends AnyType, X extends Args> extends Type<T> {
-  _shape: T
   _args: X
-  typeDef: TypeDefinition<T>
 
   constructor(shape: T) {
     super()
@@ -452,7 +429,6 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
 class GArgs<T extends AnyType, X extends Args> extends Type<T> {
   _inner: T
   _args: X
-  typeDef: TypeDefinition<T>
 
   constructor(shape: T, args: X) {
     super()

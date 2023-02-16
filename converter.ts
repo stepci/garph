@@ -41,7 +41,6 @@ function iterateFields (type: AnyType, name: string, config) {
 }
 
 function convertToGraphqlType(name: string, type: AnyType, config) {
-  console.log(name)
   switch (type.typeDef.type) {
     case 'type':
       return schemaComposer.createObjectTC({
