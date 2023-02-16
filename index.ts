@@ -579,7 +579,7 @@ export const g = {
   // union<T extends AnyType>(args: T[]) {
   //   return new GUnion<T>('', args)
   // },
-  scalar<I, O>(name: string, options: ScalarOptions<I, O>) {
+  scalarType<I, O>(name: string, options: ScalarOptions<I, O>) {
     return new GScalar<I, O>(name, options)
   },
   list<T extends AnyType>(shape: T) {

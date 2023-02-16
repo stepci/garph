@@ -17,27 +17,30 @@ const userType = g.type('User', {
   friends: g.ref('User').description('The friends of the user').list().deprecated('wow'),
 })
 
+const scalarType = g.scalarType<Date, number>('SC', {
+  serialize: (value) => value.getTime(),
+  parseValue: (value) => new Date(value)
+}).description('The query type')
+
 const inputType = g.inputType('UserInput', {
   name: g.string(),
   age: g.int(),
 })
 
 const queryType = g.type('Query', {
-  greet: g.string().args({
-    input: inputType
-  })
+  greet: g.ref(scalarType)
 })
 
 const union = g.unionType('Union', [userType, blogType])
 
 const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
   Query: {
-    greet: (parent, args) => 'A'
+    greet: (parent, args) => new Date()
   }
 }
 
 const schema = convertSchema({
-  types: [inputType, queryType, userType, blogType, union],
+  types: [inputType, queryType, userType, blogType, union, scalarType],
   resolvers
 }, { defaultNullability: false })
 

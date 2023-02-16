@@ -70,6 +70,14 @@ function convertToGraphqlType(name: string, type: AnyType, config) {
         description: type.typeDef.description,
         fields: parseFields(type.typeDef.shape, config) as any,
       })
+    case 'scalar':
+      return schemaComposer.createScalarTC({
+        name,
+        description: type.typeDef.description,
+        serialize: type.typeDef.scalarOptions.serialize,
+        parseValue: type.typeDef.scalarOptions.parseValue,
+        parseLiteral: type.typeDef.scalarOptions.parseLiteral,
+      })
   }
 }
 
