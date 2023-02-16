@@ -95,12 +95,12 @@ function parseFields(fields: AnyType['_shape'], config) {
   return fieldsObj
 }
 
-function parseArgs (anyargs, config) {
-  if (!anyargs) return
+function parseArgs (anyArgs, config) {
+  if (!anyArgs) return
 
   const args: any = {}
-  Object.keys(anyargs).forEach(argName => {
-    const arg = anyargs[argName]
+  Object.keys(anyArgs).forEach(argName => {
+    const arg = anyArgs[argName]
     args[argName] = {
       type: iterateFields(arg, argName, config),
       defaultValue: arg.typeDef.defaultValue,
