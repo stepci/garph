@@ -5,7 +5,7 @@ abstract class Type<T> {
 
 type TypeDefinition<T> = {
   name?: string
-  type: 'string' | 'int' | 'float' | 'boolean' | 'id' | 'type' | 'ref' | 'list' | 'union' | 'enum' | 'scalar'
+  type: 'string' | 'int' | 'float' | 'boolean' | 'id' | 'type' | 'ref' | 'list' | 'union' | 'enum' | 'scalar' | 'input'
   shape?: T
   args?: Args
   description?: string
@@ -100,11 +100,11 @@ class GType<T extends ObjectType> extends Type<T> {
   _shape: T
   typeDef: TypeDefinition<T>
 
-  constructor(name: string, shape: T) {
+  constructor(name: string, shape: T, type: 'type' | 'input' = 'type') {
     super()
     this.typeDef = {
       name,
-      type: 'type',
+      type,
       shape
     }
   }
@@ -548,6 +548,9 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
 export const g = {
   type<T extends ObjectType>(name: string, shape: T) {
     return new GType<T>(name, shape)
+  },
+  inputType<T extends ObjectType>(name: string, shape: T) {
+    return new GType<T>(name, shape, 'input')
   },
   string() {
     return new GString()

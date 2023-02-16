@@ -17,8 +17,15 @@ const userType = g.type('User', {
   friends: g.ref('User').description('The friends of the user').list().deprecated('wow'),
 })
 
+const inputType = g.inputType('UserInput', {
+  name: g.string(),
+  age: g.int(),
+})
+
 const queryType = g.type('Query', {
-  greet: g.string()
+  greet: g.string().args({
+    input: inputType
+  })
 })
 
 const union = g.unionType('Union', [userType, blogType])
@@ -30,7 +37,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
 }
 
 const schema = convertSchema({
-  types: [userType, blogType, queryType, union],
+  types: [inputType, queryType, userType, blogType, union],
   resolvers
 }, { defaultNullability: false })
 

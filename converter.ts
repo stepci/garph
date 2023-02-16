@@ -35,10 +35,13 @@ function iterateFields (type: AnyType, name: string, config) {
       return isOptional(type.typeDef.name, type, config)
     case 'type':
       return isOptional(type.typeDef.name, type, config)
+    case 'input':
+      return isOptional(type.typeDef.name, type, config)
   }
 }
 
 function convertToGraphqlType(name: string, type: AnyType, config) {
+  console.log(name)
   switch (type.typeDef.type) {
     case 'type':
       return schemaComposer.createObjectTC({
@@ -60,6 +63,12 @@ function convertToGraphqlType(name: string, type: AnyType, config) {
         name,
         description: type.typeDef.description,
         types: type.typeDef.shape.map(t => t.typeDef.name)
+      })
+    case 'input':
+      return schemaComposer.createInputTC({
+        name,
+        description: type.typeDef.description,
+        fields: parseFields(type.typeDef.shape, config) as any,
       })
   }
 }
