@@ -29,7 +29,7 @@ const inputType = g.inputType('UserInput', {
 
 const queryType = g.type('Query', {
   greet: g.string().args({
-    test: g.ref(inputType).description('The test').list().default({ name: 'test', age: 10 }),
+    test: g.ref(scalarType).description('The wow').list(),
   }).description('The greet query'),
 })
 

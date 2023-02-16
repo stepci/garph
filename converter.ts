@@ -24,7 +24,7 @@ function iterateFields (type: AnyType, name: string, config) {
     case 'id':
       return isOptional('ID', type, config)
     case 'list':
-      return isOptional(`[${iterateFields(type.typeDef.shape, name, config)}]`, type, config)
+      return isOptional(`[${type.typeDef.name}]`, type, config)
     case 'ref':
       return isOptional(type.typeDef.name, type, config)
     case 'enum':
