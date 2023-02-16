@@ -9,20 +9,22 @@ type Blog = {
 
 const blogType = g.type('Blog', {
   title: g.string(),
-  author: g.ref<Blog>('User')
-})
+  author: g.ref<Blog>('User').description('The author of the blog')
+}).description('The blog of the user')
 
 const userType = g.type('User', {
   age: g.int(),
-  blog: blogType.description('The blog of the user')
+  friends: g.ref('User').description('The friends of the user'),
 })
 
 const queryType = g.type('Query', {
   // Edge-case: Schema must contain uniquely named types but contains multiple types named "User".
-  greet: g.string().args({
-    name: g.string().required(),
+  greet: g.ref('User').deprecated('wow').args({
+    id: g.string().default('ABC'),
   })
 })
+
+const union = g.unionType('Union', [userType, blogType])
 
 const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
   Query: {
@@ -31,7 +33,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
 }
 
 const schema = convertSchema({
-  types: [userType, blogType, queryType],
+  types: [userType, blogType, queryType, union],
   resolvers
 })
 

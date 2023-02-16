@@ -11,6 +11,7 @@ type TypeDefinition<T> = {
   description?: string
   isOptional?: boolean
   isRequired?: boolean
+  deprecated?: string
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
@@ -112,6 +113,11 @@ class GType<T extends ObjectType> extends Type<T> {
     this.typeDef.description = text
     return this
   }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
 }
 
 class GString extends Type<string> {
@@ -143,13 +149,18 @@ class GString extends Type<string> {
     return this
   }
 
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
-  }
-
   default(value: string) {
     this.typeDef.defaultValue = value
     return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -182,13 +193,18 @@ class GNumber extends Type<number> {
     return this
   }
 
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
-  }
-
   default(value: number) {
     this.typeDef.defaultValue = value
     return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -221,13 +237,18 @@ class GBoolean extends Type<boolean> {
     return this
   }
 
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
-  }
-
   default(value: boolean) {
     this.typeDef.defaultValue = value
     return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -263,13 +284,18 @@ class GEnum<T extends string> extends Type<T[]> {
     return this
   }
 
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
-  }
-
   default(value: string) {
     this.typeDef.defaultValue = value
     return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -302,6 +328,11 @@ class GUnion<T extends AnyType> extends Type<T[]> {
 
   description(text: string) {
     this.typeDef.description = text
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
     return this
   }
 
@@ -340,6 +371,16 @@ class GRef<T> extends Type<T> {
     return this
   }
 
+  default(value: T) {
+    this.typeDef.defaultValue = value
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
   args<X extends Args>(x: X) {
     return new GArgs<this, X>(this, x)
   }
@@ -361,6 +402,11 @@ class GScalar<I, O> extends Type<I> {
 
   description(text: string) {
     this.typeDef.description = text
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
     return this
   }
 }
@@ -394,6 +440,16 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
     return this
   }
 
+  default(value: T) {
+    this.typeDef.defaultValue = value
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
@@ -421,6 +477,16 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
 
   description(text: string) {
     this.typeDef.description = text
+    return this
+  }
+
+  default(value: T) {
+    this.typeDef.defaultValue = value
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
     return this
   }
 
@@ -455,6 +521,16 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
 
   description(text: string) {
     this.typeDef.description = text
+    return this
+  }
+
+  default(value: T) {
+    this.typeDef.defaultValue = value
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
     return this
   }
 

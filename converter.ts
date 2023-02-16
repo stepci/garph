@@ -30,10 +30,7 @@ function iterateFields (type: AnyType, name: string, config) {
     case 'union':
       return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
     case 'type':
-      return schemaComposer.createObjectTC({
-        name: type.typeDef.name,
-        fields: parseFields(type.typeDef.shape, config)
-      })
+      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
   }
 }
 
@@ -54,17 +51,24 @@ function convertToGraphqlType(name: string, type: AnyType, config) {
           return acc
         }, {})
       })
+    case 'union':
+      return schemaComposer.createUnionTC({
+        name,
+        description: type.typeDef.description,
+        types: type.typeDef.shape.map(t => t.typeDef.name)
+      })
   }
 }
 
-function parseFields(fields, config) {
+function parseFields(fields: AnyType['_shape'], config) {
   const fieldsObj: ObjectTypeComposerFieldConfigMapDefinition<any, any> = {}
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName]
     fieldsObj[fieldName] = {
       type: iterateFields(field, fieldName, config),
+      deprecationReason: field.typeDef.deprecated,
       args: parseArgs(field.typeDef.args, config),
-      description: field.typeDef.description,
+      description: field.typeDef.description
     }
   })
 
@@ -79,6 +83,8 @@ function parseArgs (anyargs, config) {
     const arg = anyargs[argName]
     args[argName] = {
       type: iterateFields(arg, argName, config),
+      defaultValue: arg.typeDef.defaultValue,
+      deprecationReason: arg.typeDef.deprecated,
       description: arg.typeDef.description
     }
   })
