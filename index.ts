@@ -419,8 +419,12 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
   constructor(shape: T) {
     super()
     this.typeDef = {
-      name: shape.typeDef.name,
       type: 'list',
+      name: shape.typeDef.name,
+      description: shape.typeDef.description,
+      defaultValue: shape.typeDef.defaultValue,
+      deprecated: shape.typeDef.deprecated,
+      isRequired: shape.typeDef.isRequired,
       shape,
       args: shape.typeDef.args
     }

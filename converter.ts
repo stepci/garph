@@ -2,35 +2,39 @@ import { AnyType } from './index'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { schemaComposer, ObjectTypeComposerFieldConfigMapDefinition } from 'graphql-compose'
 
-export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: { defaultRequired?: boolean }) {
+export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: { defaultNullability?: boolean }) {
   const convertedTypes = types.map(type => convertToGraphqlType(type.typeDef.name, type, config))
   return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
+}
+
+function isOptional (target: string, type: AnyType, config) {
+  return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }
 
 function iterateFields (type: AnyType, name: string, config) {
   switch (type.typeDef.type) {
     case 'string':
-      return type.typeDef.isRequired ? 'String!' : 'String'
+      return isOptional('String', type, config)
     case 'int':
-      return type.typeDef.isRequired ? 'Int!' : 'Int'
+      return isOptional('Int', type, config)
     case 'float':
-      return type.typeDef.isRequired ? 'Float!' : 'Float'
+      return isOptional('Float', type, config)
     case 'boolean':
-      return type.typeDef.isRequired ? 'Boolean!' : 'Boolean'
+      return isOptional('Boolean', type, config)
     case 'id':
-      return type.typeDef.isRequired ? 'ID!' : 'ID'
+      return isOptional('ID', type, config)
     case 'list':
-      return type.typeDef.isRequired ? `[${iterateFields(type.typeDef.shape, name, config)}]!` : `[${iterateFields(type.typeDef.shape, name, config)}]`
+      return isOptional(`[${iterateFields(type.typeDef.shape, name, config)}]`, type, config)
     case 'ref':
-      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+      return isOptional(type.typeDef.name, type, config)
     case 'enum':
-      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+      return isOptional(type.typeDef.name, type, config)
     case 'scalar':
-      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+      return isOptional(type.typeDef.name, type, config)
     case 'union':
-      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+      return isOptional(type.typeDef.name, type, config)
     case 'type':
-      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+      return isOptional(type.typeDef.name, type, config)
   }
 }
 

@@ -14,14 +14,11 @@ const blogType = g.type('Blog', {
 
 const userType = g.type('User', {
   age: g.int(),
-  friends: g.ref('User').description('The friends of the user'),
+  friends: g.ref('User').description('The friends of the user').list().deprecated('wow'),
 })
 
 const queryType = g.type('Query', {
-  // Edge-case: Schema must contain uniquely named types but contains multiple types named "User".
-  greet: g.ref('User').deprecated('wow').args({
-    id: g.string().default('ABC'),
-  })
+  greet: g.string()
 })
 
 const union = g.unionType('Union', [userType, blogType])
@@ -35,7 +32,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
 const schema = convertSchema({
   types: [userType, blogType, queryType, union],
   resolvers
-})
+}, { defaultNullability: false })
 
 const yoga = createYoga({ schema })
 Bun.serve(yoga)
