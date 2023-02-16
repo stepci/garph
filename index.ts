@@ -490,12 +490,12 @@ export const g = {
   unionType<T extends AnyType>(name: string, args: T[]) {
     return new GUnion<T>(name, args)
   },
-  enum<T extends string>(args: T[]) {
-    return new GEnum<T>('', args)
-  },
-  union<T extends AnyType>(args: T[]) {
-    return new GUnion<T>('', args)
-  },
+  // enum<T extends string>(args: T[]) {
+  //   return new GEnum<T>('', args)
+  // },
+  // union<T extends AnyType>(args: T[]) {
+  //   return new GUnion<T>('', args)
+  // },
   scalar<I, O>(name: string, options: ScalarOptions<I, O>) {
     return new GScalar<I, O>(name, options)
   },

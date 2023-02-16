@@ -2,32 +2,36 @@ import { convertSchema } from './converter'
 import { g, InferResolvers, Infer } from './index'
 import { createYoga } from 'graphql-yoga'
 
+type Blog = {
+  title: string
+  author: string
+}
+
 const blogType = g.type('Blog', {
-  title: g.string().required().list(),
-  // author: g.ref<typeof userType>('User')
+  title: g.string(),
+  author: g.ref<Blog>('User')
 })
 
 const userType = g.type('User', {
-  name: g.string().args({
-    first: g.int().list().description('First name'),
-  }),
   age: g.int(),
-  blog: g.ref<typeof blogType>('Blog')
+  blog: blogType.description('The blog of the user')
 })
 
 const queryType = g.type('Query', {
   // Edge-case: Schema must contain uniquely named types but contains multiple types named "User".
-  greet: g.string()
+  greet: g.string().args({
+    name: g.string().required(),
+  })
 })
 
 const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
   Query: {
-    greet: () => 'Hello world!'
+    greet: (parent, args) => 'A'
   }
 }
 
 const schema = convertSchema({
-  types: [queryType, blogType, userType],
+  types: [userType, blogType, queryType],
   resolvers
 })
 

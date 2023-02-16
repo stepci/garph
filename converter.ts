@@ -1,10 +1,9 @@
 import { AnyType } from './index'
 import { makeExecutableSchema } from '@graphql-tools/schema'
-
 import { schemaComposer, ObjectTypeComposerFieldConfigMapDefinition } from 'graphql-compose'
 
 export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: { defaultRequired?: boolean }) {
-  const convertedTypes = types.map(type => convertToGraphqlType(type, config, resolvers))
+  const convertedTypes = types.map(type => convertToGraphqlType(type.typeDef.name, type, config))
   return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
 }
 
@@ -24,19 +23,41 @@ function iterateFields (type: AnyType, name: string, config) {
       return type.typeDef.isRequired ? `[${iterateFields(type.typeDef.shape, name, config)}]!` : `[${iterateFields(type.typeDef.shape, name, config)}]`
     case 'ref':
       return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+    case 'enum':
+      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+    case 'scalar':
+      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+    case 'union':
+      return type.typeDef.isRequired ? `${type.typeDef.name}!` : type.typeDef.name
+    case 'type':
+      return schemaComposer.createObjectTC({
+        name: type.typeDef.name,
+        fields: parseFields(type.typeDef.shape, config)
+      })
   }
 }
 
-function convertToGraphqlType(type: AnyType, config, resolvers) {
-  const x = schemaComposer.createObjectTC({
-    name: type.typeDef.name,
-    fields: parseFields(type.typeDef.shape, config, resolvers),
-  })
-
-  return x
+function convertToGraphqlType(name: string, type: AnyType, config) {
+  switch (type.typeDef.type) {
+    case 'type':
+      return schemaComposer.createObjectTC({
+        name,
+        description: type.typeDef.description,
+        fields: parseFields(type.typeDef.shape, config),
+      })
+    case 'enum':
+      return schemaComposer.createEnumTC({
+        name,
+        description: type.typeDef.description,
+        values: type.typeDef.shape.reduce((acc, val) => {
+          acc[val] = {}
+          return acc
+        }, {})
+      })
+  }
 }
 
-function parseFields(fields, config, resolvers) {
+function parseFields(fields, config) {
   const fieldsObj: ObjectTypeComposerFieldConfigMapDefinition<any, any> = {}
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName]
