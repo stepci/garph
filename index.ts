@@ -18,28 +18,17 @@ type TypeDefinition<T> = {
 }
 
 export type AnyType = Type<any>
-
-type AnyString = Type<string>
-
-type AnyBoolean = Type<boolean>
-
-type AnyNumber = Type<number>
-
-type AnyRef = InstanceType<typeof GRef>
-
-type AnyList = InstanceType<typeof GList>
-
-type AnyUnion = InstanceType<typeof GUnion>
-
-type AnyEnum = InstanceType<typeof GEnum>
-
-type AnyOptional = InstanceType<typeof GOptional>
-
-type AnyObject = InstanceType<typeof GType>
-
-type AnyScalar = InstanceType<typeof GScalar>
-
-type AnyArgs = InstanceType<typeof GArgs>
+export type AnyString = Type<string>
+export type AnyBoolean = Type<boolean>
+export type AnyNumber = Type<number>
+export type AnyRef = InstanceType<typeof GRef>
+export type AnyList = InstanceType<typeof GList>
+export type AnyUnion = InstanceType<typeof GUnion>
+export type AnyEnum = InstanceType<typeof GEnum>
+export type AnyOptional = InstanceType<typeof GOptional>
+export type AnyObject = InstanceType<typeof GType>
+export type AnyScalar = InstanceType<typeof GScalar>
+export type AnyArgs = InstanceType<typeof GArgs>
 
 type Args = {
   [key: string]: AnyType
@@ -63,16 +52,16 @@ export type InferResolverConfig = {
 export type Infer<T> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 } : T extends AnyString ? T['_shape'] :
-  T extends AnyBoolean ? T['_shape'] :
-  T extends AnyNumber ? T['_shape'] :
-  T extends AnyList ? readonly Infer<T['_shape']>[] :
-  T extends AnyOptional ? Infer<T['_shape']> | null :
-  T extends AnyArgs ? Infer<T['_inner']> :
-  T extends AnyUnion ? Infer<T['_inner']> :
-  T extends AnyEnum ? T['_inner'] :
-  T extends AnyScalar ? T['_shape'] :
-  T extends AnyRef ? Infer<T['_ref']> :
-  T
+T extends AnyBoolean ? T['_shape'] :
+T extends AnyNumber ? T['_shape'] :
+T extends AnyList ? readonly Infer<T['_shape']>[] :
+T extends AnyOptional ? Infer<T['_shape']> | null :
+T extends AnyArgs ? Infer<T['_inner']> :
+T extends AnyUnion ? Infer<T['_inner']> :
+T extends AnyEnum ? T['_inner'] :
+T extends AnyScalar ? T['_shape'] :
+T extends AnyRef ? Infer<T['_ref']> :
+T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? {
@@ -266,36 +255,14 @@ class GEnum<T extends string> extends Type<T[]> {
     }
   }
 
-  optional() {
-    return new GOptional<this, never>(this)
-  }
-
-  required() {
-    this.typeDef.isRequired = true
-    return this
-  }
-
-  list() {
-    return new GList<this, never>(this)
-  }
-
   description(text: string) {
     this.typeDef.description = text
-    return this
-  }
-
-  default(value: string) {
-    this.typeDef.defaultValue = value
     return this
   }
 
   deprecated(reason: string) {
     this.typeDef.deprecated = reason
     return this
-  }
-
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -313,19 +280,6 @@ class GUnion<T extends AnyType> extends Type<T[]> {
     }
   }
 
-  optional() {
-    return new GOptional<this, never>(this)
-  }
-
-  required() {
-    this.typeDef.isRequired = true
-    return this
-  }
-
-  list() {
-    return new GList<this, never>(this)
-  }
-
   description(text: string) {
     this.typeDef.description = text
     return this
@@ -334,10 +288,6 @@ class GUnion<T extends AnyType> extends Type<T[]> {
   deprecated(reason: string) {
     this.typeDef.deprecated = reason
     return this
-  }
-
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
   }
 }
 
@@ -371,7 +321,7 @@ class GRef<T> extends Type<T> {
     return this
   }
 
-  default(value: T) {
+  default(value) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -444,7 +394,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
     return this
   }
 
-  default(value: T) {
+  default(value) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -484,7 +434,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
     return this
   }
 
-  default(value: T) {
+  default(value) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -528,7 +478,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
     return this
   }
 
-  default(value: T) {
+  default(value) {
     this.typeDef.defaultValue = value
     return this
   }

@@ -28,14 +28,18 @@ const inputType = g.inputType('UserInput', {
 })
 
 const queryType = g.type('Query', {
-  greet: g.ref(scalarType)
+  greet: g.string().args({
+    test: g.ref(scalarType).list().description('The test')
+  }).description('The greet query'),
 })
+
+type x = Infer<typeof queryType>
 
 const union = g.unionType('Union', [userType, blogType])
 
 const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
   Query: {
-    greet: (parent, args) => new Date()
+    greet: (parent, args) => 'Hello World'
   }
 }
 
