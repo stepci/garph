@@ -6,7 +6,7 @@ type convertConfig = {
   defaultNullability?: boolean
 }
 
-export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: convertConfig) {
+export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config: convertConfig = { defaultNullability: false }) {
   const convertedTypes = types.map(type => convertToGraphqlType(type.typeDef.name, type, config))
   return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
 }

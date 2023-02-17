@@ -24,7 +24,7 @@ const scalarType = g.scalarType<Date, number>('SC', {
 
 const inputType = g.inputType('UserInput', {
   name: g.string(),
-  age: g.int(),
+  age: g.int().required(),
 })
 
 const queryType = g.type('Query', {
@@ -46,7 +46,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
 const schema = convertSchema({
   types: [inputType, queryType, userType, blogType, union, scalarType],
   resolvers
-}, { defaultNullability: false })
+})
 
 const yoga = createYoga({ schema })
 Bun.serve(yoga)
