@@ -30,11 +30,11 @@ export type AnyObject = InstanceType<typeof GType>
 export type AnyScalar = InstanceType<typeof GScalar>
 export type AnyArgs = InstanceType<typeof GArgs>
 
-type Args = {
+export type Args = {
   [key: string]: AnyType
 }
 
-type ObjectType = {
+export type ObjectType = {
   [key: string]: AnyType
 }
 
@@ -44,7 +44,7 @@ type ScalarOptions<I, O> = {
   parseLiteral?: (ast: any) => I
 }
 
-export type InferResolverConfig = {
+type InferResolverConfig = {
   context?: any
   info?: any
 }

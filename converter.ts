@@ -1,17 +1,21 @@
-import { AnyType } from './index'
+import { AnyType, Args } from './index'
 import { makeExecutableSchema } from '@graphql-tools/schema'
-import { schemaComposer, ObjectTypeComposerFieldConfigMapDefinition } from 'graphql-compose'
+import { schemaComposer } from 'graphql-compose'
 
-export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: { defaultNullability?: boolean }) {
+type convertConfig = {
+  defaultNullability?: boolean
+}
+
+export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config?: convertConfig) {
   const convertedTypes = types.map(type => convertToGraphqlType(type.typeDef.name, type, config))
   return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
 }
 
-function isOptional (target: string, type: AnyType, config) {
+function isOptional (target: string, type: AnyType, config: convertConfig) {
   return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }
 
-function iterateFields (type: AnyType, name: string, config) {
+function iterateFields (type: AnyType, config: convertConfig) {
   switch (type.typeDef.type) {
     case 'string':
       return isOptional('String', type, config)
@@ -40,7 +44,7 @@ function iterateFields (type: AnyType, name: string, config) {
   }
 }
 
-function convertToGraphqlType(name: string, type: AnyType, config) {
+function convertToGraphqlType(name: string, type: AnyType, config: convertConfig) {
   switch (type.typeDef.type) {
     case 'type':
       return schemaComposer.createObjectTC({
@@ -80,12 +84,12 @@ function convertToGraphqlType(name: string, type: AnyType, config) {
   }
 }
 
-function parseFields(fields: AnyType['_shape'], config) {
-  const fieldsObj: ObjectTypeComposerFieldConfigMapDefinition<any, any> = {}
+function parseFields(fields: AnyType, config: convertConfig) {
+  const fieldsObj = {}
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName]
     fieldsObj[fieldName] = {
-      type: iterateFields(field, fieldName, config),
+      type: iterateFields(field, config),
       deprecationReason: field.typeDef.deprecated,
       args: parseArgs(field.typeDef.args, config),
       description: field.typeDef.description
@@ -95,14 +99,14 @@ function parseFields(fields: AnyType['_shape'], config) {
   return fieldsObj
 }
 
-function parseArgs (anyArgs, config) {
+function parseArgs (anyArgs: Args, config) {
   if (!anyArgs) return
 
-  const args: any = {}
+  const args = {}
   Object.keys(anyArgs).forEach(argName => {
     const arg = anyArgs[argName]
     args[argName] = {
-      type: iterateFields(arg, argName, config),
+      type: iterateFields(arg, config),
       defaultValue: arg.typeDef.defaultValue,
       deprecationReason: arg.typeDef.deprecated,
       description: arg.typeDef.description
