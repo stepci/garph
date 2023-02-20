@@ -1,3 +1,5 @@
+import { convertSchema } from './converter'
+
 abstract class Type<T> {
   _shape: T
   typeDef: TypeDefinition<T>
@@ -512,3 +514,5 @@ export const g = {
     return new GRef<T>(ref)
   }
 }
+
+export { convertSchema }

@@ -1,8 +1,13 @@
 {
+  "name": "garph",
+  "version": "0.0.1",
+  "license": "MIT",
   "dependencies": {
     "@graphql-tools/schema": "^9.0.16",
+    "graphql-compose": "^9.0.10"
+  },
+  "devDependencies": {
     "bun-types": "^0.5.6",
-    "graphql-compose": "^9.0.10",
     "graphql-yoga": "^3.6.0"
   }
 }
