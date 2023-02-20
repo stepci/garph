@@ -1,6 +1,8 @@
 # garph
 
-> **Note:** Garph is currently in Alpha. We would love to hear your Feedback on our Discord community
+https://user-images.githubusercontent.com/10400064/220190966-705e4a4e-56ea-491a-8fa5-f2c3d243ab91.mov
+
+> **Note**: Garph is currently in Alpha. We would love to hear your Feedback on our Discord community
 
 Garph is a GraphQL schema-builder for TypeScript, that aims to deliver tRPC-like Developer-Experience. On top of that, Garph provides a GraphQL compability layer and type-safety primitives for any TypeScript project
 
@@ -196,7 +198,7 @@ g.string().required()
 
 #### Default
 
-> **Note:** Not type-safe at the moment
+> **Note**: Not type-safe at the moment
 
 ```ts
 g.string().default("Default string")
