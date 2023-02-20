@@ -3,13 +3,13 @@ import { createYoga } from 'graphql-yoga'
 
 const queryType = g.type('Query', {
   greet: g.string()
-  .args({
-    name: g.string().optional().default('Max'),
-  })
-  .description('Greets a person')
+    .args({
+      name: g.string().optional().default('Max'),
+    })
+    .description('Greets a person')
 })
 
-const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
+const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   Query: {
     greet: (parent, args, context, info) => `Hello, ${args.name}`
   }

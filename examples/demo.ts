@@ -36,7 +36,7 @@ type x = Infer<typeof queryType>
 
 const union = g.unionType('Union', [userType, blogType])
 
-const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
+const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   Query: {
     greet: (parent, args) => 'Hello World'
   }

@@ -20,7 +20,7 @@ const queryType = g.type('Query', {
     .description('Greets a person')
 })
 
-const resolvers: InferResolvers<{ Query: typeof queryType}, {}> = {
+const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   Query: {
     greet: (parent, args, context, info) => `Hello, ${args.name}`
   }
@@ -271,7 +271,7 @@ const queryType = g.type('Query', {
   .description('Greets a person')
 })
 
-const resolvers: InferResolvers<{ Query: typeof queryType}, { context: any, info: any }> = {
+const resolvers: InferResolvers<{ Query: typeof queryType }, { context: any, info: any }> = {
   Query: {
     greet: (parent, args, context, info) => `Hello, ${args.name}`
   }
