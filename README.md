@@ -133,6 +133,8 @@ See [Circular References](#circular-references) for handling circular references
 
 #### Interface
 
+> **Note**: Interface implementations lack type-safety at the moment
+
 ```ts
 g.interface('Name', {
   greet: g.string()

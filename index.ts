@@ -55,7 +55,9 @@ type InferResolverConfig = {
 
 export type Infer<T> = T extends AnyObject ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
-} : T extends AnyString ? T['_shape'] :
+} : InferShallow<T>
+
+export type InferShallow<T> = T extends AnyString ? T['_shape'] :
 T extends AnyBoolean ? T['_shape'] :
 T extends AnyNumber ? T['_shape'] :
 T extends AnyList ? readonly Infer<T['_shape']>[] :
