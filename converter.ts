@@ -51,6 +51,13 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
         name,
         description: type.typeDef.description,
         fields: parseFields(type.typeDef.shape, config),
+        interfaces: () => {
+          if (type.typeDef.interfaces) {
+            return type.typeDef.interfaces.map(i => i)
+          }
+
+          return []
+        }
       })
     case 'enum':
       return schemaComposer.createEnumTC({
@@ -80,6 +87,12 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
         serialize: type.typeDef.scalarOptions.serialize,
         parseValue: type.typeDef.scalarOptions.parseValue,
         parseLiteral: type.typeDef.scalarOptions.parseLiteral,
+      })
+    case 'interface':
+      return schemaComposer.createInterfaceTC({
+        name,
+        description: type.typeDef.description,
+        fields: parseFields(type.typeDef.shape, config)
       })
   }
 }

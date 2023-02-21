@@ -7,7 +7,7 @@ abstract class Type<T> {
 
 type TypeDefinition<T> = {
   name?: string
-  type: 'string' | 'int' | 'float' | 'boolean' | 'id' | 'type' | 'ref' | 'list' | 'union' | 'enum' | 'scalar' | 'input'
+  type: 'string' | 'int' | 'float' | 'boolean' | 'id' | 'type' | 'ref' | 'list' | 'union' | 'enum' | 'scalar' | 'input' | 'interface'
   shape?: T
   args?: Args
   description?: string
@@ -16,6 +16,7 @@ type TypeDefinition<T> = {
   deprecated?: string
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
+  interfaces?: string[]
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
@@ -88,7 +89,7 @@ type InferArg<T extends Args> = {
 }
 
 class GType<T extends ObjectType> extends Type<T> {
-  constructor(name: string, shape: T, type: 'type' | 'input' = 'type') {
+  constructor(name: string, shape: T, type: 'type' | 'input' | 'interface' = 'type') {
     super()
     this.typeDef = {
       name,
@@ -102,8 +103,8 @@ class GType<T extends ObjectType> extends Type<T> {
     return this
   }
 
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
+  implements (ref: AnyType[] | AnyType | string[] | string) {
+    this.typeDef.interfaces = Array.isArray(ref) ? ref.map(i => typeof ref === 'string' ? i : (i as AnyType).typeDef.name) : [typeof ref === 'string' ? ref : (ref as AnyType).typeDef.name]
     return this
   }
 }
@@ -473,6 +474,9 @@ export const g = {
   },
   inputType<T extends ObjectType>(name: string, shape: T) {
     return new GType<T>(name, shape, 'input')
+  },
+  interface<T extends ObjectType>(name: string, shape: T) {
+    return new GType<T>(name, shape, 'interface')
   },
   string() {
     return new GString()

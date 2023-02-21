@@ -133,7 +133,11 @@ See [Circular References](#circular-references) for handling circular references
 
 #### Interface
 
-Currently not supported
+```ts
+g.interface('Name', {
+  greet: g.string()
+})
+```
 
 #### Input
 
@@ -163,6 +167,24 @@ Currently not supported
 ### Modifiers
 
 Modifiers can be chained together to produce desired type
+
+#### Implements
+
+```ts
+g.type('Name', {
+  greet: g.string()
+})
+.implements('Name')
+```
+
+Or array of interfaces
+
+```ts
+g.type('Name', {
+  greet: g.string()
+})
+.implements(['Name', 'User'])
+```
 
 #### List
 
