@@ -70,7 +70,7 @@ T extends AnyRef ? Infer<T['_ref']> :
 T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
-  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? {
+  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? T['_shape'][K]['_args'] extends never ? never : {
     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
@@ -365,7 +365,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
   }
 
   optional() {
-    return new GOptional<this, never>(this)
+    return new GOptional<this, X>(this)
   }
 
   required() {
