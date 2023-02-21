@@ -408,7 +408,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
   }
 
   list() {
-    return new GList<this, never>(this)
+    return new GList<this, X>(this)
   }
 
   description(text: string) {
@@ -442,7 +442,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
   }
 
   optional() {
-    return new GOptional<this, never>(this)
+    return new GOptional<this, X>(this)
   }
 
   required() {
@@ -451,7 +451,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
   }
 
   list() {
-    return new GList<this, never>(this)
+    return new GList<this, X>(this)
   }
 
   description(text: string) {
