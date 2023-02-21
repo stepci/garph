@@ -45,6 +45,7 @@ type ScalarOptions<I, O> = {
   serialize: (value: I) => O
   parseValue: (value: O) => I
   parseLiteral?: (ast: any) => I
+  specifiedByUrl?: string
 }
 
 type InferResolverConfig = {
@@ -341,6 +342,11 @@ class GScalar<I, O> extends Type<I> {
 
   deprecated(reason: string) {
     this.typeDef.deprecated = reason
+    return this
+  }
+
+  specifiedByUrl(url: string) {
+    this.typeDef.scalarOptions.specifiedByUrl = url
     return this
   }
 }

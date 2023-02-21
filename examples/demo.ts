@@ -19,12 +19,12 @@ const userType = g.type('User', {
 const scalarType = g.scalarType<Date, number>('SC', {
   serialize: (value) => value.getTime(),
   parseValue: (value) => new Date(value)
-}).description('The query type')
+}).description('The scalar type')
 
 const inputType = g.inputType('UserInput', {
   name: g.string(),
   age: g.int().required(),
-})
+}).description('The input type')
 
 const queryType = g.type('Query', {
   greet: g.string().args({

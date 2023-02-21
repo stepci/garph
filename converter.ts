@@ -87,6 +87,7 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
         serialize: type.typeDef.scalarOptions.serialize,
         parseValue: type.typeDef.scalarOptions.parseValue,
         parseLiteral: type.typeDef.scalarOptions.parseLiteral,
+        specifiedByURL: type.typeDef.scalarOptions.specifiedByUrl
       })
     case 'interface':
       return schemaComposer.createInterfaceTC({
