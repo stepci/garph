@@ -16,7 +16,7 @@ type TypeDefinition<T> = {
   deprecated?: string
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
-  interfaces?: string[]
+  interfaces?: AnyType[]
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
@@ -32,6 +32,8 @@ export type AnyOptional = InstanceType<typeof GOptional>
 export type AnyObject = InstanceType<typeof GType>
 export type AnyScalar = InstanceType<typeof GScalar>
 export type AnyArgs = InstanceType<typeof GArgs>
+export type AnyInput = InstanceType<typeof GInput>
+export type AnyInterface = InstanceType<typeof GInterface>
 
 export type Args = {
   [key: string]: AnyType
@@ -54,20 +56,23 @@ type InferResolverConfig = {
 }
 
 export type Infer<T> = T extends AnyObject ? {
+  [K in keyof T['_inner']]: Infer<T['_inner'][K]>
+}: T extends AnyInput | AnyInterface ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
-} : InferShallow<T>
+}: InferShallow<T>
 
-export type InferShallow<T> = T extends AnyString ? T['_shape'] :
-T extends AnyBoolean ? T['_shape'] :
-T extends AnyNumber ? T['_shape'] :
-T extends AnyList ? readonly Infer<T['_shape']>[] :
-T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
-T extends AnyArgs ? Infer<T['_inner']> :
-T extends AnyUnion ? Infer<T['_inner']> :
-T extends AnyEnum ? T['_inner'] :
-T extends AnyScalar ? T['_shape'] :
-T extends AnyRef ? Infer<T['_ref']> :
-T
+export type InferShallow<T> =
+  T extends AnyString ? T['_shape'] :
+  T extends AnyBoolean ? T['_shape'] :
+  T extends AnyNumber ? T['_shape'] :
+  T extends AnyList ? readonly Infer<T['_shape']>[] :
+  T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
+  T extends AnyArgs ? Infer<T['_inner']> :
+  T extends AnyUnion ? Infer<T['_inner']> :
+  T extends AnyEnum ? T['_inner'] :
+  T extends AnyScalar ? T['_shape'] :
+  T extends AnyRef ? Infer<T['_ref']> :
+  T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? T['_shape'][K]['_args'] extends never ? never : {
@@ -91,13 +96,20 @@ type InferArg<T extends Args> = {
   [K in keyof T]: Infer<T[K]>
 }
 
-class GType<T extends ObjectType> extends Type<T> {
-  constructor(name: string, shape: T, type: 'type' | 'input' | 'interface' = 'type') {
+type UnionToIntersection<T> =
+  (T extends any ? (x: T) => any : never) extends
+  (x: infer R) => any ? R : never
+
+class GType<T extends ObjectType, X> extends Type<T> {
+  _inner: X
+
+  constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
     super()
     this.typeDef = {
       name,
-      type,
-      shape
+      type: 'type',
+      shape,
+      interfaces
     }
   }
 
@@ -106,8 +118,39 @@ class GType<T extends ObjectType> extends Type<T> {
     return this
   }
 
-  implements (ref: AnyType[] | AnyType | string[] | string) {
-    this.typeDef.interfaces = Array.isArray(ref) ? ref.map(i => typeof ref === 'string' ? i : (i as AnyType).typeDef.name) : [typeof ref === 'string' ? ref : (ref as AnyType).typeDef.name]
+  implements<D extends AnyInterface>(ref: D | D[]) {
+    return new GType<T, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape, Array.isArray(ref) ? ref : [ref])
+  }
+}
+
+class GInput<T extends ObjectType> extends Type<T> {
+  constructor(name: string, shape: T) {
+    super()
+    this.typeDef = {
+      name,
+      type: 'input',
+      shape
+    }
+  }
+
+  description(text: string) {
+    this.typeDef.description = text
+    return this
+  }
+}
+
+class GInterface<T extends ObjectType> extends Type<T> {
+  constructor(name: string, shape: T) {
+    super()
+    this.typeDef = {
+      name,
+      type: 'interface',
+      shape
+    }
+  }
+
+  description(text: string) {
+    this.typeDef.description = text
     return this
   }
 }
@@ -478,13 +521,13 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T> {
 
 export const g = {
   type<T extends ObjectType>(name: string, shape: T) {
-    return new GType<T>(name, shape)
+    return new GType<T, T>(name, shape)
   },
   inputType<T extends ObjectType>(name: string, shape: T) {
-    return new GType<T>(name, shape, 'input')
+    return new GInput<T>(name, shape)
   },
   interface<T extends ObjectType>(name: string, shape: T) {
-    return new GType<T>(name, shape, 'interface')
+    return new GInterface<T>(name, shape)
   },
   string() {
     return new GString()

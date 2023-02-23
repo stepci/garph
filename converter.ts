@@ -11,11 +11,11 @@ export function convertSchema({ types, resolvers }: { types: AnyType[], resolver
   return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
 }
 
-function isOptional (target: string, type: AnyType, config: convertConfig) {
+function isOptional(target: string, type: AnyType, config: convertConfig) {
   return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }
 
-function iterateFields (type: AnyType, config: convertConfig) {
+function iterateFields(type: AnyType, config: convertConfig) {
   switch (type.typeDef.type) {
     case 'string':
       return isOptional('String', type, config)
@@ -47,18 +47,20 @@ function iterateFields (type: AnyType, config: convertConfig) {
 function convertToGraphqlType(name: string, type: AnyType, config: convertConfig) {
   switch (type.typeDef.type) {
     case 'type':
-      return schemaComposer.createObjectTC({
+      const objType = schemaComposer.createObjectTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(type.typeDef.shape, config),
-        interfaces: () => {
-          if (type.typeDef.interfaces) {
-            return type.typeDef.interfaces.map(i => i)
-          }
-
-          return []
-        }
+        fields: parseFields(type.typeDef.shape, config)
       })
+
+      if (type.typeDef.interfaces) {
+        type.typeDef.interfaces.forEach(i => {
+          objType.addFields(parseFields(i.typeDef.shape, config))
+          objType.addInterface(i.typeDef.name)
+        })
+      }
+
+      return objType
     case 'enum':
       return schemaComposer.createEnumTC({
         name,
@@ -78,7 +80,7 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
       return schemaComposer.createInputTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(type.typeDef.shape, config) as any,
+        fields: parseFields(type.typeDef.shape, config),
       })
     case 'scalar':
       return schemaComposer.createScalarTC({
@@ -113,7 +115,7 @@ function parseFields(fields: AnyType, config: convertConfig) {
   return fieldsObj
 }
 
-function parseArgs (anyArgs: Args, config) {
+function parseArgs(anyArgs: Args, config) {
   if (!anyArgs) return
 
   const args = {}

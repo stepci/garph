@@ -133,13 +133,25 @@ See [Circular References](#circular-references) for handling circular references
 
 #### Interface
 
-> **Note**: Interface implementations lack type-safety at the moment
-
 ```ts
 g.interface('Name', {
   greet: g.string()
 })
 ```
+
+Implementing an interface
+
+```ts
+const test = g.type('Test', {}).implements(interface)
+```
+
+Or a set of interfaces:
+
+```ts
+const test = g.type('Test', {}).implements([interface, interface])
+```
+
+> **Note**: Inherited fields will be added to the schema automatically, you don't need to re-specify them
 
 #### Input
 
@@ -173,19 +185,13 @@ Modifiers can be chained together to produce desired type
 #### Implements
 
 ```ts
-g.type('Name', {
-  greet: g.string()
-})
-.implements('Name')
+const test = g.type('Test', {}).implements(interface)
 ```
 
-Or array of interfaces
+Or array of interfaces:
 
 ```ts
-g.type('Name', {
-  greet: g.string()
-})
-.implements(['Name', 'User'])
+const test = g.type('Test', {}).implements([interface, interface])
 ```
 
 #### List
