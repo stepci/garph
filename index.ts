@@ -1,6 +1,8 @@
 import { convertSchema } from './converter'
 
-abstract class Type<T, X> {
+type GraphQLType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
+
+abstract class Type<T, X extends GraphQLType> {
   _is: X
   _shape: T
   typeDef: TypeDefinition<T>
@@ -23,8 +25,11 @@ type TypeDefinition<T> = {
 
 export type AnyType = Type<any, any>
 export type AnyString = Type<string, 'String'>
+export type AnyID = Type<string, 'ID'>
 export type AnyBoolean = Type<boolean, 'Boolean'>
-export type AnyNumber = Type<number, 'Number'>
+export type AnyNumber = Type<number, any>
+export type AnyInt = Type<number, 'Int'>
+export type AnyFloat = Type<number, 'Float'>
 export type AnyRef = InstanceType<typeof GRef>
 export type AnyList = InstanceType<typeof GList>
 export type AnyUnion = InstanceType<typeof GUnion>
@@ -64,9 +69,10 @@ export type Infer<T> = T extends AnyObject ? {
 
 export type InferShallow<T> =
   T extends AnyString ? T['_shape'] :
+  T extends AnyID ? T['_shape'] :
   T extends AnyBoolean ? T['_shape'] :
   T extends AnyNumber ? T['_shape'] :
-  T extends AnyList ? readonly Infer<T['_shape']>[] :
+  T extends AnyList ? Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs ? Infer<T['_inner']> :
   T extends AnyUnion ? Infer<T['_inner']> :
@@ -75,7 +81,7 @@ export type InferShallow<T> =
   T extends AnyRef ? Infer<T['_ref']> :
   T
 
-export type InferArgs<T extends AnyType> = T extends AnyObject ? {
+export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? T['_shape'][K]['_args'] extends never ? never : {
     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
   } : never
@@ -140,7 +146,7 @@ class GInput<T extends ObjectType> extends Type<T, 'InputType'> {
   }
 }
 
-class GInterface<T extends ObjectType> extends Type<T, 'Interface'> {
+class GInterface<T extends ObjectType> extends Type<T, 'InterfaceType'> {
   constructor(name: string, shape: T) {
     super()
     this.typeDef = {
@@ -156,7 +162,7 @@ class GInterface<T extends ObjectType> extends Type<T, 'Interface'> {
   }
 }
 
-class GString extends Type<string, 'String'> {
+class GString<T extends GraphQLType> extends Type<string, T> {
   constructor(type: 'string' | 'id' = 'string') {
     super()
     this.typeDef = {
@@ -197,7 +203,7 @@ class GString extends Type<string, 'String'> {
   }
 }
 
-class GNumber extends Type<number, 'Number'> {
+class GNumber<T extends GraphQLType> extends Type<number, T> {
   constructor(type: 'int' | 'float' = 'int') {
     super()
     this.typeDef = {
@@ -441,7 +447,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
   }
 }
 
-class GOptional<T extends AnyType, X extends Args> extends Type<T, never> {
+class GOptional<T extends AnyType, X extends Args> extends Type<T, 'Optional'> {
   _args: X
 
   constructor(shape: T) {
@@ -475,7 +481,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T, never> {
   }
 }
 
-class GArgs<T extends AnyType, X extends Args> extends Type<T, never> {
+class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
   _inner: T
   _args: X
 
@@ -531,19 +537,19 @@ export const g = {
     return new GInterface<T>(name, shape)
   },
   string() {
-    return new GString()
+    return new GString<'String'>()
+  },
+  id() {
+    return new GString<'ID'>('id')
   },
   int() {
-    return new GNumber('int')
+    return new GNumber<'Int'>('int')
   },
   float() {
-    return new GNumber('float')
+    return new GNumber<'Float'>('float')
   },
   boolean() {
     return new GBoolean()
-  },
-  id() {
-    return new GString('id')
   },
   enumType<T extends string>(name: string, args: T[]) {
     return new GEnum<T>(name, args)
@@ -560,12 +566,12 @@ export const g = {
   scalarType<I, O>(name: string, options: ScalarOptions<I, O>) {
     return new GScalar<I, O>(name, options)
   },
-  list<T extends AnyType>(shape: T) {
-    return new GList<T, any>(shape)
-  },
-  optional<T extends AnyType>(shape: T) {
-    return new GOptional<T, any>(shape)
-  },
+  // list<T extends AnyType>(shape: T) {
+  //   return new GList<T, any>(shape)
+  // },
+  // optional<T extends AnyType>(shape: T) {
+  //   return new GOptional<T, any>(shape)
+  // },
   ref<T>(ref: string | T) {
     return new GRef<T>(ref)
   }
