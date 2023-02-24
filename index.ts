@@ -1,6 +1,7 @@
 import { convertSchema } from './converter'
 
-abstract class Type<T> {
+abstract class Type<T, X> {
+  _is: X
   _shape: T
   typeDef: TypeDefinition<T>
 }
@@ -20,10 +21,10 @@ type TypeDefinition<T> = {
   resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
-export type AnyType = Type<any>
-export type AnyString = Type<string>
-export type AnyBoolean = Type<boolean>
-export type AnyNumber = Type<number>
+export type AnyType = Type<any, any>
+export type AnyString = Type<string, 'String'>
+export type AnyBoolean = Type<boolean, 'Boolean'>
+export type AnyNumber = Type<number, 'Number'>
 export type AnyRef = InstanceType<typeof GRef>
 export type AnyList = InstanceType<typeof GList>
 export type AnyUnion = InstanceType<typeof GUnion>
@@ -100,7 +101,7 @@ type UnionToIntersection<T> =
   (T extends any ? (x: T) => any : never) extends
   (x: infer R) => any ? R : never
 
-class GType<T extends ObjectType, X> extends Type<T> {
+class GType<T extends ObjectType, X> extends Type<T, 'ObjectType'> {
   _inner: X
 
   constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
@@ -123,7 +124,7 @@ class GType<T extends ObjectType, X> extends Type<T> {
   }
 }
 
-class GInput<T extends ObjectType> extends Type<T> {
+class GInput<T extends ObjectType> extends Type<T, 'InputType'> {
   constructor(name: string, shape: T) {
     super()
     this.typeDef = {
@@ -139,7 +140,7 @@ class GInput<T extends ObjectType> extends Type<T> {
   }
 }
 
-class GInterface<T extends ObjectType> extends Type<T> {
+class GInterface<T extends ObjectType> extends Type<T, 'Interface'> {
   constructor(name: string, shape: T) {
     super()
     this.typeDef = {
@@ -155,7 +156,7 @@ class GInterface<T extends ObjectType> extends Type<T> {
   }
 }
 
-class GString extends Type<string> {
+class GString extends Type<string, 'String'> {
   constructor(type: 'string' | 'id' = 'string') {
     super()
     this.typeDef = {
@@ -196,7 +197,7 @@ class GString extends Type<string> {
   }
 }
 
-class GNumber extends Type<number> {
+class GNumber extends Type<number, 'Number'> {
   constructor(type: 'int' | 'float' = 'int') {
     super()
     this.typeDef = {
@@ -237,7 +238,7 @@ class GNumber extends Type<number> {
   }
 }
 
-class GBoolean extends Type<boolean> {
+class GBoolean extends Type<boolean, 'Boolean'> {
   constructor() {
     super()
     this.typeDef = {
@@ -278,7 +279,7 @@ class GBoolean extends Type<boolean> {
   }
 }
 
-class GEnum<T extends string> extends Type<T[]> {
+class GEnum<T extends string> extends Type<T[], 'Enum'> {
   _inner: T
 
   constructor(name: string, shape: T[]) {
@@ -301,7 +302,7 @@ class GEnum<T extends string> extends Type<T[]> {
   }
 }
 
-class GUnion<T extends AnyType> extends Type<T[]> {
+class GUnion<T extends AnyType> extends Type<T[], 'Union'> {
   _inner: T
 
   constructor(name: string, shape: T[]) {
@@ -324,7 +325,7 @@ class GUnion<T extends AnyType> extends Type<T[]> {
   }
 }
 
-class GRef<T> extends Type<T> {
+class GRef<T> extends Type<T, 'Ref'> {
   _ref: T
 
   constructor(ref: string | T) {
@@ -368,7 +369,7 @@ class GRef<T> extends Type<T> {
   }
 }
 
-class GScalar<I, O> extends Type<I> {
+class GScalar<I, O> extends Type<I,'Scalar'> {
   _output: O
 
   constructor(name: string, scalarOptions: ScalarOptions<I, O>) {
@@ -396,7 +397,7 @@ class GScalar<I, O> extends Type<I> {
   }
 }
 
-class GList<T extends AnyType, X extends Args> extends Type<T> {
+class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
   _args: X
 
   constructor(shape: T) {
@@ -440,7 +441,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T> {
   }
 }
 
-class GOptional<T extends AnyType, X extends Args> extends Type<T> {
+class GOptional<T extends AnyType, X extends Args> extends Type<T, never> {
   _args: X
 
   constructor(shape: T) {
@@ -474,7 +475,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T> {
   }
 }
 
-class GArgs<T extends AnyType, X extends Args> extends Type<T> {
+class GArgs<T extends AnyType, X extends Args> extends Type<T, never> {
   _inner: T
   _args: X
 
