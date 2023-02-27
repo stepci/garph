@@ -1,8 +1,8 @@
 import { convertSchema } from './converter'
 
-type GraphQLType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
+type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
-abstract class Type<T, X extends GraphQLType> {
+abstract class Type<T, X extends GarphType> {
   _is: X
   _shape: T
   typeDef: TypeDefinition<T>
@@ -10,7 +10,7 @@ abstract class Type<T, X extends GraphQLType> {
 
 type TypeDefinition<T> = {
   name?: string
-  type: 'string' | 'int' | 'float' | 'boolean' | 'id' | 'type' | 'ref' | 'list' | 'union' | 'enum' | 'scalar' | 'input' | 'interface'
+  type: GarphType
   shape?: T
   args?: Args
   description?: string
@@ -20,7 +20,7 @@ type TypeDefinition<T> = {
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
   interfaces?: AnyType[]
-  resolverFunction?: (parent: any, args: any, context: any, info: any) => T // Add additional type-safety around this
+  resolverFunction?: (parent: unknown, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
 export type AnyType = Type<any, any>
@@ -114,7 +114,7 @@ class GType<T extends ObjectType, X> extends Type<T, 'ObjectType'> {
     super()
     this.typeDef = {
       name,
-      type: 'type',
+      type: 'ObjectType',
       shape,
       interfaces
     }
@@ -135,7 +135,7 @@ class GInput<T extends ObjectType> extends Type<T, 'InputType'> {
     super()
     this.typeDef = {
       name,
-      type: 'input',
+      type: 'InputType',
       shape
     }
   }
@@ -151,7 +151,7 @@ class GInterface<T extends ObjectType> extends Type<T, 'InterfaceType'> {
     super()
     this.typeDef = {
       name,
-      type: 'interface',
+      type: 'InterfaceType',
       shape
     }
   }
@@ -162,8 +162,8 @@ class GInterface<T extends ObjectType> extends Type<T, 'InterfaceType'> {
   }
 }
 
-class GString<T extends GraphQLType> extends Type<string, T> {
-  constructor(type: 'string' | 'id' = 'string') {
+class GString<T extends GarphType> extends Type<string, T> {
+  constructor(type: 'String' | 'ID' = 'String') {
     super()
     this.typeDef = {
       type
@@ -203,8 +203,8 @@ class GString<T extends GraphQLType> extends Type<string, T> {
   }
 }
 
-class GNumber<T extends GraphQLType> extends Type<number, T> {
-  constructor(type: 'int' | 'float' = 'int') {
+class GNumber<T extends GarphType> extends Type<number, T> {
+  constructor(type: 'Int' | 'Float' = 'Int') {
     super()
     this.typeDef = {
       type
@@ -248,7 +248,7 @@ class GBoolean extends Type<boolean, 'Boolean'> {
   constructor() {
     super()
     this.typeDef = {
-      type: 'boolean'
+      type: 'Boolean'
     }
   }
 
@@ -292,7 +292,7 @@ class GEnum<T extends string> extends Type<T[], 'Enum'> {
     super()
     this.typeDef = {
       name,
-      type: 'enum',
+      type: 'Enum',
       shape
     }
   }
@@ -315,7 +315,7 @@ class GUnion<T extends AnyType> extends Type<T[], 'Union'> {
     super()
     this.typeDef = {
       name,
-      type: 'union',
+      type: 'Union',
       shape
     }
   }
@@ -338,7 +338,7 @@ class GRef<T> extends Type<T, 'Ref'> {
     super()
     this.typeDef = {
       name: typeof ref === 'string' ? ref : (ref as AnyType).typeDef.name,
-      type: 'ref'
+      type: 'Ref'
     }
   }
 
@@ -382,7 +382,7 @@ class GScalar<I, O> extends Type<I,'Scalar'> {
     super()
     this.typeDef = {
       name,
-      type: 'scalar',
+      type: 'Scalar',
       scalarOptions
     }
   }
@@ -409,8 +409,8 @@ class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
   constructor(shape: T) {
     super()
     this.typeDef = {
-      ...shape.typeDef,
-      type: 'list'
+      type: 'List',
+      shape: shape
     }
   }
 
@@ -540,13 +540,13 @@ export const g = {
     return new GString<'String'>()
   },
   id() {
-    return new GString<'ID'>('id')
+    return new GString<'ID'>('ID')
   },
   int() {
-    return new GNumber<'Int'>('int')
+    return new GNumber<'Int'>('Int')
   },
   float() {
-    return new GNumber<'Float'>('float')
+    return new GNumber<'Float'>('Float')
   },
   boolean() {
     return new GBoolean()

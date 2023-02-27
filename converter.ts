@@ -17,36 +17,36 @@ function isOptional(target: string, type: AnyType, config: convertConfig) {
 
 function iterateFields(type: AnyType, config: convertConfig) {
   switch (type.typeDef.type) {
-    case 'string':
+    case 'String':
       return isOptional('String', type, config)
-    case 'int':
+    case 'Int':
       return isOptional('Int', type, config)
-    case 'float':
+    case 'Float':
       return isOptional('Float', type, config)
-    case 'boolean':
+    case 'Boolean':
       return isOptional('Boolean', type, config)
-    case 'id':
+    case 'ID':
       return isOptional('ID', type, config)
-    case 'list':
-      return isOptional(`[${type.typeDef.name}]`, type, config)
-    case 'ref':
+    case 'List':
+      return isOptional(`[${iterateFields(type.typeDef.shape, config)}]`, type, config)
+    case 'Ref':
       return isOptional(type.typeDef.name, type, config)
-    case 'enum':
+    case 'Enum':
       return isOptional(type.typeDef.name, type, config)
-    case 'scalar':
+    case 'Scalar':
       return isOptional(type.typeDef.name, type, config)
-    case 'union':
+    case 'Union':
       return isOptional(type.typeDef.name, type, config)
-    case 'type':
+    case 'ObjectType':
       return isOptional(type.typeDef.name, type, config)
-    case 'input':
+    case 'InputType':
       return isOptional(type.typeDef.name, type, config)
   }
 }
 
 function convertToGraphqlType(name: string, type: AnyType, config: convertConfig) {
   switch (type.typeDef.type) {
-    case 'type':
+    case 'ObjectType':
       const objType = schemaComposer.createObjectTC({
         name,
         description: type.typeDef.description,
@@ -61,7 +61,7 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
       }
 
       return objType
-    case 'enum':
+    case 'Enum':
       return schemaComposer.createEnumTC({
         name,
         description: type.typeDef.description,
@@ -70,19 +70,19 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
           return acc
         }, {})
       })
-    case 'union':
+    case 'Union':
       return schemaComposer.createUnionTC({
         name,
         description: type.typeDef.description,
         types: type.typeDef.shape.map(t => t.typeDef.name)
       })
-    case 'input':
+    case 'InputType':
       return schemaComposer.createInputTC({
         name,
         description: type.typeDef.description,
         fields: parseFields(type.typeDef.shape, config),
       })
-    case 'scalar':
+    case 'Scalar':
       return schemaComposer.createScalarTC({
         name,
         description: type.typeDef.description,
@@ -91,7 +91,7 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
         parseLiteral: type.typeDef.scalarOptions.parseLiteral,
         specifiedByURL: type.typeDef.scalarOptions.specifiedByUrl
       })
-    case 'interface':
+    case 'InterfaceType':
       return schemaComposer.createInterfaceTC({
         name,
         description: type.typeDef.description,
