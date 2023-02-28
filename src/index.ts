@@ -1,4 +1,5 @@
 import { convertSchema } from './converter'
+import { InferClient, InferClientArgs } from './client'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
@@ -30,7 +31,7 @@ export type AnyBoolean = Type<boolean, 'Boolean'>
 export type AnyNumber = Type<number, any>
 export type AnyInt = Type<number, 'Int'>
 export type AnyFloat = Type<number, 'Float'>
-export type AnyRef = InstanceType<typeof GRef>
+export type AnyRef = Type<any, 'Ref'>
 export type AnyList = InstanceType<typeof GList>
 export type AnyUnion = InstanceType<typeof GUnion>
 export type AnyEnum = InstanceType<typeof GEnum>
@@ -68,17 +69,11 @@ export type Infer<T> = T extends AnyObject ? {
 }: InferShallow<T>
 
 export type InferShallow<T> =
-  T extends AnyString ? T['_shape'] :
-  T extends AnyID ? T['_shape'] :
-  T extends AnyBoolean ? T['_shape'] :
-  T extends AnyNumber ? T['_shape'] :
+  T extends AnyString | AnyEnum | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyList ? Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
-  T extends AnyArgs ? Infer<T['_inner']> :
-  T extends AnyUnion ? Infer<T['_inner']> :
-  T extends AnyEnum ? T['_inner'] :
-  T extends AnyScalar ? T['_shape'] :
-  T extends AnyRef ? Infer<T['_ref']> :
+  T extends AnyArgs | AnyUnion | AnyRef ? Infer<T['_shape']> :
+  T extends AnyUnion ? Infer<T['_shape']> :
   T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
@@ -286,8 +281,6 @@ class GBoolean extends Type<boolean, 'Boolean'> {
 }
 
 class GEnum<T extends string> extends Type<T[], 'Enum'> {
-  _inner: T
-
   constructor(name: string, shape: T[]) {
     super()
     this.typeDef = {
@@ -309,8 +302,6 @@ class GEnum<T extends string> extends Type<T[], 'Enum'> {
 }
 
 class GUnion<T extends AnyType> extends Type<T[], 'Union'> {
-  _inner: T
-
   constructor(name: string, shape: T[]) {
     super()
     this.typeDef = {
@@ -332,8 +323,6 @@ class GUnion<T extends AnyType> extends Type<T[], 'Union'> {
 }
 
 class GRef<T> extends Type<T, 'Ref'> {
-  _ref: T
-
   constructor(ref: string | T) {
     super()
     this.typeDef = {
@@ -482,7 +471,6 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T, 'Optional'> {
 }
 
 class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
-  _inner: T
   _args: X
 
   constructor(shape: T, args: X) {
@@ -526,7 +514,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
   // }
 }
 
-export const g = {
+const g = {
   type<T extends ObjectType>(name: string, shape: T) {
     return new GType<T, T>(name, shape)
   },
@@ -577,4 +565,4 @@ export const g = {
   }
 }
 
-export { convertSchema }
+export { g, convertSchema, InferClient, InferClientArgs }
