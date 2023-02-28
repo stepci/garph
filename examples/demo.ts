@@ -1,4 +1,4 @@
-import { g, InferResolvers, Infer, InferArgs, convertSchema } from '../index'
+import { g, InferResolvers, Infer, InferArgs, convertSchema } from '../src/index'
 import { createYoga } from 'graphql-yoga'
 
 type Blog = {

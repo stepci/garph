@@ -1,4 +1,4 @@
-import { g, Infer, InferResolvers, convertSchema } from './../index'
+import { g, Infer, InferResolvers, convertSchema } from './../src/index'
 import { createYoga } from 'graphql-yoga'
 
 const node = g.interface('Node', {
