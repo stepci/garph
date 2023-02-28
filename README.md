@@ -232,8 +232,6 @@ g.string().required()
 
 #### Default
 
-> **Note**: Not type-safe at the moment
-
 ```ts
 g.string().default("Default string")
 ```

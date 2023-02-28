@@ -32,15 +32,17 @@ export type AnyNumber = Type<number, any>
 export type AnyInt = Type<number, 'Int'>
 export type AnyFloat = Type<number, 'Float'>
 export type AnyRef = Type<any, 'Ref'>
-export type AnyList = InstanceType<typeof GList>
-export type AnyUnion = InstanceType<typeof GUnion>
+export type AnyList = Type<any, 'List'>
+export type AnyUnion = Type<any, 'Union'>
 export type AnyEnum = InstanceType<typeof GEnum>
-export type AnyOptional = InstanceType<typeof GOptional>
-export type AnyObject = InstanceType<typeof GType>
-export type AnyScalar = InstanceType<typeof GScalar>
-export type AnyArgs = InstanceType<typeof GArgs>
-export type AnyInput = InstanceType<typeof GInput>
-export type AnyInterface = InstanceType<typeof GInterface>
+export type AnyScalar = Type<any, 'Scalar'>
+export type AnyInput = Type<any, 'InputType'>
+export type AnyInterface = Type<any, 'InterfaceType'>
+export type AnyArgs = Type<any, 'Args'>
+export type AnyOptional = Type<any, 'Optional'>
+export type AnyObject = Type<any, 'ObjectType'>
+export type AnyArgsInstance = InstanceType<typeof GArgs>
+export type AnyObjectInstance = InstanceType<typeof GType>
 
 export type Args = {
   [key: string]: AnyType
@@ -62,14 +64,15 @@ type InferResolverConfig = {
   info?: any
 }
 
-export type Infer<T> = T extends AnyObject ? {
+export type Infer<T> = T extends AnyObjectInstance ? {
   [K in keyof T['_inner']]: Infer<T['_inner'][K]>
 }: T extends AnyInput | AnyInterface ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 }: InferShallow<T>
 
 export type InferShallow<T> =
-  T extends AnyString | AnyEnum | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
+  T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
+  T extends AnyEnum ? T['_inner'] :
   T extends AnyList ? Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs | AnyUnion | AnyRef ? Infer<T['_shape']> :
@@ -281,6 +284,8 @@ class GBoolean extends Type<boolean, 'Boolean'> {
 }
 
 class GEnum<T extends string> extends Type<T[], 'Enum'> {
+  _inner: T
+
   constructor(name: string, shape: T[]) {
     super()
     this.typeDef = {
@@ -417,7 +422,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
     return this
   }
 
-  default(value: any[]) {
+  default(value: Infer<T>) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -455,7 +460,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T, 'Optional'> {
     return this
   }
 
-  default(value) {
+  default(value: Infer<T>) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -494,11 +499,6 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 
   description(text: string) {
     this.typeDef.description = text
-    return this
-  }
-
-  default(value) {
-    this.typeDef.defaultValue = value
     return this
   }
 

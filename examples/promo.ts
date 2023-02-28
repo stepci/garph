@@ -21,4 +21,4 @@ const schema = convertSchema({
 })
 
 const yoga = createYoga({ schema })
-Bun.serve({ fetch: yoga, port: 4000 })
+Bun.serve(yoga)

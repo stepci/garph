@@ -1,18 +1,14 @@
 import { g, AnyType, InferClient } from '../src'
 
 const tType = g.type('Query', {
-  test: g.string()
-    .args({
-      nae: g.string().optional().default('Max'),
-    })
-    .description('Greets a person')
+  test: g.string().list().description('Greets a person')
 })
 
 const queryType = g.type('Query', {
   greet: g.ref<typeof tType>('')
     .list()
     .args({
-      name: g.ref<typeof tType>('').optional().default('Max'),
+      name: g.ref<typeof tType>('').optional().default({ test: ['sdf'] }),
     })
     .description('Greets a person')
 })
@@ -22,6 +18,4 @@ export function createClient <T extends AnyType> (): InferClient<T> {
 }
 
 const client = createClient<typeof queryType>()
-client.greet({ name: { test: '' } }).map(greet => {
-  greet.test({ nae: 'Max' })
-})
+client.greet({ name: { test: ['sdf'] } }).forEach((x) => x.test)
