@@ -3,7 +3,7 @@
     "outDir": "dist",
     "declaration": true,
     "lib": ["ESNext"],
-    "module": "ESNext",
+    "module": "NodeNext",
     "target": "ESNext",
     "moduleResolution": "Node"
   },
