@@ -336,7 +336,7 @@ type User = {
 const userType = g.type('User', {
   name: g.string(),
   age: g.int(),
-  friends: g.ref<User>('User').list(),
+  friends: g.ref<User>('User').list()
 })
 ```
 
@@ -349,6 +349,27 @@ type UserType = {
   friends: readonly User[]
 }
 ```
+
+**Example: Arguments in Circular References**
+
+```ts
+type User = {
+  name: string
+  age: number
+  friends: (args: { includeLastName?: boolean }) User[]
+}
+
+const userType = g.type('User', {
+  name: g.string(),
+  age: g.int(),
+  friends: g.ref<User>('User').list()
+    .args({
+      includeLastName: g.boolean().optional()
+    })
+})
+```
+
+The return types of the shim args will be correctly inferred in both Garph and the clients
 
 #### Converting to GraphQL schema
 

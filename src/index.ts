@@ -21,7 +21,7 @@ type TypeDefinition<T> = {
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
   interfaces?: AnyType[]
-  resolverFunction?: (parent: unknown, args: any, context: any, info: any) => T // Add additional type-safety around this
+  // resolverFunction?: (parent: unknown, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
 export type AnyType = Type<any, any>
@@ -70,6 +70,11 @@ export type Infer<T> = T extends AnyObjectInstance ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
 }: InferShallow<T>
 
+// Infers return types from functions (needed to infer circular dependencies with args correctly)
+type RawType <T> = T extends object ? {
+  [K in keyof T]: T[K] extends (args: any) => any ? RawType<ReturnType<T[K]>> : RawType<T[K]>
+}: T
+
 export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
@@ -77,9 +82,9 @@ export type InferShallow<T> =
   T extends AnyList ? Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
-  T
+  RawType<T>
 
-export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
+export type InferArgs<T extends AnyType> = T extends AnyObject ? {
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? T['_shape'][K]['_args'] extends never ? never : {
     [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
   } : never
