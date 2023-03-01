@@ -33,7 +33,7 @@ export type AnyInt = Type<number, 'Int'>
 export type AnyFloat = Type<number, 'Float'>
 export type AnyRef = Type<any, 'Ref'>
 export type AnyList = Type<any, 'List'>
-export type AnyUnion = Type<any, 'Union'>
+export type AnyUnion = InstanceType<typeof GUnion>
 export type AnyEnum = InstanceType<typeof GEnum>
 export type AnyScalar = Type<any, 'Scalar'>
 export type AnyInput = Type<any, 'InputType'>
@@ -73,10 +73,10 @@ export type Infer<T> = T extends AnyObjectInstance ? {
 export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
+  T extends AnyUnion ? Infer<T['_inner']> :
   T extends AnyList ? Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
-  T extends AnyArgs | AnyUnion | AnyRef ? Infer<T['_shape']> :
-  T extends AnyUnion ? Infer<T['_shape']> :
+  T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
   T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
@@ -307,6 +307,8 @@ class GEnum<T extends string> extends Type<T[], 'Enum'> {
 }
 
 class GUnion<T extends AnyType> extends Type<T[], 'Union'> {
+  _inner: T
+
   constructor(name: string, shape: T[]) {
     super()
     this.typeDef = {
