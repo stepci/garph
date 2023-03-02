@@ -311,7 +311,7 @@ class GEnum<T extends readonly string[] | TSEnumType> extends Type<readonly stri
   }
 }
 
-class GUnion<T extends AnyType> extends Type<T[], 'Union'> {
+class GUnion<T extends AnyObject> extends Type<T[], 'Union'> {
   declare _inner: T
 
   constructor(name: string, shape: T[]) {
@@ -521,7 +521,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
   // }
 }
 
-class GarphSchema {
+export class GarphSchema {
   types: AnyType[] = []
 
   buildSchema({ resolvers }: { resolvers: any }, config?: convertConfig) {
@@ -546,7 +546,7 @@ class GarphSchema {
     return t
   }
 
-  unionType<T extends AnyType>(name: string, args: T[]) {
+  unionType<T extends AnyObject>(name: string, args: T[]) {
     const t = new GUnion<T>(name, args)
     this.types.push(t)
     return t
@@ -605,5 +605,5 @@ class GarphSchema {
   // }
 }
 
-const g = new GarphSchema()
-export { g, convertSchema, InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes }
+export const g = new GarphSchema()
+export { convertSchema, InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes }
