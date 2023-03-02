@@ -12,7 +12,7 @@ export type InferClient<T extends ClientTypes> = {
 
 export type InferClientTypes<T> = T extends AnyObject ? {
   [K in keyof T['_inner']]: InferClientTypes<T['_inner'][K]>
-}: InferClientTypesShallow<T>
+} : InferClientTypesShallow<T>
 
 export type InferClientTypesShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :

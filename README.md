@@ -30,11 +30,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   }
 }
 
-const schema = convertSchema({
-  types: [queryType],
-  resolvers
-})
-
+const schema = g.buildSchema({ resolvers })
 const yoga = createYoga({ schema })
 Bun.serve(yoga)
 ```
@@ -388,7 +384,11 @@ The return types of the shim args will be correctly inferred in both Garph and t
 
 #### Converting to GraphQL schema
 
-You can import `convertSchema` method to convert your types built with Garph into a functioning GraphQL schema
+```ts
+g.buildSchema({ resolvers })
+```
+
+Or you can use `convertSchema` method directly
 
 ```ts
 const schema = convertSchema({

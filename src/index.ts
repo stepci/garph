@@ -1,4 +1,4 @@
-import { convertSchema } from './converter'
+import { convertConfig, convertSchema } from './converter'
 import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
 import { RawType, TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
 
@@ -67,9 +67,9 @@ type InferResolverConfig = {
 
 export type Infer<T> = T extends AnyObject ? {
   [K in keyof T['_inner']]: Infer<T['_inner'][K]>
-}: T extends AnyInput | AnyInterface ? {
+} : T extends AnyInput | AnyInterface ? {
   [K in keyof T['_shape']]: Infer<T['_shape'][K]>
-}: InferShallow<T>
+} : InferShallow<T>
 
 export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
@@ -376,7 +376,7 @@ class GRef<T> extends Type<T, 'Ref'> {
   }
 }
 
-class GScalar<I, O> extends Type<I,'Scalar'> {
+class GScalar<I, O> extends Type<I, 'Scalar'> {
   _output: O
 
   constructor(name: string, scalarOptions: ScalarOptions<I, O>) {
@@ -521,55 +521,89 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
   // }
 }
 
-const g = {
+class GarphSchema {
+  types: AnyType[] = []
+
+  buildSchema({ resolvers }: { resolvers: any }, config?: convertConfig) {
+    return convertSchema({ types: this.types, resolvers }, config)
+  }
+
   type<T extends ObjectType>(name: string, shape: T) {
-    return new GType<T, T>(name, shape)
-  },
+    const t = new GType<T, T>(name, shape)
+    this.types.push(t)
+    return t
+  }
+
   inputType<T extends ObjectType>(name: string, shape: T) {
-    return new GInput<T>(name, shape)
-  },
+    const t = new GInput<T>(name, shape)
+    this.types.push(t)
+    return t
+  }
+
+  enumType<T extends readonly string[] | TSEnumType>(name: string, args: T) {
+    const t = new GEnum<T>(name, args)
+    this.types.push(t)
+    return t
+  }
+
+  unionType<T extends AnyType>(name: string, args: T[]) {
+    const t = new GUnion<T>(name, args)
+    this.types.push(t)
+    return t
+  }
+
+  scalarType<I, O>(name: string, options: ScalarOptions<I, O>) {
+    const t = new GScalar<I, O>(name, options)
+    this.types.push(t)
+    return t
+  }
+
   interface<T extends ObjectType>(name: string, shape: T) {
-    return new GInterface<T>(name, shape)
-  },
+    const t = new GInterface<T>(name, shape)
+    this.types.push(t)
+    return t
+  }
+
   string() {
     return new GString<'String'>()
-  },
+  }
+
   id() {
     return new GString<'ID'>('ID')
-  },
+  }
+
   int() {
     return new GNumber<'Int'>('Int')
-  },
+  }
+
   float() {
     return new GNumber<'Float'>('Float')
-  },
+  }
+
   boolean() {
     return new GBoolean()
-  },
-  enumType<T extends readonly string[] | TSEnumType>(name: string, args: T) {
-    return new GEnum<T>(name, args)
-  },
-  unionType<T extends AnyType>(name: string, args: T[]) {
-    return new GUnion<T>(name, args)
-  },
-  // enum<T extends string>(args: T[]) {
-  //   return new GEnum<T>('', args)
-  // },
-  // union<T extends AnyType>(args: T[]) {
-  //   return new GUnion<T>('', args)
-  // },
-  scalarType<I, O>(name: string, options: ScalarOptions<I, O>) {
-    return new GScalar<I, O>(name, options)
-  },
-  // list<T extends AnyType>(shape: T) {
-  //   return new GList<T, any>(shape)
-  // },
-  // optional<T extends AnyType>(shape: T) {
-  //   return new GOptional<T, any>(shape)
-  // },
+  }
+
   ref<T>(ref: string | T) {
     return new GRef<T>(ref)
   }
+
+  // enum<T extends string>(args: T[]) {
+  //   return new GEnum<T>('', args)
+  // }
+
+  // union<T extends AnyType>(args: T[]) {
+  //   return new GUnion<T>('', args)
+  // }
+
+  // list<T extends AnyType>(shape: T) {
+  //   return new GList<T, any>(shape)
+  // }
+
+  // optional<T extends AnyType>(shape: T) {
+  //   return new GOptional<T, any>(shape)
+  // }
 }
 
+const g = new GarphSchema()
 export { g, convertSchema, InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes }

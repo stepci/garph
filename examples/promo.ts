@@ -1,4 +1,4 @@
-import { g, Infer, InferResolvers, convertSchema } from './../src/index'
+import { g, Infer, InferResolvers } from './../src/index'
 import { createYoga } from 'graphql-yoga'
 
 const queryType = g.type('Query', {
@@ -15,10 +15,6 @@ const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   }
 }
 
-const schema = convertSchema({
-  types: [queryType],
-  resolvers
-})
-
+const schema = g.buildSchema({ resolvers })
 const yoga = createYoga({ schema })
 Bun.serve(yoga)
