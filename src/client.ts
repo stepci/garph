@@ -1,6 +1,6 @@
-import { Infer, AnyString, AnyID, AnyBoolean, AnyNumber, AnyList, AnyOptional, AnyArgs, AnyUnion, AnyEnum, AnyScalar, AnyRef, AnyObjectInstance } from './index'
+import { Infer, AnyString, AnyID, AnyBoolean, AnyNumber, AnyList, AnyOptional, AnyArgs, AnyUnion, AnyEnum, AnyScalar, AnyRef, AnyObject } from './index'
 
-export type InferClient<T> = T extends AnyObjectInstance ? {
+export type InferClient<T> = T extends AnyObject ? {
   [K in keyof T['_inner']]: InferClient<T['_inner'][K]>
 }: InferClientShallow<T>
 
@@ -14,11 +14,6 @@ export type InferClientShallow<T> =
   T extends AnyRef ? InferClient<T['_shape']> :
   T
 
-// Dirty trick, do not try at home. I know what I'm doing
-type AnyInstance = {
-  [key: string]: any
-}
-
-export type InferClientArgs<T extends AnyInstance> = {
+export type InferClientArgs<T extends AnyArgs> = {
   [K in keyof T['_args']]: Infer<T['_args'][K]>
 }

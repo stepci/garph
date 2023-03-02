@@ -101,8 +101,23 @@ g.id()
 
 #### Enum
 
+Plain:
+
 ```ts
-g.enumType('Name', ['A', 'B', 'C'])
+g.enumType('Name', ['A', 'B', 'C'] as const)
+```
+
+(We need `as const` for proper type inference)
+
+From TypeScript Enum:
+
+```ts
+enum Fruits {
+  Apples,
+  Oranges
+}
+
+g.enumType('Name', Fruits)
 ```
 
 #### Union
@@ -316,7 +331,7 @@ Inferred type:
 {
   Query: {
     greet?: (parent: any, args: {
-      test: readonly Date[]
+      name: string
     }, context: any, info: any) => string | Promise<string>
   }
 }
