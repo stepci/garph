@@ -1,19 +1,29 @@
 import { Infer, AnyString, AnyID, AnyBoolean, AnyNumber, AnyList, AnyOptional, AnyArgs, AnyUnion, AnyEnum, AnyScalar, AnyRef, AnyObject } from './index'
 
-export type InferClient<T> = T extends AnyObject ? {
-  [K in keyof T['_inner']]: InferClient<T['_inner'][K]>
-}: InferClientShallow<T>
+export type ClientTypes = {
+  query: AnyObject
+  mutation?: AnyObject
+  subscription?: AnyObject
+}
 
-export type InferClientShallow<T> =
+export type InferClient<T extends ClientTypes> = {
+  [K in keyof T]: InferClientTypes<T[K]>
+}
+
+export type InferClientTypes<T> = T extends AnyObject ? {
+  [K in keyof T['_inner']]: InferClientTypes<T['_inner'][K]>
+}: InferClientTypesShallow<T>
+
+export type InferClientTypesShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? InferClient<T['_inner']> :
-  T extends AnyList ? InferClient<T['_shape']>[] :
-  T extends AnyOptional ? InferClient<T['_shape']> | null | undefined :
-  T extends AnyArgs ? (args?: InferClientArgs<T>) => InferClient<T['_shape']> :
-  T extends AnyRef ? InferClient<T['_shape']> :
+  T extends AnyUnion ? InferClientTypes<T['_inner']> :
+  T extends AnyList ? InferClientTypes<T['_shape']>[] :
+  T extends AnyOptional ? InferClientTypes<T['_shape']> | null | undefined :
+  T extends AnyArgs ? (args?: InferClientTypesArgs<T>) => InferClientTypes<T['_shape']> :
+  T extends AnyRef ? InferClientTypes<T['_shape']> :
   T
 
-export type InferClientArgs<T extends AnyArgs> = {
+export type InferClientTypesArgs<T extends AnyArgs> = {
   [K in keyof T['_args']]: Infer<T['_args'][K]>
 }

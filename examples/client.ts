@@ -1,4 +1,4 @@
-import { g, AnyType, InferClient } from '../src'
+import { g, InferClient, ClientTypes } from '../src'
 
 const tType = g.type('Query', {
   test: g.string().list().description('Greets a person')
@@ -13,9 +13,9 @@ const queryType = g.type('Query', {
     .description('Greets a person')
 })
 
-export function createClient <T extends AnyType> (): InferClient<T> {
+export function createClient <T extends ClientTypes> (): InferClient<T> {
   return null as any
 }
 
-const client = createClient<typeof queryType>()
-client.greet({ name: { test: ['sdf'] } }).forEach((x) => x.test)
+const client = createClient<{ query: typeof queryType }>()
+client.query.greet({ name: { test: ['sdf'] } }).forEach((x) => x.test)

@@ -1,5 +1,5 @@
 import { convertSchema } from './converter'
-import { InferClient, InferClientArgs } from './client'
+import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
 import { RawType, TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
@@ -572,4 +572,4 @@ const g = {
   }
 }
 
-export { g, convertSchema, InferClient, InferClientArgs }
+export { g, convertSchema, InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes }
