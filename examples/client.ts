@@ -7,15 +7,18 @@ const tType = g.type('Query', {
 const queryType = g.type('Query', {
   greet: g.ref<typeof tType>('')
     .list()
+    .optional()
     .args({
       name: g.ref<typeof tType>('').optional().default({ test: ['sdf'] }),
     })
     .description('Greets a person')
 })
 
+type x = InferClient<{ query: typeof queryType }>
+
 export function createClient <T extends ClientTypes> (): InferClient<T> {
   return null as any
 }
 
 const client = createClient<{ query: typeof queryType }>()
-client.query.greet({ name: { test: ['sdf'] } }).forEach((x) => x.test)
+client.query.greet({ name: { test: ['sdf'] } })?.forEach((x) => x.test)

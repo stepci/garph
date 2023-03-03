@@ -1,6 +1,6 @@
 // Infers return types from functions (needed to infer circular dependencies with args correctly)
-export type RawType<T> = T extends object ? {
-  [K in keyof T]: T[K] extends (args: any) => any ? RawType<ReturnType<T[K]>> : RawType<T[K]>
+export type CleanType<T> = T extends object ? {
+  [K in keyof T]: T[K] extends (args: any) => any ? CleanType<ReturnType<T[K]>> : CleanType<T[K]>
 } : T
 
 export type UnionToIntersection<T> =

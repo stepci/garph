@@ -1,6 +1,6 @@
 import { ConverterConfig, convertSchema } from './converter'
 import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
-import { RawType, TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
+import { CleanType, TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
@@ -95,7 +95,7 @@ export type InferShallow<T> =
   T extends AnyList ? readonly Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
-  RawType<T>
+  CleanType<T>
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
   // The following line can be improved
