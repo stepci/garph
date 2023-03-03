@@ -6,7 +6,7 @@ https://user-images.githubusercontent.com/10400064/222474710-bc263775-06b8-4a78-
 > Garph is currently in Alpha. We would love to hear your Feedback on our [Discord](https://discord.gg/gJmS2KGq)
 
 > **Note**:
-> tRPC-style client for Garph under way and will be released soon, separately
+> tRPC-style client for Garph has arrived! See [garph-gqty](https://github.com/stepci/garph-gqty) for more 🚀
 
 Garph is a GraphQL schema-builder for TypeScript, that aims to deliver tRPC-like Developer-Experience. On top of that, Garph provides a GraphQL compability layer and type-safety primitives for any TypeScript project
 
