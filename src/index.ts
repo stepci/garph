@@ -97,9 +97,15 @@ export type InferShallow<T> =
   T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
   CleanType<T>
 
+// The following can be improved, see client for better implementation
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
-  // The following line can be improved
-  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? T['_shape'][K]['_args'] extends never ? never : {
+  [K in keyof T['_inner']]: T['_inner'][K] extends AnyArgs ? {
+    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_inner'][K]['_args'][G]>
+  } & {
+    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_inner'][K]['_args'][G]>
+  } : never
+}: T extends AnyInterface ? {
+  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
     [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_shape'][K]['_args'][G]>
   } & {
     [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_shape'][K]['_args'][G]>
@@ -174,6 +180,10 @@ class GInterface<T extends ObjectType> extends Type<T, 'InterfaceType'> {
   description(text: string) {
     this.typeDef.description = text
     return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
   }
 }
 
