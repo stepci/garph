@@ -11,7 +11,9 @@ export type InferClient<T extends ClientTypes> = {
 }
 
 export type InferClientTypes<T> = T extends AnyObject ? {
-  [K in keyof T['_inner']]: InferClientTypes<T['_inner'][K]>
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never : K]: InferClientTypes<T['_inner'][K]>
+} & {
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K : never]?: InferClientTypes<T['_inner'][K]>
 } : InferClientTypesShallow<T>
 
 export type InferClientTypesShallow<T> =
@@ -25,5 +27,7 @@ export type InferClientTypesShallow<T> =
   T
 
 export type InferClientTypesArgs<T extends AnyArgs> = {
-  [K in keyof T['_args']]: Infer<T['_args'][K]>
+  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? never : K]: Infer<T['_args'][K]>
+} & {
+  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: Infer<T['_args'][K]>
 }

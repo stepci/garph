@@ -66,9 +66,13 @@ type InferResolverConfig = {
 }
 
 export type Infer<T> = T extends AnyObject ? {
-  [K in keyof T['_inner']]: Infer<T['_inner'][K]>
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never : K]: Infer<T['_inner'][K]>
+} & {
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K : never]?: Infer<T['_inner'][K]>
 } : T extends AnyInput | AnyInterface ? {
-  [K in keyof T['_shape']]: Infer<T['_shape'][K]>
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never : K]: Infer<T['_shape'][K]>
+} & {
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K : never]?: Infer<T['_shape'][K]>
 } : InferShallow<T>
 
 export type InferShallow<T> =
@@ -81,8 +85,11 @@ export type InferShallow<T> =
   RawType<T>
 
 export type InferArgs<T extends AnyType> = T extends AnyObject ? {
+  // The following line can be improved
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? T['_shape'][K]['_args'] extends never ? never : {
-    [G in keyof T['_shape'][K]['_args']]: Infer<T['_shape'][K]['_args'][G]>
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_shape'][K]['_args'][G]>
+  } & {
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
 
