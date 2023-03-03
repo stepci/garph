@@ -1,6 +1,6 @@
 import { ConverterConfig, convertSchema } from './converter'
 import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
-import { RawType, TSEnumType, UnionToIntersection, getEnumProperties, NiceIntersection } from './utils'
+import { RawType, TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
@@ -60,55 +60,53 @@ type ScalarOptions<I, O> = {
   specifiedByUrl?: string
 }
 
-type InferRawResolverConfig = {
+type InferResolverConfig = {
   context?: any
   info?: any
 }
 
-export type Infer<T> = NiceIntersection<InferRaw<T>>
-export type InferRaw<T> = T extends AnyObject ? {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never : K]: InferRaw<T['_inner'][K]>
+export type Infer<T> = T extends AnyObject ? {
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never : K]: Infer<T['_inner'][K]>
 } & {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K : never]?: InferRaw<T['_inner'][K]>
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K : never]?: Infer<T['_inner'][K]>
 } : T extends AnyInput | AnyInterface ? {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never : K]: InferRaw<T['_shape'][K]>
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never : K]: Infer<T['_shape'][K]>
 } & {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K : never]?: InferRaw<T['_shape'][K]>
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K : never]?: Infer<T['_shape'][K]>
 } : InferShallow<T>
 
 export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? InferRaw<T['_inner']> :
-  T extends AnyList ? readonly InferRaw<T['_shape']>[] :
-  T extends AnyOptional ? InferRaw<T['_shape']> | null | undefined :
-  T extends AnyArgs | AnyRef ? InferRaw<T['_shape']> :
+  T extends AnyUnion ? Infer<T['_inner']> :
+  T extends AnyList ? readonly Infer<T['_shape']>[] :
+  T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
+  T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
   RawType<T>
 
-export type InferArgs <T extends AnyType> = NiceIntersection<InferRawArgs<T>>
-export type InferRawArgs<T extends AnyType> = T extends AnyObject ? {
+export type InferArgs<T extends AnyType> = T extends AnyObject ? {
   // The following line can be improved
   [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends Args ? T['_shape'][K]['_args'] extends never ? never : {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: InferRaw<T['_shape'][K]['_args'][G]>
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_shape'][K]['_args'][G]>
   } & {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: InferRaw<T['_shape'][K]['_args'][G]>
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
 
-export type InferResolvers<T extends ObjectType, X extends InferRawResolverConfig> = {
+export type InferResolvers<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
     [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
-export type InferResolversStrict<T extends ObjectType, X extends InferRawResolverConfig> = {
+export type InferResolversStrict<T extends ObjectType, X extends InferResolverConfig> = {
   [K in keyof T]: {
     [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
-type InferRawArg<T extends Args> = {
-  [K in keyof T]: InferRaw<T[K]>
+type InferArg<T extends Args> = {
+  [K in keyof T]: Infer<T[K]>
 }
 
 class GType<T extends ObjectType, X> extends Type<T, 'ObjectType'> {
@@ -370,7 +368,7 @@ class GRef<T> extends Type<T, 'Ref'> {
     return this
   }
 
-  default(value: InferRaw<T>) {
+  default(value: Infer<T>) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -438,7 +436,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
     return this
   }
 
-  default(value: InferRaw<T>) {
+  default(value: Infer<T>) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -476,7 +474,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T, 'Optional'> {
     return this
   }
 
-  default(value: InferRaw<T>) {
+  default(value: Infer<T>) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -524,7 +522,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
   }
 
   // For future reference
-  // resolve (fn: (parent: unknown, args: InferRawArg<X>, context: unknown, info: unknown) => InferRaw<T>) {
+  // resolve (fn: (parent: unknown, args: InferArg<X>, context: unknown, info: unknown) => Infer<T>) {
   //   this.typeDef.resolverFunction = fn
   //   return this
   // }
