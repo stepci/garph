@@ -65,14 +65,27 @@ type InferResolverConfig = {
   info?: any
 }
 
+// TODO: Refactor Args to get rid of this mess
 export type Infer<T> = T extends AnyObject ? {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never : K]: Infer<T['_inner'][K]>
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never :
+  T['_inner'][K] extends AnyArgs ?
+  T['_inner'][K]['_shape'] extends AnyOptional ? never : K :
+  K]: Infer<T['_inner'][K]>
 } & {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K : never]?: Infer<T['_inner'][K]>
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K :
+  T['_inner'][K] extends AnyArgs ?
+  T['_inner'][K]['_shape'] extends AnyOptional ? K : never :
+  never]?: Infer<T['_inner'][K]>
 } : T extends AnyInput | AnyInterface ? {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never : K]: Infer<T['_shape'][K]>
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never :
+  T['_shape'][K] extends AnyArgs ?
+  T['_shape'][K]['_shape'] extends AnyOptional ? never : K :
+  K]: Infer<T['_shape'][K]>
 } & {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K : never]?: Infer<T['_shape'][K]>
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K :
+  T['_shape'][K] extends AnyArgs ?
+  T['_shape'][K]['_shape'] extends AnyOptional ? K : never :
+  never]?: Infer<T['_shape'][K]>
 } : InferShallow<T>
 
 export type InferShallow<T> =
