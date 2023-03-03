@@ -1,4 +1,4 @@
-import { convertConfig, convertSchema } from './converter'
+import { ConverterConfig, convertSchema } from './converter'
 import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
 import { RawType, TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
 
@@ -531,7 +531,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 export class GarphSchema {
   types: AnyType[] = []
 
-  buildSchema({ resolvers }: { resolvers: any }, config?: convertConfig) {
+  buildSchema({ resolvers }: { resolvers: any }, config?: ConverterConfig) {
     return convertSchema({ types: this.types, resolvers }, config)
   }
 

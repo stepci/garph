@@ -2,20 +2,20 @@ import { AnyType, Args } from './index'
 import { makeExecutableSchema } from '@graphql-tools/schema'
 import { schemaComposer } from 'graphql-compose'
 
-export type convertConfig = {
+export type ConverterConfig = {
   defaultNullability?: boolean
 }
 
-export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config: convertConfig = { defaultNullability: false }) {
+export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
   const convertedTypes = types.map(type => convertToGraphqlType(type.typeDef.name, type, config))
   return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
 }
 
-function isOptional(target: string, type: AnyType, config: convertConfig) {
+function isOptional(target: string, type: AnyType, config: ConverterConfig) {
   return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }
 
-function iterateFields(type: AnyType, config: convertConfig) {
+export function getFieldType(type: AnyType, config: ConverterConfig) {
   switch (type.typeDef.type) {
     case 'String':
       return isOptional('String', type, config)
@@ -28,7 +28,7 @@ function iterateFields(type: AnyType, config: convertConfig) {
     case 'ID':
       return isOptional('ID', type, config)
     case 'List':
-      return isOptional(`[${iterateFields(type.typeDef.shape, config)}]`, type, config)
+      return isOptional(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
     case 'Ref':
       return isOptional(type.typeDef.name, type, config)
     case 'Enum':
@@ -44,7 +44,7 @@ function iterateFields(type: AnyType, config: convertConfig) {
   }
 }
 
-function convertToGraphqlType(name: string, type: AnyType, config: convertConfig) {
+export function convertToGraphqlType(name: string, type: AnyType, config: ConverterConfig) {
   switch (type.typeDef.type) {
     case 'ObjectType':
       const objType = schemaComposer.createObjectTC({
@@ -100,12 +100,12 @@ function convertToGraphqlType(name: string, type: AnyType, config: convertConfig
   }
 }
 
-function parseFields(fields: AnyType, config: convertConfig) {
+export function parseFields(fields: AnyType, config: ConverterConfig) {
   const fieldsObj = {}
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName]
     fieldsObj[fieldName] = {
-      type: iterateFields(field, config),
+      type: getFieldType(field, config),
       deprecationReason: field.typeDef.deprecated,
       args: parseArgs(field.typeDef.args, config),
       description: field.typeDef.description
@@ -115,14 +115,14 @@ function parseFields(fields: AnyType, config: convertConfig) {
   return fieldsObj
 }
 
-function parseArgs(anyArgs: Args, config) {
+export function parseArgs(anyArgs: Args, config) {
   if (!anyArgs) return
 
   const args = {}
   Object.keys(anyArgs).forEach(argName => {
     const arg = anyArgs[argName]
     args[argName] = {
-      type: iterateFields(arg, config),
+      type: getFieldType(arg, config),
       defaultValue: arg.typeDef.defaultValue,
       deprecationReason: arg.typeDef.deprecated,
       description: arg.typeDef.description
