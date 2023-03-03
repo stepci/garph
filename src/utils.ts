@@ -11,6 +11,10 @@ export type ArrayToEnum<T extends readonly any[]> = T[number]
 export type TSEnumType = { [s: number]: string }
 export type EnumToUnion<T extends TSEnumType> = keyof T
 
+export type NiceIntersection<T> = T extends object ? {
+  [K in keyof T]: T[K] extends object ? NiceIntersection<T[K]> : T[K]
+} : T
+
 export function getEnumProperties(enumValue: TSEnumType) {
   return Object.keys(enumValue).filter((key) => isNaN(Number(key)))
 }
