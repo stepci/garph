@@ -10,11 +10,11 @@ export type InferClient<T extends ClientTypes> = {
   [K in keyof T]: InferClientTypes<T[K]>
 }
 
-export type InferClientTypes<T> = T extends AnyObject ? {
+export type InferClientTypes<T> = T extends AnyObject | AnyInterface ? {
   [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never : K]: InferClientTypes<T['_inner'][K]>
 } & {
   [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K : never]?: InferClientTypes<T['_inner'][K]>
-} : T extends AnyInput | AnyInterface ? {
+} : T extends AnyInput ? {
   [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never : K]: InferClientTypes<T['_shape'][K]>
 } & {
   [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K : never]?: InferClientTypes<T['_shape'][K]>

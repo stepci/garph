@@ -1,6 +1,6 @@
 import { ConverterConfig, convertSchema } from './converter'
 import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
-import { CleanType, TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
+import { TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
@@ -66,7 +66,7 @@ type InferResolverConfig = {
 }
 
 // TODO: Refactor Args to get rid of this mess
-export type Infer<T> = T extends AnyObject ? {
+export type Infer<T> = T extends AnyObject | AnyInterface ? {
   [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never :
   T['_inner'][K] extends AnyArgs ?
   T['_inner'][K]['_shape'] extends AnyOptional ? never : K :
@@ -76,7 +76,7 @@ export type Infer<T> = T extends AnyObject ? {
   T['_inner'][K] extends AnyArgs ?
   T['_inner'][K]['_shape'] extends AnyOptional ? K : never :
   never]?: Infer<T['_inner'][K]>
-} : T extends AnyInput | AnyInterface ? {
+} : T extends AnyInput ? {
   [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never :
   T['_shape'][K] extends AnyArgs ?
   T['_shape'][K]['_shape'] extends AnyOptional ? never : K :
@@ -95,20 +95,13 @@ export type InferShallow<T> =
   T extends AnyList ? readonly Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
-  CleanType<T>
+  T
 
-// The following can be improved, see client for better implementation
-export type InferArgs<T extends AnyType> = T extends AnyObject ? {
+export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
   [K in keyof T['_inner']]: T['_inner'][K] extends AnyArgs ? {
     [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_inner'][K]['_args'][G]>
   } & {
     [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_inner'][K]['_args'][G]>
-  } : never
-}: T extends AnyInterface ? {
-  [K in keyof T['_shape']]: T['_shape'][K]['_args'] extends AnyArgs ? {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_shape'][K]['_args'][G]>
-  } & {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
 
@@ -122,10 +115,6 @@ export type InferResolversStrict<T extends ObjectType, X extends InferResolverCo
   [K in keyof T]: {
     [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
-}
-
-type InferArg<T extends Args> = {
-  [K in keyof T]: Infer<T[K]>
 }
 
 class GType<T extends ObjectType, X> extends Type<T, 'ObjectType'> {
@@ -147,6 +136,8 @@ class GType<T extends ObjectType, X> extends Type<T, 'ObjectType'> {
   }
 
   implements<D extends AnyInterface>(ref: D | D[]) {
+    // This is temporary construct, until we figure out how to properly manage to shared schema
+    this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
     return new GType<T, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape, Array.isArray(ref) ? ref : [ref])
   }
 }
@@ -167,13 +158,16 @@ class GInput<T extends ObjectType> extends Type<T, 'InputType'> {
   }
 }
 
-class GInterface<T extends ObjectType> extends Type<T, 'InterfaceType'> {
-  constructor(name: string, shape: T) {
+class GInterface<T extends ObjectType, X> extends Type<T, 'InterfaceType'> {
+  declare _inner: X
+
+  constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
     super()
     this.typeDef = {
       name,
       type: 'InterfaceType',
-      shape
+      shape,
+      interfaces
     }
   }
 
@@ -182,8 +176,10 @@ class GInterface<T extends ObjectType> extends Type<T, 'InterfaceType'> {
     return this
   }
 
-  args<X extends Args>(args: X) {
-    return new GArgs<this, X>(this, args)
+  implements<D extends AnyInterface>(ref: D | D[]) {
+    // This is temporary construct, until we figure out how to properly manage to shared schema
+    this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
+    return new GInterface<T, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape, Array.isArray(ref) ? ref : [ref])
   }
 }
 
@@ -196,7 +192,7 @@ class GString<T extends GarphType> extends Type<string, T> {
   }
 
   optional() {
-    return new GOptional<this, never>(this)
+    return new GOptional<this>(this)
   }
 
   required() {
@@ -205,7 +201,7 @@ class GString<T extends GarphType> extends Type<string, T> {
   }
 
   list() {
-    return new GList<this, never>(this)
+    return new GList<this>(this)
   }
 
   description(text: string) {
@@ -237,7 +233,7 @@ class GNumber<T extends GarphType> extends Type<number, T> {
   }
 
   optional() {
-    return new GOptional<this, never>(this)
+    return new GOptional<this>(this)
   }
 
   required() {
@@ -246,7 +242,7 @@ class GNumber<T extends GarphType> extends Type<number, T> {
   }
 
   list() {
-    return new GList<this, never>(this)
+    return new GList<this>(this)
   }
 
   description(text: string) {
@@ -278,7 +274,7 @@ class GBoolean extends Type<boolean, 'Boolean'> {
   }
 
   optional() {
-    return new GOptional<this, never>(this)
+    return new GOptional<this>(this)
   }
 
   required() {
@@ -287,7 +283,7 @@ class GBoolean extends Type<boolean, 'Boolean'> {
   }
 
   list() {
-    return new GList<this, never>(this)
+    return new GList<this>(this)
   }
 
   description(text: string) {
@@ -334,11 +330,6 @@ class GEnum<T extends readonly string[] | TSEnumType> extends Type<readonly stri
     this.typeDef.description = text
     return this
   }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
-    return this
-  }
 }
 
 class GUnion<T extends AnyObject> extends Type<T[], 'Union'> {
@@ -357,11 +348,6 @@ class GUnion<T extends AnyObject> extends Type<T[], 'Union'> {
     this.typeDef.description = text
     return this
   }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
-    return this
-  }
 }
 
 class GRef<T> extends Type<T, 'Ref'> {
@@ -374,7 +360,7 @@ class GRef<T> extends Type<T, 'Ref'> {
   }
 
   optional() {
-    return new GOptional<this, never>(this)
+    return new GOptional<this>(this)
   }
 
   required() {
@@ -383,7 +369,7 @@ class GRef<T> extends Type<T, 'Ref'> {
   }
 
   list() {
-    return new GList<this, never>(this)
+    return new GList<this>(this)
   }
 
   description(text: string) {
@@ -434,9 +420,7 @@ class GScalar<I, O> extends Type<I, 'Scalar'> {
   }
 }
 
-class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
-  declare _args: X
-
+class GList<T extends AnyType> extends Type<T, 'List'> {
   constructor(shape: T) {
     super()
     this.typeDef = {
@@ -446,7 +430,7 @@ class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
   }
 
   optional() {
-    return new GOptional<this, X>(this)
+    return new GOptional<this>(this)
   }
 
   required() {
@@ -474,13 +458,11 @@ class GList<T extends AnyType, X extends Args> extends Type<T, 'List'> {
   }
 
   list() {
-    return new GList<this, X>(this)
+    return new GList<this>(this)
   }
 }
 
-class GOptional<T extends AnyType, X extends Args> extends Type<T, 'Optional'> {
-  declare _args: X
-
+class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
   constructor(shape: T) {
     super()
     this.typeDef = shape.typeDef
@@ -489,7 +471,7 @@ class GOptional<T extends AnyType, X extends Args> extends Type<T, 'Optional'> {
   }
 
   list() {
-    return new GList<this, X>(this)
+    return new GList<this>(this)
   }
 
   description(text: string) {
@@ -520,19 +502,6 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
     this.typeDef = shape.typeDef
     this.typeDef.args = args
   }
-
-  // optional() {
-  //   return new GOptional<this, X>(this)
-  // }
-
-  // required() {
-  //   this.typeDef.isRequired = true
-  //   return this
-  // }
-
-  // list() {
-  //   return new GList<this, X>(this)
-  // }
 
   description(text: string) {
     this.typeDef.description = text
@@ -589,7 +558,7 @@ export class GarphSchema {
   }
 
   interface<T extends ObjectType>(name: string, shape: T) {
-    const t = new GInterface<T>(name, shape)
+    const t = new GInterface<T, T>(name, shape)
     this.types.push(t)
     return t
   }
@@ -624,14 +593,6 @@ export class GarphSchema {
 
   // union<T extends AnyType>(args: T[]) {
   //   return new GUnion<T>('', args)
-  // }
-
-  // list<T extends AnyType>(shape: T) {
-  //   return new GList<T, any>(shape)
-  // }
-
-  // optional<T extends AnyType>(shape: T) {
-  //   return new GOptional<T, any>(shape)
   // }
 }
 

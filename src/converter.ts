@@ -92,11 +92,20 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
         specifiedByURL: type.typeDef.scalarOptions.specifiedByUrl
       })
     case 'InterfaceType':
-      return schemaComposer.createInterfaceTC({
+      const interfaceType = schemaComposer.createInterfaceTC({
         name,
         description: type.typeDef.description,
         fields: parseFields(type.typeDef.shape, config)
       })
+
+      if (type.typeDef.interfaces) {
+        type.typeDef.interfaces.forEach(i => {
+          interfaceType.addFields(parseFields(i.typeDef.shape, config))
+          interfaceType.addInterface(i.typeDef.name)
+        })
+      }
+
+      return interfaceType
   }
 }
 
