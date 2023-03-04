@@ -29,17 +29,7 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
       return isNullable('ID', type, config)
     case 'List':
       return isNullable(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
-    case 'Ref':
-      return isNullable(type.typeDef.name, type, config)
-    case 'Enum':
-      return isNullable(type.typeDef.name, type, config)
-    case 'Scalar':
-      return isNullable(type.typeDef.name, type, config)
-    case 'Union':
-      return isNullable(type.typeDef.name, type, config)
-    case 'ObjectType':
-      return isNullable(type.typeDef.name, type, config)
-    case 'InputType':
+    default:
       return isNullable(type.typeDef.name, type, config)
   }
 }
