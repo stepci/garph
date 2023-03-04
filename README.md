@@ -19,7 +19,7 @@ import { createYoga } from 'graphql-yoga'
 const queryType = g.type('Query', {
   greet: g.string()
     .args({
-      name: g.string().optional().default('Max')
+      name: g.string().nullable().default('Max')
     })
     .description('Greets a person')
 })
@@ -215,10 +215,10 @@ const test = g.type('Test', {}).implements([interface, interface])
 g.string().list()
 ```
 
-#### Optional (nullable)
+#### Nullable
 
 ```ts
-g.string().optional()
+g.string().nullable()
 ```
 
 #### Description
@@ -285,7 +285,7 @@ Argument Types can be inferred into TypeScript using the `InferArgs` utility
 import { g, InferArgs } from 'garph'
 
 const nameType = g.type('Name', {
-  greet: g.string().args({ name: g.string().optional() })
+  greet: g.string().args({ name: g.string().nullable() })
 })
 
 type NameType = InferArgs<typeof nameType>
@@ -309,7 +309,7 @@ Resolvers can be inferred into TypeScript using the `InferResolvers` utility
 const queryType = g.type('Query', {
   greet: g.string()
   .args({
-    name: g.string().optional().default('Max'),
+    name: g.string().nullable().default('Max'),
   })
   .description('Greets a person')
 })
@@ -375,7 +375,7 @@ const userType = g.type('User', {
   age: g.int(),
   friends: g.ref<User>('User').list()
     .args({
-      includeLastName: g.boolean().optional()
+      includeLastName: g.boolean().nullable()
     })
 })
 ```

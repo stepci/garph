@@ -11,36 +11,36 @@ export function convertSchema({ types, resolvers }: { types: AnyType[], resolver
   return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
 }
 
-function isOptional(target: string, type: AnyType, config: ConverterConfig) {
-  return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
+function isNullable(target: string, type: AnyType, config: ConverterConfig) {
+  return type.typeDef.isRequired ? `${target}!` : type.typeDef.isNullable ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }
 
 export function getFieldType(type: AnyType, config: ConverterConfig) {
   switch (type.typeDef.type) {
     case 'String':
-      return isOptional('String', type, config)
+      return isNullable('String', type, config)
     case 'Int':
-      return isOptional('Int', type, config)
+      return isNullable('Int', type, config)
     case 'Float':
-      return isOptional('Float', type, config)
+      return isNullable('Float', type, config)
     case 'Boolean':
-      return isOptional('Boolean', type, config)
+      return isNullable('Boolean', type, config)
     case 'ID':
-      return isOptional('ID', type, config)
+      return isNullable('ID', type, config)
     case 'List':
-      return isOptional(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
+      return isNullable(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
     case 'Ref':
-      return isOptional(type.typeDef.name, type, config)
+      return isNullable(type.typeDef.name, type, config)
     case 'Enum':
-      return isOptional(type.typeDef.name, type, config)
+      return isNullable(type.typeDef.name, type, config)
     case 'Scalar':
-      return isOptional(type.typeDef.name, type, config)
+      return isNullable(type.typeDef.name, type, config)
     case 'Union':
-      return isOptional(type.typeDef.name, type, config)
+      return isNullable(type.typeDef.name, type, config)
     case 'ObjectType':
-      return isOptional(type.typeDef.name, type, config)
+      return isNullable(type.typeDef.name, type, config)
     case 'InputType':
-      return isOptional(type.typeDef.name, type, config)
+      return isNullable(type.typeDef.name, type, config)
   }
 }
 

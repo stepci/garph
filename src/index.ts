@@ -2,7 +2,7 @@ import { ConverterConfig, convertSchema } from './converter'
 import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
 import { TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
 
-type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
+type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Nullable' | 'Args'
 
 abstract class Type<T, X extends GarphType> {
   _is: X
@@ -18,7 +18,7 @@ type TypeDefinition<T> = {
   shape?: T
   args?: Args
   description?: string
-  isOptional?: boolean
+  isNullable?: boolean
   isRequired?: boolean
   deprecated?: string
   scalarOptions?: ScalarOptions<any, any>
@@ -42,7 +42,7 @@ export type AnyScalar = Type<any, 'Scalar'>
 export type AnyInput = Type<any, 'InputType'>
 export type AnyInterface = Type<any, 'InterfaceType'>
 export type AnyArgs = Type<any, 'Args'>
-export type AnyOptional = Type<any, 'Optional'>
+export type AnyNullable = Type<any, 'Nullable'>
 export type AnyObject = Type<any, 'ObjectType'>
 
 export type Args = {
@@ -67,24 +67,24 @@ type InferResolverConfig = {
 
 // TODO: Refactor Args to get rid of this mess
 export type Infer<T> = T extends AnyObject | AnyInterface ? {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never :
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyNullable ? never :
   T['_inner'][K] extends AnyArgs ?
-  T['_inner'][K]['_shape'] extends AnyOptional ? never : K :
+  T['_inner'][K]['_shape'] extends AnyNullable ? never : K :
   K]: Infer<T['_inner'][K]>
 } & {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K :
+  [K in keyof T['_inner'] as T['_inner'][K] extends AnyNullable ? K :
   T['_inner'][K] extends AnyArgs ?
-  T['_inner'][K]['_shape'] extends AnyOptional ? K : never :
+  T['_inner'][K]['_shape'] extends AnyNullable ? K : never :
   never]?: Infer<T['_inner'][K]>
 } : T extends AnyInput ? {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never :
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyNullable ? never :
   T['_shape'][K] extends AnyArgs ?
-  T['_shape'][K]['_shape'] extends AnyOptional ? never : K :
+  T['_shape'][K]['_shape'] extends AnyNullable ? never : K :
   K]: Infer<T['_shape'][K]>
 } & {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K :
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyNullable ? K :
   T['_shape'][K] extends AnyArgs ?
-  T['_shape'][K]['_shape'] extends AnyOptional ? K : never :
+  T['_shape'][K]['_shape'] extends AnyNullable ? K : never :
   never]?: Infer<T['_shape'][K]>
 } : InferShallow<T>
 
@@ -93,15 +93,15 @@ export type InferShallow<T> =
   T extends AnyEnum ? T['_inner'] :
   T extends AnyUnion ? Infer<T['_inner']> :
   T extends AnyList ? readonly Infer<T['_shape']>[] :
-  T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
+  T extends AnyNullable ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
   T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
   [K in keyof T['_inner']]: T['_inner'][K] extends AnyArgs ? {
-    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_inner'][K]['_args'][G]>
+    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyNullable ? never : G]: Infer<T['_inner'][K]['_args'][G]>
   } & {
-    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_inner'][K]['_args'][G]>
+    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyNullable ? G : never]?: Infer<T['_inner'][K]['_args'][G]>
   } : never
 } : never
 
@@ -191,8 +191,8 @@ class GString<T extends GarphType> extends Type<string, T> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GNullable<this>(this)
   }
 
   required() {
@@ -232,8 +232,8 @@ class GNumber<T extends GarphType> extends Type<number, T> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GNullable<this>(this)
   }
 
   required() {
@@ -273,8 +273,8 @@ class GBoolean extends Type<boolean, 'Boolean'> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GNullable<this>(this)
   }
 
   required() {
@@ -359,8 +359,8 @@ class GRef<T> extends Type<T, 'Ref'> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GNullable<this>(this)
   }
 
   required() {
@@ -429,8 +429,8 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
     }
   }
 
-  optional() {
-    return new GOptional<this>(this)
+  nullable() {
+    return new GNullable<this>(this)
   }
 
   required() {
@@ -462,11 +462,11 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
   }
 }
 
-class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
+class GNullable<T extends AnyType> extends Type<T, 'Nullable'> {
   constructor(shape: T) {
     super()
     this.typeDef = shape.typeDef
-    this.typeDef.isOptional = true
+    this.typeDef.isNullable = true
     this.typeDef.isRequired = false
   }
 

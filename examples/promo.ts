@@ -4,7 +4,7 @@ import { createYoga } from 'graphql-yoga'
 const queryType = g.type('Query', {
   greet: g.string()
     .args({
-      name: g.string().optional().default('Max'),
+      name: g.string().nullable().default('Max'),
     })
     .description('Greets a person')
 })
