@@ -597,4 +597,4 @@ export class GarphSchema {
 }
 
 export const g = new GarphSchema()
-export { convertSchema, InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes }
+export { convertSchema }

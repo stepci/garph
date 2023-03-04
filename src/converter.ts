@@ -7,8 +7,9 @@ export type ConverterConfig = {
 }
 
 export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
-  const convertedTypes = types.map(type => convertToGraphqlType(type.typeDef.name, type, config))
-  return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
+  types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
+  schemaComposer.addResolveMethods(resolvers)
+  return schemaComposer.buildSchema()
 }
 
 function isNullable(target: string, type: AnyType, config: ConverterConfig) {
