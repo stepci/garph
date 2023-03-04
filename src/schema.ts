@@ -1,12 +1,12 @@
-import { AnyType, Args } from './index'
+import { AnyType, Args, GarphSchema } from './index'
 import { schemaComposer } from 'graphql-compose'
 
 export type ConverterConfig = {
   defaultNullability?: boolean
 }
 
-export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
-  types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
+export function buildSchema({ g, resolvers }: { g: GarphSchema, resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
+  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
   schemaComposer.addResolveMethods(resolvers)
   return schemaComposer.buildSchema()
 }

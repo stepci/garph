@@ -13,7 +13,7 @@ Garph is a GraphQL schema-builder for TypeScript, that aims to deliver tRPC-like
 Example of a GraphQL API built with Garph (served by Yoga):
 
 ```ts
-import { g, InferResolvers, convertSchema } from 'garph'
+import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga } from 'graphql-yoga'
 import { createServer } from 'http'
 
@@ -31,7 +31,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   }
 }
 
-const schema = g.buildSchema({ resolvers })
+const schema = buildSchema({ g, resolvers })
 const yoga = createYoga({ schema })
 const server = createServer(yoga)
 server.listen(4000, () => {

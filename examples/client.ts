@@ -1,4 +1,5 @@
-import { g, InferClient, ClientTypes } from '../src'
+import { g } from '../src'
+import { InferClient, ClientTypes } from '../src/client'
 
 const tType = g.type('Query', {
   test: g.string().list().description('Greets a person')

@@ -1,6 +1,5 @@
-import { ConverterConfig, convertSchema } from './converter'
-import { InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes } from './client'
 import { TSEnumType, UnionToIntersection, getEnumProperties } from './utils'
+import { buildSchema } from './schema'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
@@ -523,10 +522,6 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 export class GarphSchema {
   types: AnyType[] = []
 
-  buildSchema({ resolvers }: { resolvers: any }, config?: ConverterConfig) {
-    return convertSchema({ types: this.types, resolvers }, config)
-  }
-
   type<T extends ObjectType>(name: string, shape: T) {
     const t = new GType<T, T>(name, shape)
     this.types.push(t)
@@ -597,4 +592,4 @@ export class GarphSchema {
 }
 
 export const g = new GarphSchema()
-export { convertSchema, InferClient, InferClientTypes, InferClientTypesArgs, ClientTypes }
+export { buildSchema }
