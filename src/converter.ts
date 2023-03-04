@@ -1,5 +1,4 @@
 import { AnyType, Args } from './index'
-import { makeExecutableSchema } from '@graphql-tools/schema'
 import { schemaComposer } from 'graphql-compose'
 
 export type ConverterConfig = {

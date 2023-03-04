@@ -1,5 +1,6 @@
 import { g, InferResolvers, Infer, InferArgs } from '../src/index'
 import { createYoga } from 'graphql-yoga'
+import { createServer } from 'http'
 
 type Blog = {
   title: string
@@ -44,4 +45,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
 
 const schema = g.buildSchema({ resolvers })
 const yoga = createYoga({ schema })
-Bun.serve(yoga)
+const server = createServer(yoga)
+server.listen(4000, () => {
+  console.info('Server is running on http://localhost:4000/graphql')
+})
