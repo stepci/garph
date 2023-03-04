@@ -11,26 +11,26 @@ export function convertSchema({ types, resolvers }: { types: AnyType[], resolver
   return schemaComposer.buildSchema()
 }
 
-function isNullable(target: string, type: AnyType, config: ConverterConfig) {
-  return type.typeDef.isRequired ? `${target}!` : type.typeDef.isNullable ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
+function isOptional(target: string, type: AnyType, config: ConverterConfig) {
+  return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }
 
 export function getFieldType(type: AnyType, config: ConverterConfig) {
   switch (type.typeDef.type) {
     case 'String':
-      return isNullable('String', type, config)
+      return isOptional('String', type, config)
     case 'Int':
-      return isNullable('Int', type, config)
+      return isOptional('Int', type, config)
     case 'Float':
-      return isNullable('Float', type, config)
+      return isOptional('Float', type, config)
     case 'Boolean':
-      return isNullable('Boolean', type, config)
+      return isOptional('Boolean', type, config)
     case 'ID':
-      return isNullable('ID', type, config)
+      return isOptional('ID', type, config)
     case 'List':
-      return isNullable(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
+      return isOptional(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
     default:
-      return isNullable(type.typeDef.name, type, config)
+      return isOptional(type.typeDef.name, type, config)
   }
 }
 

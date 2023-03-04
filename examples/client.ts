@@ -7,9 +7,9 @@ const tType = g.type('Query', {
 const queryType = g.type('Query', {
   greet: g.ref<typeof tType>('')
     .list()
-    .nullable()
+    .optional()
     .args({
-      name: g.ref<typeof tType>('').nullable().default({ test: ['sdf'] }),
+      name: g.ref<typeof tType>('').optional().default({ test: ['sdf'] }),
     })
     .description('Greets a person')
 })

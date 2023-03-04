@@ -20,7 +20,7 @@ import { createServer } from 'http'
 const queryType = g.type('Query', {
   greet: g.string()
     .args({
-      name: g.string().nullable().default('Max')
+      name: g.string().optional().default('Max')
     })
     .description('Greets a person')
 })
@@ -219,10 +219,10 @@ const test = g.type('Test', {}).implements([interface, interface])
 g.string().list()
 ```
 
-#### Nullable
+#### Optional (nullable)
 
 ```ts
-g.string().nullable()
+g.string().optional()
 ```
 
 #### Description
@@ -289,7 +289,7 @@ Argument Types can be inferred into TypeScript using the `InferArgs` utility
 import { g, InferArgs } from 'garph'
 
 const nameType = g.type('Name', {
-  greet: g.string().args({ name: g.string().nullable() })
+  greet: g.string().args({ name: g.string().optional() })
 })
 
 type NameType = InferArgs<typeof nameType>
@@ -313,7 +313,7 @@ Resolvers can be inferred into TypeScript using the `InferResolvers` utility
 const queryType = g.type('Query', {
   greet: g.string()
   .args({
-    name: g.string().nullable().default('Max'),
+    name: g.string().optional().default('Max'),
   })
   .description('Greets a person')
 })
@@ -379,7 +379,7 @@ const userType = g.type('User', {
   age: g.int(),
   friends: g.ref<User>('User').list()
     .args({
-      includeLastName: g.boolean().nullable()
+      includeLastName: g.boolean().optional()
     })
 })
 ```

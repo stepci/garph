@@ -5,7 +5,7 @@ import { createServer } from 'http'
 const queryType = g.type('Query', {
   greet: g.string()
     .args({
-      name: g.string().nullable().default('Max'),
+      name: g.string().optional().default('Max'),
     })
     .description('Greets a person')
 })
