@@ -1,5 +1,4 @@
 import { AnyType, Args } from './index'
-import { makeExecutableSchema } from '@graphql-tools/schema'
 import { schemaComposer } from 'graphql-compose'
 
 export type ConverterConfig = {
@@ -7,8 +6,9 @@ export type ConverterConfig = {
 }
 
 export function convertSchema({ types, resolvers }: { types: AnyType[], resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
-  const convertedTypes = types.map(type => convertToGraphqlType(type.typeDef.name, type, config))
-  return makeExecutableSchema({ typeDefs: convertedTypes.map(t => t.toSDL()), resolvers })
+  types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
+  schemaComposer.addResolveMethods(resolvers)
+  return schemaComposer.buildSchema()
 }
 
 function isNullable(target: string, type: AnyType, config: ConverterConfig) {
@@ -29,17 +29,7 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
       return isNullable('ID', type, config)
     case 'List':
       return isNullable(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
-    case 'Ref':
-      return isNullable(type.typeDef.name, type, config)
-    case 'Enum':
-      return isNullable(type.typeDef.name, type, config)
-    case 'Scalar':
-      return isNullable(type.typeDef.name, type, config)
-    case 'Union':
-      return isNullable(type.typeDef.name, type, config)
-    case 'ObjectType':
-      return isNullable(type.typeDef.name, type, config)
-    case 'InputType':
+    default:
       return isNullable(type.typeDef.name, type, config)
   }
 }
