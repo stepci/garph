@@ -14,16 +14,24 @@ const union = g.unionType('Union', { x, y })
 type Union = Infer<typeof union>
 
 const queryType = g.type('Query', {
-  greet: g.string()
+  greet: g.ref<typeof union>('Union')
     .args({
       name: g.string().optional().default('Max'),
     })
     .description('Greets a person')
 })
 
+type Query = Infer<typeof queryType>
+
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   Query: {
-    greet: (parent, args, context, info) => `Hello, ${args.name}`
+    greet: (parent, args, context, info) => {
+      if (args.name === 'Max') {
+        return { __typename: 'X', a: 'Hello Max' }
+      } else {
+        return { __typename: 'Y', b: 'Hello World' }
+      }
+    }
   }
 }
 

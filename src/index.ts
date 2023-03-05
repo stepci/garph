@@ -68,17 +68,7 @@ type InferResolverConfig = {
 }
 
 // TODO: Refactor Args to get rid of this mess
-export type Infer<T> = T extends AnyObject | AnyInterface ? {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? never :
-  T['_inner'][K] extends AnyArgs ?
-  T['_inner'][K]['_shape'] extends AnyOptional ? never : K :
-  K]: Infer<T['_inner'][K]>
-} & {
-  [K in keyof T['_inner'] as T['_inner'][K] extends AnyOptional ? K :
-  T['_inner'][K] extends AnyArgs ?
-  T['_inner'][K]['_shape'] extends AnyOptional ? K : never :
-  never]?: Infer<T['_inner'][K]>
-} : T extends AnyInput ? {
+export type Infer<T> = T extends AnyInput | AnyObject | AnyInterface ? {
   [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never :
   T['_shape'][K] extends AnyArgs ?
   T['_shape'][K]['_shape'] extends AnyOptional ? never : K :
@@ -100,10 +90,10 @@ export type InferShallow<T> =
   T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
-  [K in keyof T['_inner']]: T['_inner'][K] extends AnyArgs ? {
-    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_inner'][K]['_args'][G]>
+  [K in keyof T['_shape']]: T['_inner'][K] extends AnyArgs ? {
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_shape'][K]['_args'][G]>
   } & {
-    [G in keyof T['_inner'][K]['_args'] as T['_inner'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_inner'][K]['_args'][G]>
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_shape'][K]['_args'][G]>
   } : never
 } : never
 
@@ -119,8 +109,7 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
   }
 }
 
-class GType<Name extends string, T extends AnyTypes, X> extends Type<T, 'ObjectType'> {
-  declare _inner: X
+class GType<Name extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> {
   name: Name
 
   constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
@@ -141,7 +130,7 @@ class GType<Name extends string, T extends AnyTypes, X> extends Type<T, 'ObjectT
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GType<Name, T, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape, Array.isArray(ref) ? ref : [ref])
+    return new GType<Name, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
   }
 }
 
@@ -161,9 +150,7 @@ class GInput<T extends AnyTypes> extends Type<T, 'InputType'> {
   }
 }
 
-class GInterface<T extends AnyTypes, X> extends Type<T, 'InterfaceType'> {
-  declare _inner: X
-
+class GInterface<T extends AnyTypes> extends Type<T, 'InterfaceType'> {
   constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
     super()
     this.typeDef = {
@@ -182,7 +169,7 @@ class GInterface<T extends AnyTypes, X> extends Type<T, 'InterfaceType'> {
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GInterface<T, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape, Array.isArray(ref) ? ref : [ref])
+    return new GInterface<T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
   }
 }
 
@@ -521,7 +508,7 @@ export class GarphSchema {
   types: AnyType[] = []
 
   type<N extends string, T extends AnyTypes>(name: N, shape: T) {
-    const t = new GType<N, T, T>(name, shape)
+    const t = new GType<N, T>(name, shape)
     this.types.push(t)
     return t
   }
@@ -551,7 +538,7 @@ export class GarphSchema {
   }
 
   interface<T extends AnyTypes>(name: string, shape: T) {
-    const t = new GInterface<T, T>(name, shape)
+    const t = new GInterface<T>(name, shape)
     this.types.push(t)
     return t
   }
