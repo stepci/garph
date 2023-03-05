@@ -1,7 +1,7 @@
 import { g } from '../src'
 import { InferClient, ClientTypes } from '../src/client'
 
-const tType = g.type('Query', {
+const tType = g.type('Test', {
   test: g.string().list().description('Greets a person')
 })
 

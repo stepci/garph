@@ -4,6 +4,7 @@ import { buildSchema } from './schema'
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
 abstract class Type<T, X extends GarphType> {
+  _name?: string
   _is: X
   _inner: any
   _args: Args
@@ -109,8 +110,8 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
   }
 }
 
-class GType<Name extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> {
-  name: Name
+class GType<N extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> {
+  declare _name: N
 
   constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
     super()
@@ -130,7 +131,7 @@ class GType<Name extends string, T extends AnyTypes> extends Type<T, 'ObjectType
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GType<Name, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
+    return new GType<N, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
   }
 }
 
