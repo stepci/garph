@@ -14,3 +14,5 @@ export type EnumToUnion<T extends TSEnumType> = keyof T
 export function getEnumProperties(enumValue: TSEnumType) {
   return Object.keys(enumValue).filter((key) => isNaN(Number(key)))
 }
+
+export type ObjectToUnion<T> = T[keyof T]

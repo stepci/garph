@@ -23,7 +23,11 @@ export type InferClientTypes<T> = T extends AnyObject | AnyInterface ? {
 export type InferClientTypesShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? InferClientTypes<T['_inner']> :
+  T extends AnyUnion ? {
+    $on: {
+      [K in keyof T['_inner'] as T['_inner'][K]['name']]: InferClientTypes<T['_inner'][K]>
+    }
+  } :
   T extends AnyList ? InferClientTypes<T['_shape']>[] :
   T extends AnyOptional ? InferClientTypes<T['_shape']> | null | undefined :
   T extends AnyArgs ? (args?: InferClientTypesArgs<T>) => InferClientTypes<T['_shape']> :

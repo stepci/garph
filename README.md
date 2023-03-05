@@ -123,7 +123,7 @@ g.enumType('Name', Fruits)
 #### Union
 
 ```ts
-g.unionType('Name', [g.string(), g.int()])
+g.unionType('Name', { a, b })
 ```
 
 #### Ref

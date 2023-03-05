@@ -10,7 +10,7 @@ const y = g.type('Y', {
   b: g.string(),
 })
 
-const union = g.unionType('Union', x, y)
+const union = g.unionType('Union', { x, y })
 type Union = Infer<typeof union>
 
 const queryType = g.type('Query', {
