@@ -86,10 +86,17 @@ export type Infer<T> = T extends AnyObject | AnyInterface ? {
   never]?: Infer<T['_shape'][K]>
 } : InferShallow<T>
 
+type inferArray <T extends any[]> = {
+  [K in keyof T as K extends number ? K : never]: T[K]
+}
+
 export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? Infer<T['_inner']> :
+  T extends AnyUnion ? Infer<T['_inner'][number]> :
+  // T extends AnyUnion ? {
+  //   [K in keyof T['_inner'][0] as T['_inner'][0]['name']]: Infer<T['_inner'][0]>
+  // } :
   T extends AnyList ? readonly Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
@@ -115,8 +122,9 @@ export type InferResolversStrict<T extends ObjectType, X extends InferResolverCo
   }
 }
 
-class GType<T extends ObjectType, X> extends Type<T, 'ObjectType'> {
+class GType<Name extends string, T extends ObjectType, X> extends Type<T, 'ObjectType'> {
   declare _inner: X
+  name: Name
 
   constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
     super()
@@ -136,7 +144,7 @@ class GType<T extends ObjectType, X> extends Type<T, 'ObjectType'> {
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GType<T, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape, Array.isArray(ref) ? ref : [ref])
+    return new GType<Name, T, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape, Array.isArray(ref) ? ref : [ref])
   }
 }
 
@@ -330,10 +338,10 @@ class GEnum<T extends readonly string[] | TSEnumType> extends Type<readonly stri
   }
 }
 
-class GUnion<T extends AnyObject> extends Type<T[], 'Union'> {
+class GUnion<T extends AnyObject[]> extends Type<T, 'Union'> {
   declare _inner: T
 
-  constructor(name: string, shape: T[]) {
+  constructor(name: string, shape: T) {
     super()
     this.typeDef = {
       name,
@@ -515,8 +523,8 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 export class GarphSchema {
   types: AnyType[] = []
 
-  type<T extends ObjectType>(name: string, shape: T) {
-    const t = new GType<T, T>(name, shape)
+  type<N extends string, T extends ObjectType>(name: N, shape: T) {
+    const t = new GType<N, T, T>(name, shape)
     this.types.push(t)
     return t
   }
@@ -533,7 +541,7 @@ export class GarphSchema {
     return t
   }
 
-  unionType<T extends AnyObject>(name: string, args: T[]) {
+  unionType<T extends AnyObject[]>(name: string, ...args: T) {
     const t = new GUnion<T>(name, args)
     this.types.push(t)
     return t
