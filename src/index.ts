@@ -91,7 +91,7 @@ export type InferShallow<T> =
   T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
-  [K in keyof T['_shape']]: T['_inner'][K] extends AnyArgs ? {
+  [K in keyof T['_shape']]: T['_shape'][K] extends AnyArgs ? {
     [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_shape'][K]['_args'][G]>
   } & {
     [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_shape'][K]['_args'][G]>
