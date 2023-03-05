@@ -339,6 +339,8 @@ Inferred type:
 
 #### Circular References
 
+> **Note**: We are currently working on a better approach to circular references. Follow our [Discord](https://discord.gg/gJmS2KGq) for more
+
 Due to some TypeScript limitations, if you want to handle circular references in a type-safe way, you'll have to point a reference to a shim-type, that mimicks your GraphQL Type
 
 ```ts
