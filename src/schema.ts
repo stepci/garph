@@ -69,7 +69,7 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
       return schemaComposer.createUnionTC({
         name,
         description: type.typeDef.description,
-        types: type.typeDef.shape.map(t => t.typeDef.name)
+        types: Object.values(type.typeDef.shape).map((t: AnyType) => t.typeDef.name)
       })
     case 'InputType':
       return schemaComposer.createInputTC({
