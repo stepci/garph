@@ -23,7 +23,6 @@ type TypeDefinition<T> = {
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
   interfaces?: AnyType[]
-  // resolverFunction?: (parent: unknown, args: any, context: any, info: any) => T // Add additional type-safety around this
 }
 
 export type AnyType = Type<any, any>
@@ -394,7 +393,7 @@ class GRef<T> extends Type<T, 'Ref'> {
 class GScalar<I, O> extends Type<I, 'Scalar'> {
   _output: O
 
-  constructor(name: string, scalarOptions: ScalarOptions<I, O>) {
+  constructor(name: string, scalarOptions?: ScalarOptions<I, O>) {
     super()
     this.typeDef = {
       name,
@@ -511,12 +510,6 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
     this.typeDef.deprecated = reason
     return this
   }
-
-  // For future reference
-  // resolve (fn: (parent: unknown, args: InferArg<X>, context: unknown, info: unknown) => Infer<T>) {
-  //   this.typeDef.resolverFunction = fn
-  //   return this
-  // }
 }
 
 export class GarphSchema {
@@ -546,7 +539,7 @@ export class GarphSchema {
     return t
   }
 
-  scalarType<I, O>(name: string, options: ScalarOptions<I, O>) {
+  scalarType<I, O>(name: string, options?: ScalarOptions<I, O>) {
     const t = new GScalar<I, O>(name, options)
     this.types.push(t)
     return t
