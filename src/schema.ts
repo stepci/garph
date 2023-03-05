@@ -5,9 +5,14 @@ export type ConverterConfig = {
   defaultNullability?: boolean
 }
 
+export function printSchema(g: GarphSchema, config: ConverterConfig = { defaultNullability: false }) {
+  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
+  return schemaComposer.toSDL()
+}
+
 export function buildSchema({ g, resolvers }: { g: GarphSchema, resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
   g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
-  schemaComposer.addResolveMethods(resolvers)
+  if (resolvers) schemaComposer.addResolveMethods(resolvers)
   return schemaComposer.buildSchema()
 }
 
@@ -76,10 +81,10 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
       return schemaComposer.createScalarTC({
         name,
         description: type.typeDef.description,
-        serialize: type.typeDef.scalarOptions.serialize,
-        parseValue: type.typeDef.scalarOptions.parseValue,
-        parseLiteral: type.typeDef.scalarOptions.parseLiteral,
-        specifiedByURL: type.typeDef.scalarOptions.specifiedByUrl
+        serialize: type.typeDef.scalarOptions?.serialize,
+        parseValue: type.typeDef.scalarOptions?.parseValue,
+        parseLiteral: type.typeDef.scalarOptions?.parseLiteral,
+        specifiedByURL: type.typeDef.scalarOptions?.specifiedByUrl
       })
     case 'InterfaceType':
       const interfaceType = schemaComposer.createInterfaceTC({
