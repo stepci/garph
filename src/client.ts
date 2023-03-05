@@ -30,8 +30,8 @@ export type InferClientTypesShallow<T> =
   T extends AnyRef ? InferClientTypes<T['_shape']> :
   T
 
-export type InferClientTypesArgs<T extends AnyArgs> = {
+export type InferClientTypesArgs<T> = T extends AnyArgs ? {
   [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? never : K]: Infer<T['_args'][K]>
 } & {
   [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: Infer<T['_args'][K]>
-}
+}: never
