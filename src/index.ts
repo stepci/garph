@@ -93,10 +93,10 @@ type inferArray <T extends any[]> = {
 export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? Infer<T['_inner'][number]> :
-  // T extends AnyUnion ? {
-  //   [K in keyof T['_inner'][0] as T['_inner'][0]['name']]: Infer<T['_inner'][0]>
-  // } :
+  // T extends AnyUnion ? Infer<T['_inner'][number]> :
+  T extends AnyUnion ? {
+    [K in T['_inner'][number] as T['_inner'][number]['name']]: any
+  } :
   T extends AnyList ? readonly Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
   T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
