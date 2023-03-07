@@ -3,7 +3,7 @@
 https://user-images.githubusercontent.com/10400064/222474710-bc263775-06b8-4a78-8099-676a9ad3c7a4.mov
 
 > **Warning**:
-> Garph is currently in Alpha. We would love to hear your Feedback on our [Discord](https://discord.gg/gJmS2KGq)
+> Garph is currently in Alpha. We would love to hear your Feedback on our [Discord](https://discord.gg/VkWt93tkYb)
 
 > **Note**:
 > tRPC-style client for Garph has arrived! See [garph-gqty](https://github.com/stepci/garph-gqty) for more 🚀
@@ -339,7 +339,7 @@ Inferred type:
 
 #### Circular References
 
-> **Note**: We are currently working on a better approach to circular references. Follow our [Discord](https://discord.gg/gJmS2KGq) for more
+> **Note**: We are currently working on a better approach to circular references. Follow our [Discord](https://discord.gg/VkWt93tkYb) for more
 
 Due to some TypeScript limitations, if you want to handle circular references in a type-safe way, you'll have to point a reference to a shim-type, that mimicks your GraphQL Type
 
@@ -409,4 +409,4 @@ Example projects can be found under [`examples/`](examples/)
 
 ## Feedback
 
-We would love to hear your Feedback on our [Discord](https://discord.gg/gJmS2KGq) community
+We would love to hear your Feedback on our [Discord](https://discord.gg/VkWt93tkYb) community
