@@ -14,7 +14,7 @@ const union = g.unionType('Union', { x, y })
 type Union = Infer<typeof union>
 
 const queryType = g.type('Query', {
-  greet: g.ref<typeof union>('Union')
+  greet: g.ref(() => union)
     .args({
       name: g.string().optional().default('Max'),
     })

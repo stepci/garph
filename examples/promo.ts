@@ -1,4 +1,4 @@
-import { g, InferResolvers, buildSchema } from './../src/index'
+import { g, InferResolvers, buildSchema, Infer } from './../src/index'
 import { createYoga } from 'graphql-yoga'
 import { createServer } from 'http'
 
@@ -9,6 +9,8 @@ const queryType = g.type('Query', {
     })
     .description('Greets a person')
 })
+
+type QueryType = Infer<typeof queryType>
 
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   Query: {

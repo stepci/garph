@@ -145,7 +145,7 @@ const name = g.type('Name', {
   greet: g.string()
 })
 
-g.ref<typeof name>('Name')
+g.ref(() => name)
 ```
 
 See [Circular References](#circular-references) for handling circular references
@@ -339,21 +339,28 @@ Inferred type:
 
 #### Circular References
 
-> **Note**: We are currently working on a better approach to circular references. Follow our [Discord](https://discord.gg/VkWt93tkYb) for more
+With Garph, circular references work just as you expect them to
 
-Due to some TypeScript limitations, if you want to handle circular references in a type-safe way, you'll have to point a reference to a shim-type, that mimicks your GraphQL Type
+Example GraphQL Schema:
+
+```gql
+type User {
+  name: String!
+  age: Int!
+  friends(includeLastName: Boolean): [User!]!
+}
+```
+
+Converted to Garph schema:
 
 ```ts
-type User = {
-  name: string
-  age: number
-  friends: User[]
-}
-
 const userType = g.type('User', {
   name: g.string(),
   age: g.int(),
-  friends: g.ref<User>('User').list()
+  friends: g.ref(() => userType).list()
+    .args({
+      includeLastName: g.boolean().optional()
+    })
 })
 ```
 
@@ -361,37 +368,18 @@ Inferred type:
 
 ```ts
 type UserType = {
-  name: string
-  age: number
-  friends: readonly User[]
+  name: string;
+  age: number;
+  friends: ...;
 }
 ```
-
-**Example: Arguments in Circular References**
-
-```ts
-type User = {
-  name: string
-  age: number
-  friends: (args: { includeLastName?: boolean }) User[]
-}
-
-const userType = g.type('User', {
-  name: g.string(),
-  age: g.int(),
-  friends: g.ref<User>('User').list()
-    .args({
-      includeLastName: g.boolean().optional()
-    })
-})
-```
-
-The return types of the shim args will be correctly inferred in both Garph and the clients
 
 #### Converting to GraphQL schema
 
 ```ts
-g.buildSchema({ resolvers })
+import { byuldSchema } from 'garph'
+
+buildSchema({ resolvers })
 ```
 
 Or you can use `convertSchema` method directly

@@ -33,7 +33,7 @@ export type InferClientTypesShallow<T> =
   T extends AnyList ? InferClientTypes<T['_shape']>[] :
   T extends AnyOptional ? InferClientTypes<T['_shape']> | null | undefined :
   T extends AnyArgs ? (args?: InferClientTypesArgs<T>) => InferClientTypes<T['_shape']> :
-  T extends AnyRef ? InferClientTypes<T['_shape']> :
+  T extends AnyRef ? InferClientTypes<ReturnType<T['_shape']>> :
   T
 
 export type InferClientTypesArgs<T> = T extends AnyArgs ? {

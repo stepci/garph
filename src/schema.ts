@@ -34,6 +34,12 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
       return isOptional('ID', type, config)
     case 'List':
       return isOptional(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
+    case 'Ref':
+      if (typeof type.typeDef.shape !== 'function') {
+        throw new Error('Ref type must be a function referencing a valid Garph Type')
+      }
+
+      return isOptional(type.typeDef.shape().typeDef.name, type, config)
     default:
       return isOptional(type.typeDef.name, type, config)
   }

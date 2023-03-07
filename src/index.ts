@@ -3,16 +3,16 @@ import { buildSchema } from './schema'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
-abstract class Type<T, X extends GarphType> {
+export abstract class Type<T, X extends GarphType> {
   _name?: string
   _is: X
-  _inner: any
-  _args: Args
+  _inner?: any
+  _args?: Args
   _shape: T
   typeDef: TypeDefinition<T>
 }
 
-type TypeDefinition<T> = {
+export type TypeDefinition<T> = {
   name?: string
   type: GarphType
   shape?: T
@@ -68,8 +68,12 @@ type InferResolverConfig = {
   info?: any
 }
 
+type RefType = () => any
+
 // TODO: Refactor Args to get rid of this mess
 export type Infer<T> = T extends AnyInput | AnyObject | AnyInterface ? {
+  __typename?: T['_name']
+} & {
   [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never :
   T['_shape'][K] extends AnyArgs ?
   T['_shape'][K]['_shape'] extends AnyOptional ? never : K :
@@ -87,7 +91,8 @@ export type InferShallow<T> =
   T extends AnyUnion ? Infer<ObjectToUnion<T['_inner']>> :
   T extends AnyList ? readonly Infer<T['_shape']>[] :
   T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
-  T extends AnyArgs | AnyRef ? Infer<T['_shape']> :
+  T extends AnyArgs ? Infer<T['_shape']> :
+  T extends AnyRef ? Infer<ReturnType<T['_shape']>> :
   T
 
 export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
@@ -100,13 +105,13 @@ export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? 
 
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
 export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]>]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
@@ -135,7 +140,9 @@ class GType<N extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> 
   }
 }
 
-class GInput<T extends AnyTypes> extends Type<T, 'InputType'> {
+class GInput<N extends string, T extends AnyTypes> extends Type<T, 'InputType'> {
+  declare _name: N
+
   constructor(name: string, shape: T) {
     super()
     this.typeDef = {
@@ -151,7 +158,9 @@ class GInput<T extends AnyTypes> extends Type<T, 'InputType'> {
   }
 }
 
-class GInterface<T extends AnyTypes> extends Type<T, 'InterfaceType'> {
+class GInterface<N extends string, T extends AnyTypes> extends Type<T, 'InterfaceType'> {
+  declare _name: N
+
   constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
     super()
     this.typeDef = {
@@ -170,7 +179,7 @@ class GInterface<T extends AnyTypes> extends Type<T, 'InterfaceType'> {
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GInterface<T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
+    return new GInterface<N ,T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
   }
 }
 
@@ -297,7 +306,8 @@ class GBoolean extends Type<boolean, 'Boolean'> {
   }
 }
 
-class GEnum<T extends readonly string[] | TSEnumType> extends Type<readonly string[], 'Enum'> {
+class GEnum<N extends string, T extends readonly string[] | TSEnumType> extends Type<readonly string[], 'Enum'> {
+  declare _name: N
   declare _inner: T extends readonly string[] ? T[number] : keyof T
 
   constructor(name: string, shape: T) {
@@ -323,7 +333,7 @@ class GEnum<T extends readonly string[] | TSEnumType> extends Type<readonly stri
   }
 }
 
-class GUnion<T extends AnyObjects> extends Type<T, 'Union'> {
+class GUnion<N extends string, T extends AnyObjects> extends Type<T, 'Union'> {
   declare _inner: T
 
   constructor(name: string, shape: T) {
@@ -342,10 +352,10 @@ class GUnion<T extends AnyObjects> extends Type<T, 'Union'> {
 }
 
 class GRef<T> extends Type<T, 'Ref'> {
-  constructor(ref: string | T) {
+  constructor(ref: T) {
     super()
     this.typeDef = {
-      name: typeof ref === 'string' ? ref : (ref as AnyType).typeDef.name,
+      shape: ref,
       type: 'Ref'
     }
   }
@@ -434,7 +444,7 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
     return this
   }
 
-  default(value: Infer<T>) {
+  default(value: Infer<T>[]) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -514,20 +524,20 @@ export class GarphSchema {
     return t
   }
 
-  inputType<T extends AnyTypes>(name: string, shape: T) {
-    const t = new GInput<T>(name, shape)
+  inputType<N extends string, T extends AnyTypes>(name: N, shape: T) {
+    const t = new GInput<N, T>(name, shape)
     this.types.push(t)
     return t
   }
 
-  enumType<T extends readonly string[] | TSEnumType>(name: string, args: T) {
-    const t = new GEnum<T>(name, args)
+  enumType<N extends string, T extends readonly string[] | TSEnumType>(name: N, args: T) {
+    const t = new GEnum<N, T>(name, args)
     this.types.push(t)
     return t
   }
 
-  unionType<T extends AnyObjects>(name: string, args: T) {
-    const t = new GUnion<T>(name, args)
+  unionType<N extends string, T extends AnyObjects>(name: N, args: T) {
+    const t = new GUnion<N, T>(name, args)
     this.types.push(t)
     return t
   }
@@ -538,8 +548,8 @@ export class GarphSchema {
     return t
   }
 
-  interface<T extends AnyTypes>(name: string, shape: T) {
-    const t = new GInterface<T>(name, shape)
+  interface<N extends string, T extends AnyTypes>(name: N, shape: T) {
+    const t = new GInterface<N, T>(name, shape)
     this.types.push(t)
     return t
   }
@@ -564,7 +574,9 @@ export class GarphSchema {
     return new GBoolean()
   }
 
-  ref<T>(ref: string | T) {
+  // The generic has to be any, because constraints cannot be applied to recursive types
+  // This is a limitation of TypeScript
+  ref<T>(ref: T) {
     return new GRef<T>(ref)
   }
 

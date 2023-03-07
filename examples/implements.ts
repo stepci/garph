@@ -13,7 +13,7 @@ const name = g.interface('Name', {
 const test = g.type('Test', {}).implements([node, name])
 
 const queryType = g.type('Query', {
-  test: g.ref(test)
+  test: g.ref(() => test)
 })
 
 const resolvers: InferResolvers<{ Query: typeof queryType, Test: typeof test }, {}> = {

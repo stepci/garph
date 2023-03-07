@@ -6,11 +6,11 @@ const tType = g.type('Test', {
 })
 
 const queryType = g.type('Query', {
-  greet: g.ref<typeof tType>('')
+  greet: g.ref(() => tType)
     .list()
     .optional()
     .args({
-      name: g.ref<typeof tType>('').optional().default({ test: ['sdf'] }),
+      name: g.ref(() => tType).optional().default({ test: ['sdf'] }),
     })
     .description('Greets a person')
 })
