@@ -8,7 +8,7 @@ https://user-images.githubusercontent.com/10400064/222474710-bc263775-06b8-4a78-
 > **Note**:
 > tRPC-style client for Garph has arrived! See [garph-gqty](https://github.com/stepci/garph-gqty) for more 🚀
 
-Garph is a GraphQL schema-builder for TypeScript, that aims to deliver tRPC-like Developer-Experience. On top of that, Garph provides a GraphQL compability layer and type-safety primitives for any TypeScript project
+Garph is a GraphQL schema-builder for TypeScript, that aims to deliver [tRPC](https://github.com/trpc/trpc)-like Developer-Experience. On top of that, Garph provides a GraphQL compability layer and type-safety primitives for any TypeScript project
 
 Example of a GraphQL API built with Garph (served by Yoga):
 
