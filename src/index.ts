@@ -69,7 +69,7 @@ type InferResolverConfig = {
   info?: any
 }
 
-type RefType = () => any
+type RefType = () => AnyType
 
 // TODO: Refactor Args to get rid of this mess
 export type Infer<T> = ExpandRecursively<InferRaw<T>>
@@ -94,7 +94,7 @@ export type InferShallow<T> =
   T extends AnyList ? readonly InferRaw<T['_shape']>[] :
   T extends AnyOptional ? InferRaw<T['_shape']> | null | undefined :
   T extends AnyArgs ? InferRaw<T['_shape']> :
-  T extends AnyRef ? InferRaw<ReturnType<T['_shape']>> :
+  T extends AnyRef ? InferRaw<T['_inner']> :
   T
 
 export type InferArgs<T extends AnyType> = ExpandRecursively<InferArgsRaw<T>>
@@ -104,9 +104,9 @@ export type InferArgsRaw<T extends AnyType> = T extends AnyObject | AnyInterface
 
 export type InferArg<T> = ExpandRecursively<InferArgRaw<T>>
 export type InferArgRaw<T> = T extends AnyArgs ? {
-  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? never : K]: Infer<T['_args'][K]>
+  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? never : K]: InferRaw<T['_args'][K]>
 } & {
-  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: Infer<T['_args'][K]>
+  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: InferRaw<T['_args'][K]>
 }: never
 
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
@@ -359,6 +359,8 @@ class GUnion<N extends string, T extends AnyObjects> extends Type<T, 'Union'> {
 }
 
 class GRef<T> extends Type<T, 'Ref'> {
+  declare _inner: T extends RefType ? ReturnType<T> : T
+
   constructor(ref: T) {
     super()
     this.typeDef = {
@@ -385,7 +387,7 @@ class GRef<T> extends Type<T, 'Ref'> {
     return this
   }
 
-  default(value: InferRaw<T>) {
+  default(value: InferRaw<this['_inner']>) {
     this.typeDef.defaultValue = value
     return this
   }
