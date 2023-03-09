@@ -97,25 +97,27 @@ export type InferShallow<T> =
   T extends AnyRef ? InferRaw<ReturnType<T['_shape']>> :
   T
 
-// Work on expanding args
 export type InferArgs<T extends AnyType> = ExpandRecursively<InferArgsRaw<T>>
 export type InferArgsRaw<T extends AnyType> = T extends AnyObject | AnyInterface ? {
-  [K in keyof T['_shape']]: T['_shape'][K] extends AnyArgs ? {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: InferRaw<T['_shape'][K]['_args'][G]>
-  } & {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: InferRaw<T['_shape'][K]['_args'][G]>
-  } : never
+  [K in keyof T['_shape']]: InferArgRaw<T['_shape'][K]>
 } : never
+
+export type InferArg<T> = ExpandRecursively<InferArgRaw<T>>
+export type InferArgRaw<T> = T extends AnyArgs ? {
+  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? never : K]: Infer<T['_args'][K]>
+} & {
+  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: Infer<T['_args'][K]>
+}: never
 
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArgsRaw<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
 export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArgsRaw<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 

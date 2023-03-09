@@ -1,4 +1,4 @@
-import { Infer, AnyInput, AnyInterface, AnyString, AnyID, AnyBoolean, AnyNumber, AnyList, AnyOptional, AnyArgs, AnyUnion, AnyEnum, AnyScalar, AnyRef, AnyObject } from './index'
+import { InferArg, AnyInput, AnyInterface, AnyString, AnyID, AnyBoolean, AnyNumber, AnyList, AnyOptional, AnyArgs, AnyUnion, AnyEnum, AnyScalar, AnyRef, AnyObject } from './index'
 import { ExpandRecursively } from './utils'
 
 export type ClientTypes = {
@@ -35,13 +35,6 @@ export type InferClientTypesShallow<T> =
   } :
   T extends AnyList ? InferClientTypesRaw<T['_shape']>[] :
   T extends AnyOptional ? InferClientTypesRaw<T['_shape']> | null | undefined :
-  T extends AnyArgs ? (args?: InferClientTypesArgs<T>) => InferClientTypes<T['_shape']> :
+  T extends AnyArgs ? (args?: InferArg<T>) => InferClientTypes<T['_shape']> :
   T extends AnyRef ? InferClientTypesRaw<ReturnType<T['_shape']>> :
   T
-
-export type InferClientTypesArgs<T> = ExpandRecursively<InferClientTypesArgsRaw<T>>
-export type InferClientTypesArgsRaw<T> = T extends AnyArgs ? {
-  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? never : K]: Infer<T['_args'][K]>
-} & {
-  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: Infer<T['_args'][K]>
-}: never

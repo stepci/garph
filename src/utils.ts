@@ -15,7 +15,7 @@ export type ObjectToUnion<T> = T[keyof T]
 // Taken from Kysely
 // See the tweet: https://twitter.com/Riyaadh_Abr/status/1622736576303312899
 export type ExpandRecursively<T>
-= T extends Record<string, unknown> | Record<string, unknown>[] | readonly Record<string, unknown>[]
-? T extends infer O
-? { [K in keyof O]: ExpandRecursively<O[K]> }
-: never : T
+  = T extends Record<string, unknown> | Record<string, unknown>[] | readonly Record<string, unknown>[]
+  ? T extends infer O
+  ? { [K in keyof O]: ExpandRecursively<O[K]> }
+  : never : T
