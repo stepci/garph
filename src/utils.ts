@@ -1,8 +1,3 @@
-// Infers return types from functions (needed to infer circular dependencies with args correctly)
-export type CleanType<T> = T extends object ? {
-  [K in keyof T]: T[K] extends (args: any) => any ? CleanType<ReturnType<T[K]>> : CleanType<T[K]>
-} : T
-
 export type UnionToIntersection<T> =
   (T extends any ? (x: T) => any : never) extends
   (x: infer R) => any ? R : never
@@ -16,3 +11,11 @@ export function getEnumProperties(enumValue: TSEnumType) {
 }
 
 export type ObjectToUnion<T> = T[keyof T]
+
+// Taken from Kysely
+// See the tweet: https://twitter.com/Riyaadh_Abr/status/1622736576303312899
+export type ExpandRecursively<T>
+= T extends Record<string, unknown> | Record<string, unknown>[] | readonly Record<string, unknown>[]
+? T extends infer O
+? { [K in keyof O]: ExpandRecursively<O[K]> }
+: never : T

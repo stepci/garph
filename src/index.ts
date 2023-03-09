@@ -1,4 +1,4 @@
-import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion } from './utils'
+import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively } from './utils'
 import { buildSchema } from './schema'
 
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
@@ -7,6 +7,7 @@ export abstract class Type<T, X extends GarphType> {
   _name?: string
   _is: X
   _inner?: any
+  _output?: any
   _args?: Args
   _shape: T
   typeDef: TypeDefinition<T>
@@ -71,47 +72,50 @@ type InferResolverConfig = {
 type RefType = () => any
 
 // TODO: Refactor Args to get rid of this mess
-export type Infer<T> = T extends AnyInput | AnyObject | AnyInterface ? {
+export type Infer<T> = ExpandRecursively<InferRaw<T>>
+export type InferRaw<T> = T extends AnyInput | AnyObject | AnyInterface ? {
   __typename?: T['_name']
 } & {
   [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never :
   T['_shape'][K] extends AnyArgs ?
   T['_shape'][K]['_shape'] extends AnyOptional ? never : K :
-  K]: Infer<T['_shape'][K]>
+  K]: InferRaw<T['_shape'][K]>
 } & {
   [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K :
   T['_shape'][K] extends AnyArgs ?
   T['_shape'][K]['_shape'] extends AnyOptional ? K : never :
-  never]?: Infer<T['_shape'][K]>
+  never]?: InferRaw<T['_shape'][K]>
 } : InferShallow<T>
 
 export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? Infer<ObjectToUnion<T['_inner']>> :
-  T extends AnyList ? readonly Infer<T['_shape']>[] :
-  T extends AnyOptional ? Infer<T['_shape']> | null | undefined :
-  T extends AnyArgs ? Infer<T['_shape']> :
-  T extends AnyRef ? Infer<ReturnType<T['_shape']>> :
+  T extends AnyUnion ? InferRaw<ObjectToUnion<T['_inner']>> :
+  T extends AnyList ? readonly InferRaw<T['_shape']>[] :
+  T extends AnyOptional ? InferRaw<T['_shape']> | null | undefined :
+  T extends AnyArgs ? InferRaw<T['_shape']> :
+  T extends AnyRef ? InferRaw<ReturnType<T['_shape']>> :
   T
 
-export type InferArgs<T extends AnyType> = T extends AnyObject | AnyInterface ? {
+// Work on expanding args
+export type InferArgs<T extends AnyType> = ExpandRecursively<InferArgsRaw<T>>
+export type InferArgsRaw<T extends AnyType> = T extends AnyObject | AnyInterface ? {
   [K in keyof T['_shape']]: T['_shape'][K] extends AnyArgs ? {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: Infer<T['_shape'][K]['_args'][G]>
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? never : G]: InferRaw<T['_shape'][K]['_args'][G]>
   } & {
-    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: Infer<T['_shape'][K]['_args'][G]>
+    [G in keyof T['_shape'][K]['_args'] as T['_shape'][K]['_args'][G] extends AnyOptional ? G : never]?: InferRaw<T['_shape'][K]['_args'][G]>
   } : never
 } : never
 
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArgsRaw<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
 export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArgs<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArgsRaw<T[K]>[G], context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
@@ -334,6 +338,7 @@ class GEnum<N extends string, T extends readonly string[] | TSEnumType> extends 
 }
 
 class GUnion<N extends string, T extends AnyObjects> extends Type<T, 'Union'> {
+  declare _name: N
   declare _inner: T
 
   constructor(name: string, shape: T) {
@@ -378,7 +383,7 @@ class GRef<T> extends Type<T, 'Ref'> {
     return this
   }
 
-  default(value: Infer<T>) {
+  default(value: InferRaw<T>) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -394,7 +399,7 @@ class GRef<T> extends Type<T, 'Ref'> {
 }
 
 class GScalar<I, O> extends Type<I, 'Scalar'> {
-  _output: O
+  declare _output: O
 
   constructor(name: string, scalarOptions?: ScalarOptions<I, O>) {
     super()
@@ -480,7 +485,7 @@ class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
     return this
   }
 
-  default(value: Infer<T>) {
+  default(value: InferRaw<T>) {
     this.typeDef.defaultValue = value
     return this
   }

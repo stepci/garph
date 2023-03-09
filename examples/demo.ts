@@ -2,19 +2,14 @@ import { g, InferResolvers, Infer, InferArgs, buildSchema } from '../src/index'
 import { createYoga } from 'graphql-yoga'
 import { createServer } from 'http'
 
-type Blog = {
-  title: string
-  author: string
-}
-
 const blogType = g.type('Blog', {
   title: g.string(),
-  author: g.ref<Blog>('User').description('The author of the blog')
+  author: g.ref(() => userType).description('The author of the blog')
 }).description('The blog of the user')
 
 const userType = g.type('User', {
   age: g.int(),
-  friends: g.ref('User').description('The friends of the user').list().deprecated('wow'),
+  friends: g.ref(() => userType).description('The friends of the user').list().deprecated('wow'),
 })
 
 const scalarType = g.scalarType<Date, number>('SC', {
@@ -29,13 +24,11 @@ const inputType = g.inputType('UserInput', {
 
 const queryType = g.type('Query', {
   greet: g.string().args({
-    test: g.ref(scalarType).description('The wow').list(),
+    test: g.ref(() => scalarType).description('The wow').list(),
   }).description('The greet query'),
 })
 
-type x = Infer<typeof queryType>
-
-const union = g.unionType('Union', [userType, blogType])
+type x = InferArgs<typeof queryType>
 
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
   Query: {
