@@ -3,7 +3,7 @@
 https://user-images.githubusercontent.com/10400064/222474710-bc263775-06b8-4a78-8099-676a9ad3c7a4.mov
 
 > **Warning**:
-> Garph is currently in Alpha. We would love to hear your Feedback on our [Discord](https://discord.gg/VkWt93tkYb)
+> Garph is currently in Alpha. We would love to hear your Feedback on our [Discord](https://discord.gg/KqJJzJ3BTu)
 
 > **Note**:
 > tRPC-style client for Garph has arrived! See [garph-gqty](https://github.com/stepci/garph-gqty) for more 🚀
@@ -397,4 +397,4 @@ Example projects can be found under [`examples/`](examples/)
 
 ## Feedback
 
-We would love to hear your Feedback on our [Discord](https://discord.gg/VkWt93tkYb) community
+We would love to hear your Feedback on our [Discord](https://discord.gg/KqJJzJ3BTu) community
