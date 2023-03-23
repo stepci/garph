@@ -377,18 +377,8 @@ type UserType = {
 #### Converting to GraphQL schema
 
 ```ts
-import { byuldSchema } from 'garph'
-
-buildSchema({ resolvers })
-```
-
-Or you can use `convertSchema` method directly
-
-```ts
-const schema = convertSchema({
-  types: [queryType],
-  resolvers
-}, { defaultNullability: false })
+import { buildSchema } from 'garph'
+const schema = buildSchema({ g, resolvers }, { defaultNullability: false })
 ```
 
 ## Examples
