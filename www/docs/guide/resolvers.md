@@ -47,6 +47,6 @@ const schema = buildSchema({ g, resolvers })
 
 ## Type-safety
 
-Resolver types can be inferred into TypeScript using the [`InferResolvers`](/api/modules.html#inferresolvers) utility
+Resolver types can be inferred into TypeScript using the [`InferResolvers`](/api/index.md#inferresolvers) utility
 
 [→ Inferring Resolvers](/docs/guide/inferring-types.md#inferring-resolvers)

@@ -2,7 +2,7 @@
 
 ## Inferring Garph Types
 
-Garph types can be inferred into TypeScript using the [`Infer`](/api/modules.html#infer) utility
+Garph types can be inferred into TypeScript using the [`Infer`](/api/index.md#infer) utility
 
 ```ts
 import { g, Infer } from 'garph'
@@ -24,7 +24,7 @@ type NameType = {
 
 ## Inferring Args
 
-Arguments on Garph types can be inferred into TypeScript using the [`InferArgs`](/api/modules.html#inferargs) utility
+Arguments on Garph types can be inferred into TypeScript using the [`InferArgs`](/api/index.md#inferargs) utility
 
 ```ts
 import { g, InferArgs } from 'garph'
@@ -48,7 +48,7 @@ type NameType = {
 
 ## Inferring Resolvers
 
-Resolver types can be inferred into TypeScript using the [`InferResolvers`](/api/modules.html#inferresolvers) utility
+Resolver types can be inferred into TypeScript using the [`InferResolvers`](/api/index.md#inferresolvers) utility
 
 ```ts
 import { g, InferResolvers } from 'garph'
@@ -84,4 +84,4 @@ Inferred type:
 
 ### Strict Mode
 
-Using [`InferResolversStrict`](/api/modules.html#inferresolversstrict) you can infer resolver types in strict mode, which requires all fields to be specified in the resolver configuration
+Using [`InferResolversStrict`](/api/index.md#inferresolversstrict) you can infer resolver types in strict mode, which requires all fields to be specified in the resolver configuration

@@ -329,6 +329,6 @@ g.string().deprecated("Deprecation reason")
 
 ## Utilities
 
-[→ `buildSchema`](/api/modules.html#buildschema)
+[→ `buildSchema`](/api/index.md#buildschema)
 
-[→ `printSchema`](/api/modules.html#printschema)
+[→ `printSchema`](/api/index.md#printschema)
