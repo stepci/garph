@@ -35,7 +35,7 @@ export default defineConfig({
       { icon: 'discord', link: 'https://discord.gg/KqJJzJ3BTu' }
     ],
     editLink: {
-      pattern: 'https://github.com/stepci/garph/edit/main/docs/:path',
+      pattern: 'https://github.com/stepci/garph/edit/main/www/:path',
       text: 'Edit this page on GitHub'
     },
     outline: [2, 3],
