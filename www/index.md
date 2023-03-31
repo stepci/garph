@@ -1,5 +1,6 @@
 ---
 title: Garph - GraphQL. Reimagined.
+description: Garph provides fullstack TypeScript experience for building GraphQL-APIs without codegen
 aside: false
 sidebar: false
 layout: page
@@ -26,10 +27,10 @@ Garph provides fullstack TypeScript experience for building GraphQL-APIs without
 </p>
 
 <div style="margin-top: 25px; margin-bottom: 40px; display: flex">
-  <a href="#" style="margin: 0 6px; font-size: 18px; border-radius: 40px; padding: 14px 18px; background: white; display: inline-flex; color: black; font-weight: 600">
+  <a href="https://github.com/stepci/garph/stargazers" style="margin: 0 6px; font-size: 18px; border-radius: 40px; padding: 14px 18px; background: white; display: inline-flex; color: black; font-weight: 600">
   <img src="/icons/star.svg" width="20" height="20" /><span style="padding-left: 8px">Star us</span></a>
 
-  <a href="#" style="margin: 0 6px; font-size: 18px; border-radius: 40px; padding: 14px 18px; background: var(--vp-c-brand); display: inline-flex; color: white; font-weight: 600;">
+  <a href="/docs" style="margin: 0 6px; font-size: 18px; border-radius: 40px; padding: 14px 18px; background: var(--vp-c-brand); display: inline-flex; color: white; font-weight: 600;">
   <span style="padding-right: 8px">Get started</span><img src="/icons/chevron-right.svg" width="20" height="20" /></a>
 </div>
 
