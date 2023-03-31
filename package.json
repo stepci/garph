@@ -9,14 +9,21 @@
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
+    "docs:dev": "vitepress dev",
+    "docs:build": "vitepress build",
+    "docs:preview": "vitepress preview",
     "build": "tsc -p tsconfig.json",
+    "postbuild": "typedoc --readme none --entryDocument index.md --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --hideInPageTOC true --out www/api src/index.ts",
     "test": "ts-node examples/promo.ts"
   },
   "devDependencies": {
     "graphql": "^16.6.0",
     "graphql-yoga": "^3.7.1",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5"
+    "typescript": "^4.9.5",
+    "typedoc": "^0.23.27",
+    "typedoc-plugin-markdown": "^3.14.0",
+    "vitepress": "^1.0.0-alpha.61"
   },
   "dependencies": {
     "graphql-compose": "^9.0.10"
