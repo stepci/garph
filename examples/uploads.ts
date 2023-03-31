@@ -2,26 +2,17 @@ import { g, InferResolvers, buildSchema } from './../src/index'
 import { createYoga } from 'graphql-yoga'
 import { createServer } from 'http'
 
-const queryType = g.type('Query', {
-  greet: g.string()
-})
-
 const file = g.scalarType<File, never>('File')
 
 const mutationType = g.type('Mutation', {
   readTextFile: g.string()
     .args({
-      file: g.ref<typeof file>('File'),
+      file: g.ref(file),
     })
     .description('Greets a person')
 })
 
-const resolvers: InferResolvers<{ Query: typeof queryType, Mutation: typeof mutationType }, {}> = {
-  Query: {
-    greet: (parent, args, context, info) => {
-      return 'Hello World'
-    }
-  },
+const resolvers: InferResolvers<{ Mutation: typeof mutationType }, {}> = {
   Mutation: {
     readTextFile: async (parent, { file }, context, info) => {
       const textContent = await file.text()
