@@ -326,7 +326,7 @@ layout: page
           </div>
           <div class="feature-description">
             <span class="feature-title">Batteries-included</span>
-            <span class="feature-subtitle">Anything you need</span>
+            <span class="feature-subtitle">Everything you need</span>
           </div>
         </div>
       </div>
