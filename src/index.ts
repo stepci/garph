@@ -1,3 +1,4 @@
+import { GraphQLResolveInfo } from 'graphql'
 import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively } from './utils'
 import { buildSchema } from './schema'
 
@@ -66,7 +67,6 @@ type ScalarOptions<I, O> = {
 
 type InferResolverConfig = {
   context?: any
-  info?: any
 }
 
 type RefType = () => AnyType
@@ -110,14 +110,24 @@ export type InferArgRaw<T> = T extends AnyArgs ? {
 }: never
 
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
-  [K in keyof T]: {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+  [K in keyof T]: K extends 'Subscription' ? {
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: {
+      subscribe: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }> | Promise<AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }>>
+      resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    }
+  } : {
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
 export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConfig> = {
-  [K in keyof T]: {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: X['info']) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+  [K in keyof T]: K extends 'Subscription' ? {
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: {
+      subscribe: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }> | Promise<AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }>>
+      resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    }
+  } : {
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
