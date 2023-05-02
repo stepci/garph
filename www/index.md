@@ -290,7 +290,7 @@ layout: page
           <img src="/icons/chevron-right.svg" width="20" height="20" />
         </a>
       </div>
-      <a class="video-backdrop" href="#">
+      <a class="video-backdrop" href="https://t.ly/9IJr">
         <video
           src="https://user-images.githubusercontent.com/10400064/222474710-bc263775-06b8-4a78-8099-676a9ad3c7a4.mov"
           autoplay="true"
@@ -299,7 +299,7 @@ layout: page
         >
         </video>
         <div class="try-link-container">
-          <div class="try-link">Try on Stackblitz →</div>
+          <div class="try-link">Try on CodeSandbox →</div>
         </div>
       </a>
     </div>
