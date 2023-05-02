@@ -290,7 +290,7 @@ layout: page
           <img src="/icons/chevron-right.svg" width="20" height="20" />
         </a>
       </div>
-      <a class="video-backdrop" href="https://t.ly/9IJr">
+      <a class="video-backdrop" href="https://t.ly/9IJr" target="_blank">
         <video
           src="https://user-images.githubusercontent.com/10400064/222474710-bc263775-06b8-4a78-8099-676a9ad3c7a4.mov"
           autoplay="true"
