@@ -224,6 +224,17 @@ layout: page
     color: rgba(0,0,0,.9);
   }
 
+  .homepage .footer-text {
+    text-align: center;
+    margin-top: 80px;
+    /* font-weight: 400; */
+    color: var(--vp-c-text-2)
+  }
+
+  .homepage .footer-text a {
+    font-weight: 700;
+  }
+
   @media screen and (max-width: 720px) {
     .homepage .container {
       padding: 40px 24px
@@ -251,6 +262,10 @@ layout: page
 
     .homepage .features {
       grid-template-columns: 1fr
+    }
+
+    .homepage .footer-text {
+      margin-top: 40px
     }
   }
 </style>
@@ -345,5 +360,6 @@ layout: page
         <a href="/docs">Start using Garph</a>
       </div>
     </div>
+    <p class="footer-text">Made by the Team behind <a href="https://stepci.com">Step CI</a></p>
   </div>
 </div>
