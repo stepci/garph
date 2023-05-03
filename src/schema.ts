@@ -13,23 +13,26 @@ export function printSchema(g: GarphSchema, config: ConverterConfig = { defaultN
 export function buildSchema({ g, resolvers }: { g: GarphSchema, resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
   g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
 
-  if (resolvers['Subscription']) {
-    Object.entries(resolvers['Subscription'])
-      .forEach(([key, value]: [string, any]) => {
-        schemaComposer.Subscription.addFields({
-          [key]: {
-            type: schemaComposer.getOTC('Subscription').getField(key).type,
-            args: schemaComposer.getOTC('Subscription').getField(key).args,
-            resolve: value.resolve,
-            subscribe: value.subscribe
-          }
-        })
-    })
+  if (resolvers) {
+    if (resolvers['Subscription']) {
+      Object.entries(resolvers['Subscription'])
+        .forEach(([key, value]: [string, any]) => {
+          schemaComposer.Subscription.addFields({
+            [key]: {
+              type: schemaComposer.getOTC('Subscription').getField(key).type,
+              args: schemaComposer.getOTC('Subscription').getField(key).args,
+              resolve: value.resolve,
+              subscribe: value.subscribe
+            }
+          })
+      })
 
-    delete resolvers['Subscription']
+      delete resolvers['Subscription']
+    }
+
+    schemaComposer.addResolveMethods(resolvers)
   }
 
-  if (resolvers) schemaComposer.addResolveMethods(resolvers)
   return schemaComposer.buildSchema()
 }
 
@@ -51,6 +54,32 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
       return isOptional('ID', type, config)
     case 'List':
       return isOptional(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
+    case 'PaginatedList':
+      schemaComposer.createObjectTC({
+        name: `${type.typeDef.shape.typeDef.shape.typeDef.name}Edge`,
+        fields: {
+          node: {
+            type: type.typeDef.shape.typeDef.shape.typeDef.name,
+          },
+          cursor: {
+            type: 'String!',
+          }
+        }
+      })
+
+      schemaComposer.createObjectTC({
+        name: `${type.typeDef.shape.typeDef.shape.typeDef.name}Connection`,
+        fields: {
+          edges: {
+            type: `[${type.typeDef.shape.typeDef.shape.typeDef.name}Edge]`,
+          },
+          pageInfo: {
+            type: 'PageInfo!',
+          }
+        }
+      })
+
+      return isOptional(`${type.typeDef.shape.typeDef.shape.typeDef.name}Connection`, type, config)
     case 'Ref':
       if (!typeof type.typeDef.shape) {
         throw new Error('Ref type must be a function or a valid Garph Type')
