@@ -1,4 +1,4 @@
-import { GraphQLResolveInfo } from 'graphql'
+import type { GraphQLResolveInfo } from 'graphql'
 import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively } from './utils'
 import { buildSchema } from './schema'
 
@@ -494,7 +494,12 @@ class GPaginatedList<T extends AnyType> extends Type<T, 'List'> {
       node: InferRaw<T>
       cursor: string
     }[]
-    pageInfo: Infer<typeof pageInfoType>
+    pageInfo: {
+      hasNextPage: boolean,
+      hasPreviousPage: boolean,
+      startCursor?: string,
+      endCursor?: string
+    }
   }
 
   constructor(shape: T) {
@@ -587,6 +592,23 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 
 export class GarphSchema {
   types: AnyType[] = []
+  nodeType = this.interface('Node', {
+    id: this.id()
+  })
+
+  pageInfoType = this.type('PageInfo', {
+    hasNextPage: this.boolean(),
+    hasPreviousPage: this.boolean(),
+    startCursor: this.string().optional(),
+    endCursor: this.string().optional()
+  })
+
+  pageInfoArgs = {
+    first: this.int().optional(),
+    last: this.int().optional(),
+    before: this.string().optional(),
+    after: this.string().optional()
+  }
 
   type<N extends string, T extends AnyTypes>(name: N, shape: T) {
     const t = new GType<N, T>(name, shape)
@@ -595,7 +617,7 @@ export class GarphSchema {
   }
 
   node<N extends string, T extends AnyTypes>(name: N, shape: T) {
-    const t = new GType<N, T>(name, shape).implements(nodeType)
+    const t = new GType<N, T>(name, shape).implements(this.nodeType)
     this.types.push(t)
     return t
   }
@@ -603,10 +625,10 @@ export class GarphSchema {
   connection<N extends string, T extends AnyObject>(name: N, shape: T) {
     const t = new GType<N, {
       edges: Type<T, 'List'>
-      pageInfo: typeof pageInfoType
+      pageInfo: typeof this.pageInfoType
     }>(name, {
       edges: new GList(shape),
-      pageInfo: pageInfoType
+      pageInfo: this.pageInfoType
     })
 
     this.types.push(t)
@@ -692,22 +714,5 @@ export class GarphSchema {
 }
 
 export const g = new GarphSchema()
-export const pageInfoType = g.type('PageInfo', {
-  hasNextPage: g.boolean(),
-  hasPreviousPage: g.boolean(),
-  startCursor: g.string().optional(),
-  endCursor: g.string().optional()
-})
-
-export const pageInfoArgs = {
-  first: g.int().optional(),
-  last: g.int().optional(),
-  before: g.string().optional(),
-  after: g.string().optional()
-}
-
-export const nodeType = g.interface('Node', {
-  id: g.id()
-})
 
 export { buildSchema }

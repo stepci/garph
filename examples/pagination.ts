@@ -1,4 +1,4 @@
-import { g, InferResolvers, buildSchema, Infer, pageInfoArgs } from './../src/index'
+import { g, InferResolvers, buildSchema, Infer } from './../src/index'
 import { createYoga } from 'graphql-yoga'
 import { createServer } from 'http'
 
@@ -8,7 +8,7 @@ const user = g.type('User', {
 })
 
 const queryType = g.type('Query', {
-  users: g.ref(user).paginatedList().args({ ...pageInfoArgs })
+  users: g.ref(user).paginatedList().args({ ...g.pageInfoArgs })
 })
 
 type QueryType = Infer<typeof queryType>
