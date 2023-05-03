@@ -13,23 +13,26 @@ export function printSchema(g: GarphSchema, config: ConverterConfig = { defaultN
 export function buildSchema({ g, resolvers }: { g: GarphSchema, resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
   g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
 
-  if (resolvers['Subscription']) {
-    Object.entries(resolvers['Subscription'])
-      .forEach(([key, value]: [string, any]) => {
-        schemaComposer.Subscription.addFields({
-          [key]: {
-            type: schemaComposer.getOTC('Subscription').getField(key).type,
-            args: schemaComposer.getOTC('Subscription').getField(key).args,
-            resolve: value.resolve,
-            subscribe: value.subscribe
-          }
-        })
-    })
+  if (resolvers) {
+    if (resolvers['Subscription']) {
+      Object.entries(resolvers['Subscription'])
+        .forEach(([key, value]: [string, any]) => {
+          schemaComposer.Subscription.addFields({
+            [key]: {
+              type: schemaComposer.getOTC('Subscription').getField(key).type,
+              args: schemaComposer.getOTC('Subscription').getField(key).args,
+              resolve: value.resolve,
+              subscribe: value.subscribe
+            }
+          })
+      })
 
-    delete resolvers['Subscription']
+      delete resolvers['Subscription']
+    }
+
+    schemaComposer.addResolveMethods(resolvers)
   }
 
-  if (resolvers) schemaComposer.addResolveMethods(resolvers)
   return schemaComposer.buildSchema()
 }
 

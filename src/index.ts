@@ -543,6 +543,38 @@ export class GarphSchema {
     return t
   }
 
+  node<N extends string, T extends AnyTypes>(name: N, shape: T) {
+    const t = new GType<N, T>(name, shape).implements(nodeType)
+    this.types.push(t)
+    return t
+  }
+
+  connection<N extends string, T extends AnyObject>(name: N, shape: T) {
+    const t = new GType<N, {
+      edges: Type<T, 'List'>
+      pageInfo: typeof pageInfoType
+    }>(name, {
+      edges: new GList(shape),
+      pageInfo: pageInfoType
+    })
+
+    this.types.push(t)
+    return t
+  }
+
+  edge<N extends string, T extends AnyObject>(name: N, shape: T) {
+    const t = new GType<N, {
+      node: T
+      cursor: Type<any, 'String'>
+    }>(name, {
+      node: shape,
+      cursor: g.string()
+    })
+
+    this.types.push(t)
+    return t
+  }
+
   inputType<N extends string, T extends AnyTypes>(name: N, shape: T) {
     const t = new GInput<N, T>(name, shape)
     this.types.push(t)
@@ -609,4 +641,22 @@ export class GarphSchema {
 }
 
 export const g = new GarphSchema()
+export const pageInfoType = g.type('PageInfo', {
+  hasNextPage: g.boolean(),
+  hasPreviousPage: g.boolean(),
+  startCursor: g.string().optional(),
+  endCursor: g.string().optional()
+})
+
+export const pageInfoArgs = {
+  first: g.int().optional(),
+  last: g.int().optional(),
+  before: g.string().optional(),
+  after: g.string().optional()
+}
+
+export const nodeType = g.interface('Node', {
+  id: g.id()
+})
+
 export { buildSchema }
