@@ -16,7 +16,7 @@
 
 #### Defined in
 
-[index.ts:538](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L538)
+[index.ts:589](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L589)
 
 ## Methods
 
@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[index.ts:624](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L624)
+[index.ts:675](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L675)
 
 ___
 
@@ -58,13 +58,13 @@ ___
 
 #### Defined in
 
-[index.ts:552](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L552)
+[index.ts:603](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L603)
 
 ___
 
 ### edge
 
-▸ **edge**<`N`, `T`\>(`name`, `shape`): `GType`<`N`, { `cursor`: [`Type`](Type.md)<`any`, ``"String"``\> ; `node`: `T`  }\>
+▸ **edge**<`N`, `T`\>(`name`, `shape`): `GType`<`N`, { `cursor`: [`AnyString`](../index.md#anystring) ; `node`: `T`  }\>
 
 #### Type parameters
 
@@ -82,11 +82,11 @@ ___
 
 #### Returns
 
-`GType`<`N`, { `cursor`: [`Type`](Type.md)<`any`, ``"String"``\> ; `node`: `T`  }\>
+`GType`<`N`, { `cursor`: [`AnyString`](../index.md#anystring) ; `node`: `T`  }\>
 
 #### Defined in
 
-[index.ts:565](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L565)
+[index.ts:616](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L616)
 
 ___
 
@@ -114,7 +114,7 @@ ___
 
 #### Defined in
 
-[index.ts:584](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L584)
+[index.ts:635](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L635)
 
 ___
 
@@ -128,7 +128,7 @@ ___
 
 #### Defined in
 
-[index.ts:620](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L620)
+[index.ts:671](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L671)
 
 ___
 
@@ -142,7 +142,7 @@ ___
 
 #### Defined in
 
-[index.ts:612](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L612)
+[index.ts:663](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L663)
 
 ___
 
@@ -170,7 +170,7 @@ ___
 
 #### Defined in
 
-[index.ts:578](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L578)
+[index.ts:629](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L629)
 
 ___
 
@@ -184,7 +184,7 @@ ___
 
 #### Defined in
 
-[index.ts:616](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L616)
+[index.ts:667](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L667)
 
 ___
 
@@ -212,7 +212,7 @@ ___
 
 #### Defined in
 
-[index.ts:602](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L602)
+[index.ts:653](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L653)
 
 ___
 
@@ -240,7 +240,7 @@ ___
 
 #### Defined in
 
-[index.ts:546](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L546)
+[index.ts:597](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L597)
 
 ___
 
@@ -266,7 +266,7 @@ ___
 
 #### Defined in
 
-[index.ts:630](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L630)
+[index.ts:681](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L681)
 
 ___
 
@@ -294,7 +294,7 @@ ___
 
 #### Defined in
 
-[index.ts:596](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L596)
+[index.ts:647](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L647)
 
 ___
 
@@ -308,7 +308,7 @@ ___
 
 #### Defined in
 
-[index.ts:608](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L608)
+[index.ts:659](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L659)
 
 ___
 
@@ -336,7 +336,7 @@ ___
 
 #### Defined in
 
-[index.ts:540](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L540)
+[index.ts:591](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L591)
 
 ___
 
@@ -364,4 +364,4 @@ ___
 
 #### Defined in
 
-[index.ts:590](https://github.com/stepci/garph/blob/9d6d6ba/src/index.ts#L590)
+[index.ts:641](https://github.com/stepci/garph/blob/3183c5f/src/index.ts#L641)

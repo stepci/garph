@@ -54,6 +54,32 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
       return isOptional('ID', type, config)
     case 'List':
       return isOptional(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
+    case 'PaginatedList':
+      schemaComposer.createObjectTC({
+        name: `${type.typeDef.shape.typeDef.shape.typeDef.name}Edge`,
+        fields: {
+          node: {
+            type: type.typeDef.shape.typeDef.shape.typeDef.name,
+          },
+          cursor: {
+            type: 'String!',
+          }
+        }
+      })
+
+      schemaComposer.createObjectTC({
+        name: `${type.typeDef.shape.typeDef.shape.typeDef.name}Connection`,
+        fields: {
+          edges: {
+            type: `[${type.typeDef.shape.typeDef.shape.typeDef.name}Edge]`,
+          },
+          pageInfo: {
+            type: 'PageInfo!',
+          }
+        }
+      })
+
+      return isOptional(`${type.typeDef.shape.typeDef.shape.typeDef.name}Connection`, type, config)
     case 'Ref':
       if (!typeof type.typeDef.shape) {
         throw new Error('Ref type must be a function or a valid Garph Type')

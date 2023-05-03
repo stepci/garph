@@ -2,7 +2,7 @@ import { GraphQLResolveInfo } from 'graphql'
 import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively } from './utils'
 import { buildSchema } from './schema'
 
-type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'Union' | 'Ref' | 'Optional' | 'Args'
+type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
 export abstract class Type<T, X extends GarphType> {
   _name?: string
@@ -91,7 +91,7 @@ export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
   T extends AnyUnion ? InferRaw<ObjectToUnion<T['_inner']>> :
-  T extends AnyList ? readonly InferRaw<T['_shape']>[] :
+  T extends AnyList ? InferRaw<T['_inner']> :
   T extends AnyOptional ? InferRaw<T['_shape']> | null | undefined :
   T extends AnyArgs ? InferRaw<T['_shape']> :
   T extends AnyRef ? InferRaw<T['_inner']> :
@@ -392,6 +392,10 @@ class GRef<T> extends Type<T, 'Ref'> {
     return new GList<this>(this)
   }
 
+  paginatedList() {
+    return new GPaginatedList<this>(this)
+  }
+
   description(text: string) {
     this.typeDef.description = text
     return this
@@ -441,6 +445,8 @@ class GScalar<I, O> extends Type<I, 'Scalar'> {
 }
 
 class GList<T extends AnyType> extends Type<T, 'List'> {
+  declare _inner: readonly InferRaw<T>[]
+
   constructor(shape: T) {
     super()
     this.typeDef = {
@@ -463,7 +469,7 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
     return this
   }
 
-  default(value: Infer<T>[]) {
+  default(value: typeof this._inner) {
     this.typeDef.defaultValue = value
     return this
   }
@@ -480,6 +486,51 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
   list() {
     return new GList<this>(this)
   }
+}
+
+class GPaginatedList<T extends AnyType> extends Type<T, 'List'> {
+  declare _inner: {
+    edges: {
+      node: InferRaw<T>
+      cursor: string
+    }[]
+    pageInfo: Infer<typeof pageInfoType>
+  }
+
+  constructor(shape: T) {
+    super()
+    this.typeDef = {
+      type: 'PaginatedList',
+      shape: shape
+    }
+  }
+
+  optional() {
+    return new GOptional<this>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
+  }
+
+  description(text: string) {
+    this.typeDef.description = text
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
+  }
+
+  // list() {
+  //   return new GList<this>(this)
+  // }
 }
 
 class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
@@ -565,7 +616,7 @@ export class GarphSchema {
   edge<N extends string, T extends AnyObject>(name: N, shape: T) {
     const t = new GType<N, {
       node: T
-      cursor: Type<any, 'String'>
+      cursor: AnyString
     }>(name, {
       node: shape,
       cursor: g.string()
