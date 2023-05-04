@@ -33,7 +33,7 @@ export type InferClientTypesShallow<T> =
       [K in keyof T['_inner'] as T['_inner'][K]['_name']]: InferClientTypesRaw<T['_inner'][K]>
     }
   } :
-  T extends AnyList ? InferClientTypesRaw<T['_inner']> :
+  T extends AnyList ? InferClientTypesRaw<T['_shape']>[] :
   T extends AnyPaginatedList ? T['_inner'] :
   T extends AnyOptional ? InferClientTypesRaw<T['_shape']> | null | undefined :
   T extends AnyArgs ? (args?: InferArg<T>) => InferClientTypes<T['_shape']> :

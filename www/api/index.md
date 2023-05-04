@@ -15,7 +15,7 @@ garph
 
 #### Defined in
 
-[index.ts:46](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L46)
+[index.ts:46](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L46)
 
 ___
 
@@ -25,7 +25,7 @@ ___
 
 #### Defined in
 
-[index.ts:34](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L34)
+[index.ts:34](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L34)
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 #### Defined in
 
-[index.ts:42](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L42)
+[index.ts:42](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L42)
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 #### Defined in
 
-[index.ts:37](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L37)
+[index.ts:37](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L37)
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 #### Defined in
 
-[index.ts:33](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L33)
+[index.ts:33](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L33)
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 #### Defined in
 
-[index.ts:44](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L44)
+[index.ts:44](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L44)
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 #### Defined in
 
-[index.ts:36](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L36)
+[index.ts:36](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L36)
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 #### Defined in
 
-[index.ts:45](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L45)
+[index.ts:45](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L45)
 
 ___
 
@@ -95,7 +95,7 @@ ___
 
 #### Defined in
 
-[index.ts:39](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L39)
+[index.ts:39](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L39)
 
 ___
 
@@ -105,7 +105,7 @@ ___
 
 #### Defined in
 
-[index.ts:35](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L35)
+[index.ts:35](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L35)
 
 ___
 
@@ -115,7 +115,7 @@ ___
 
 #### Defined in
 
-[index.ts:48](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L48)
+[index.ts:48](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L48)
 
 ___
 
@@ -129,7 +129,7 @@ ___
 
 #### Defined in
 
-[index.ts:58](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L58)
+[index.ts:58](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L58)
 
 ___
 
@@ -139,7 +139,7 @@ ___
 
 #### Defined in
 
-[index.ts:47](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L47)
+[index.ts:47](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L47)
 
 ___
 
@@ -149,7 +149,7 @@ ___
 
 #### Defined in
 
-[index.ts:40](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L40)
+[index.ts:40](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L40)
 
 ___
 
@@ -159,7 +159,7 @@ ___
 
 #### Defined in
 
-[index.ts:38](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L38)
+[index.ts:38](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L38)
 
 ___
 
@@ -169,7 +169,7 @@ ___
 
 #### Defined in
 
-[index.ts:43](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L43)
+[index.ts:43](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L43)
 
 ___
 
@@ -179,7 +179,7 @@ ___
 
 #### Defined in
 
-[index.ts:32](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L32)
+[index.ts:32](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L32)
 
 ___
 
@@ -189,7 +189,7 @@ ___
 
 #### Defined in
 
-[index.ts:31](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L31)
+[index.ts:31](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L31)
 
 ___
 
@@ -203,7 +203,7 @@ ___
 
 #### Defined in
 
-[index.ts:54](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L54)
+[index.ts:54](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L54)
 
 ___
 
@@ -213,7 +213,7 @@ ___
 
 #### Defined in
 
-[index.ts:41](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L41)
+[index.ts:41](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L41)
 
 ___
 
@@ -227,7 +227,7 @@ ___
 
 #### Defined in
 
-[index.ts:50](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L50)
+[index.ts:50](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L50)
 
 ___
 
@@ -243,7 +243,7 @@ ___
 
 #### Defined in
 
-[index.ts:76](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L76)
+[index.ts:76](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L76)
 
 ___
 
@@ -259,7 +259,7 @@ ___
 
 #### Defined in
 
-[index.ts:107](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L107)
+[index.ts:107](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L107)
 
 ___
 
@@ -275,7 +275,7 @@ ___
 
 #### Defined in
 
-[index.ts:108](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L108)
+[index.ts:108](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L108)
 
 ___
 
@@ -291,7 +291,7 @@ ___
 
 #### Defined in
 
-[index.ts:102](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L102)
+[index.ts:102](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L102)
 
 ___
 
@@ -307,7 +307,7 @@ ___
 
 #### Defined in
 
-[index.ts:103](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L103)
+[index.ts:103](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L103)
 
 ___
 
@@ -323,7 +323,7 @@ ___
 
 #### Defined in
 
-[index.ts:77](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L77)
+[index.ts:77](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L77)
 
 ___
 
@@ -340,7 +340,7 @@ ___
 
 #### Defined in
 
-[index.ts:114](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L114)
+[index.ts:114](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L114)
 
 ___
 
@@ -357,7 +357,7 @@ ___
 
 #### Defined in
 
-[index.ts:125](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L125)
+[index.ts:125](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L125)
 
 ___
 
@@ -373,7 +373,7 @@ ___
 
 #### Defined in
 
-[index.ts:91](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L91)
+[index.ts:91](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L91)
 
 ___
 
@@ -405,7 +405,7 @@ ___
 
 #### Defined in
 
-[index.ts:17](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L17)
+[index.ts:17](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L17)
 
 ## Variables
 
@@ -415,7 +415,7 @@ ___
 
 #### Defined in
 
-[index.ts:713](https://github.com/stepci/garph/blob/9ab8d6d/src/index.ts#L713)
+[index.ts:713](https://github.com/stepci/garph/blob/528ec47/src/index.ts#L713)
 
 ## Functions
 
@@ -438,4 +438,4 @@ ___
 
 #### Defined in
 
-[schema.ts:13](https://github.com/stepci/garph/blob/9ab8d6d/src/schema.ts#L13)
+[schema.ts:13](https://github.com/stepci/garph/blob/528ec47/src/schema.ts#L13)
