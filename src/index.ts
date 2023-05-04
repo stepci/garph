@@ -1,5 +1,5 @@
 import type { GraphQLResolveInfo } from 'graphql'
-import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively } from './utils'
+import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively, MaybePromise } from './utils'
 import { buildSchema } from './schema'
 
 type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
@@ -112,25 +112,33 @@ export type InferArgRaw<T> = T extends AnyArgs ? {
   [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: InferRaw<T['_args'][K]>
 }: never
 
+export type InferUnionNames<T> = T extends AnyUnion ? ObjectToUnion<T['_inner']>['_name'] : never
+
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: K extends 'Subscription' ? {
     [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: {
-      subscribe: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }> | Promise<AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }>>
-      resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+      subscribe: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }>>
+      resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
     }
   } : {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
+  } & {
+    __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
+    __resolveType?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<InferUnionNames<T[K]>>
   }
 }
 
 export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: K extends 'Subscription' ? {
     [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: {
-      subscribe: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }> | Promise<AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }>>
-      resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+      subscribe: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof Infer<T[K]>]: Infer<T[K]>[G] }>>
+      resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
     }
   } : {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
+  } & {
+    __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
+    __resolveType?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<InferUnionNames<T[K]>>
   }
 }
 

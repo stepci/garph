@@ -33,7 +33,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
           endCursor: '1',
         }
       }
-    }
+    },
   }
 }
 

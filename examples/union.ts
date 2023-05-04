@@ -23,7 +23,7 @@ const queryType = g.type('Query', {
 
 type Query = Infer<typeof queryType>
 
-const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
+const resolvers: InferResolvers<{ Query: typeof queryType, Union: typeof union }, {}> = {
   Query: {
     greet: (parent, args, context, info) => {
       if (args.name === 'Max') {
@@ -31,6 +31,11 @@ const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
       } else {
         return { __typename: 'Y', b: 'Hello World' }
       }
+    }
+  },
+  Union: {
+    __resolveType: (parent, context, info) => {
+      return parent.__typename
     }
   }
 }
