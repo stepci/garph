@@ -1,4 +1,4 @@
-import { InferArg, AnyInput, AnyInterface, AnyString, AnyID, AnyBoolean, AnyNumber, AnyList, AnyOptional, AnyArgs, AnyUnion, AnyEnum, AnyScalar, AnyRef, AnyObject } from './index'
+import { InferArg, AnyInput, AnyInterface, AnyString, AnyID, AnyBoolean, AnyNumber, AnyList, AnyPaginatedList, AnyOptional, AnyArgs, AnyUnion, AnyEnum, AnyScalar, AnyRef, AnyObject } from './index'
 import { ExpandRecursively } from './utils'
 
 export type ClientTypes = {
@@ -34,6 +34,7 @@ export type InferClientTypesShallow<T> =
     }
   } :
   T extends AnyList ? InferClientTypesRaw<T['_inner']> :
+  T extends AnyPaginatedList ? T['_inner'] :
   T extends AnyOptional ? InferClientTypesRaw<T['_shape']> | null | undefined :
   T extends AnyArgs ? (args?: InferArg<T>) => InferClientTypes<T['_shape']> :
   T extends AnyRef ? InferClientTypesRaw<ReturnType<T['_shape']>> :

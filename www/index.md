@@ -227,7 +227,7 @@ layout: page
   .homepage .footer-text {
     text-align: center;
     margin-top: 80px;
-    /* font-weight: 400; */
+    font-weight: 500;
     color: var(--vp-c-text-2)
   }
 
@@ -322,7 +322,7 @@ layout: page
             <img src="/icons/graphql.svg">
           </div>
           <div class="feature-description">
-            <span class="feature-title">GraphQL</span>
+            <span class="feature-title">GraphQL + Relay</span>
             <span class="feature-subtitle">Spec-compatible API</span>
           </div>
         </div>

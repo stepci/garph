@@ -34,7 +34,7 @@ Example Schema:
 
 ::: code-group
 ```ts [schema.ts]
-import { g } from 'garph'
+import { g, buildSchema } from 'garph'
 
 export const queryType = g.type('Query', {
   greet: g.string()
@@ -43,6 +43,8 @@ export const queryType = g.type('Query', {
     })
     .description('Greets a person')
 })
+
+const schema = buildSchema({ g })
 ```
 :::
 
@@ -50,13 +52,13 @@ Initializing the client:
 
 ::: code-group
 ```ts [client.ts]
-import { queryType } from './schema.ts'
+import { queryType, schema } from './schema.ts'
 import { InferClient, createClient } from '@garph/gqty'
 
 type ClientTypes = InferClient<{ query: typeof queryType }>
 
 export const { useQuery, ... } = createClient<ClientTypes>({
-  schema: g,
+  schema,
   url: 'http://localhost:4000/graphql'
 })
 ```

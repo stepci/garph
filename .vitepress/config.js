@@ -59,6 +59,7 @@ export default defineConfig({
             { text: 'Defer and Stream', link: '/docs/advanced/defer-stream.md' },
             { text: 'Subscriptions', link: '/docs/advanced/subscriptions.md' },
             { text: 'Pagination', link: '/docs/advanced/pagination.md' },
+            { text: 'Relay', link: '/docs/advanced/relay.md' },
             { text: 'Validation', link: '/docs/advanced/validation.md' },
             { text: 'Federation', link: '/docs/advanced/federation.md' },
             { text: 'Errors', link: '/docs/advanced/errors.md' },

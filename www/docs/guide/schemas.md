@@ -13,16 +13,16 @@ In GraphQL, a schema is a collection of types that define the structure of data 
 An object type is a type in GraphQL that represents an object with a set of named fields and their corresponding values. Object types are used to define the structure and shape of data that can be queried and retrieved from a GraphQL API. They can also be used as inputs for mutations.
 
 ```ts
-g.type('Name', {
-  greet: g.string()
+g.type('User', {
+  name: g.string()
 })
 ```
 
 GraphQL Type:
 
 ```graphql
-type Name {
-  greet: String!
+type User {
+  name: String!
 }
 ```
 
@@ -215,7 +215,7 @@ input Name {
 Custom scalars can be useful for handling specific data types that are not natively supported by GraphQL or you want a version of an existing type that does some validation. For example, you might define a custom scalar for handling dates:
 
 ```ts
-g.scalarType<Date, number>('Name', {
+g.scalarType<Date, number>('Date', {
   serialize: (value) => value.getTime(),
   parseValue: (value) => new Date(value)
 })
@@ -224,7 +224,7 @@ g.scalarType<Date, number>('Name', {
 GraphQL Type:
 
 ```graphql
-scalar Name
+scalar Date
 ```
 
 ### Directive
@@ -234,6 +234,84 @@ A directive is a special kind of declaration in GraphQL that can be used to modi
 Currently not supported.
 
 See: https://github.com/stepci/garph/issues/40
+
+## Relay Types
+
+### Node
+
+```ts
+g.node('User', {
+  name: g.string()
+})
+```
+
+GraphQL Type:
+
+```graphql
+type User {
+  id: ID!
+  name: String!
+}
+```
+
+### Edge
+
+```ts
+g.connection('UserEdge', g.ref(userNode))
+```
+
+GraphQL Type:
+
+```graphql
+type UserEdge {
+  cursor: String!
+  node: User
+}
+```
+
+### Connection
+
+```ts
+g.connection('UserConnection', g.ref(userEdge))
+```
+
+GraphQL Type:
+
+```graphql
+type UserConnection {
+  edges: [UserEdge]
+  pageInfo: PageInfo!
+}
+```
+
+### PageInfo
+
+```ts
+g.pageInfoType
+```
+
+GraphQL Type:
+
+```graphql
+type PageInfo {
+  hasNextPage: Boolean!
+  hasPreviousPage: Boolean!
+  startCursor: String
+  endCursor: String
+}
+```
+
+### PageInfoArgs
+
+```
+g.pageInfoArgs
+```
+
+GraphQL Type:
+
+```graphql
+(first: Int, last: Int, before: ID, after: ID)
+```
 
 ## Modifiers
 
@@ -285,6 +363,14 @@ Turns a particular type into a list
 
 ```ts
 g.string().list()
+```
+
+### Paginated List
+
+Turns a particular type into a cursor-paginated list
+
+```ts
+g.ref(user).paginatedList()
 ```
 
 ### Optional (nullable)

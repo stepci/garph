@@ -37,6 +37,7 @@ export type AnyInt = Type<number, 'Int'>
 export type AnyFloat = Type<number, 'Float'>
 export type AnyRef = Type<any, 'Ref'>
 export type AnyList = Type<any, 'List'>
+export type AnyPaginatedList = Type<any, 'PaginatedList'>
 export type AnyUnion = Type<any, 'Union'>
 export type AnyEnum = Type<any, 'Enum'>
 export type AnyScalar = Type<any, 'Scalar'>
@@ -91,7 +92,8 @@ export type InferShallow<T> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
   T extends AnyUnion ? InferRaw<ObjectToUnion<T['_inner']>> :
-  T extends AnyList ? InferRaw<T['_inner']> :
+  T extends AnyList ? InferRaw<T['_shape']>[] :
+  T extends AnyPaginatedList ? T['_inner'] :
   T extends AnyOptional ? InferRaw<T['_shape']> | null | undefined :
   T extends AnyArgs ? InferRaw<T['_shape']> :
   T extends AnyRef ? InferRaw<T['_inner']> :
@@ -445,8 +447,6 @@ class GScalar<I, O> extends Type<I, 'Scalar'> {
 }
 
 class GList<T extends AnyType> extends Type<T, 'List'> {
-  declare _inner: readonly InferRaw<T>[]
-
   constructor(shape: T) {
     super()
     this.typeDef = {
@@ -488,7 +488,7 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
   }
 }
 
-class GPaginatedList<T extends AnyType> extends Type<T, 'List'> {
+class GPaginatedList<T extends AnyType> extends Type<T, 'PaginatedList'> {
   declare _inner: {
     edges: {
       node: InferRaw<T>
@@ -606,8 +606,8 @@ export class GarphSchema {
   pageInfoArgs = {
     first: this.int().optional(),
     last: this.int().optional(),
-    before: this.string().optional(),
-    after: this.string().optional()
+    before: this.id().optional(),
+    after: this.id().optional()
   }
 
   type<N extends string, T extends AnyTypes>(name: N, shape: T) {
@@ -623,10 +623,7 @@ export class GarphSchema {
   }
 
   connection<N extends string, T extends AnyObject>(name: N, shape: T) {
-    const t = new GType<N, {
-      edges: Type<T, 'List'>
-      pageInfo: typeof this.pageInfoType
-    }>(name, {
+    const t = new GType(name, {
       edges: new GList(shape),
       pageInfo: this.pageInfoType
     })
