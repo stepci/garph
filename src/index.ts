@@ -2,6 +2,7 @@ import type { GraphQLResolveInfo } from 'graphql'
 import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively } from './utils'
 import { buildSchema } from './schema'
 
+type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Optional' | 'Args'
 
 export abstract class Type<T, X extends GarphType> {
@@ -118,7 +119,7 @@ export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = 
       resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
     }
   } : {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
@@ -129,7 +130,7 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
       resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
     }
   } : {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: any, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => Infer<T[K]>[G] | Promise<Infer<T[K]>[G]>
   }
 }
 
