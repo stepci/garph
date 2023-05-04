@@ -71,6 +71,9 @@ The example above produces the following GraphQL schema:
 
 ```graphql
 type Query {
+  """
+  Greets a person
+  """
   greet(name: String = "Max"): String!
 }
 ```

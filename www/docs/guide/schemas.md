@@ -257,7 +257,7 @@ type User {
 ### Edge
 
 ```ts
-g.connection('UserEdge', g.ref(userNode))
+g.edge('UserEdge', g.ref(userNode))
 ```
 
 GraphQL Type:
