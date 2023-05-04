@@ -69,11 +69,11 @@ Garph is a GraphQL schema-builder for TypeScript, that aims to deliver [tRPC](ht
 
 ## Documentation
 
-Documentation is available on [garph.dev/docs](https://graph.dev/docs)
+Documentation is available on [garph.dev/docs](https://garph.dev/docs)
 
 ## Examples
 
-Example projects can be found under [`examples/`](examples/)
+Example projects can be found under [examples/](examples/)
 
 ## Feedback
 
