@@ -12,7 +12,7 @@ Garph is a GraphQL schema-builder for TypeScript, that aims to deliver [tRPC](ht
 
 ## Get started
 
-1. Install the required packages
+1. Install the dependencies
 
     ```
     npm i garph graphql-yoga
@@ -49,7 +49,7 @@ Garph is a GraphQL schema-builder for TypeScript, that aims to deliver [tRPC](ht
 
 3. Start the server
 
-    ```ts
+    ```
     npx ts-node server.ts
     ```
 
