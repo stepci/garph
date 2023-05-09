@@ -3,12 +3,21 @@
 https://user-images.githubusercontent.com/10400064/222474710-bc263775-06b8-4a78-8099-676a9ad3c7a4.mov
 
 > **Warning**:
-> Garph is currently in Alpha. We would love to hear your Feedback on our [Discord](https://discord.gg/KqJJzJ3BTu)
+> We would love to hear your Feedback on our [Discord](https://discord.gg/KqJJzJ3BTu)
 
 > **Note**:
 > tRPC-style client for Garph has arrived! See [garph-gqty](https://github.com/stepci/garph-gqty) for more 🚀
 
-Garph is a GraphQL schema-builder for TypeScript, that aims to deliver [tRPC](https://github.com/trpc/trpc)-like Developer-Experience. On top of that, Garph provides a GraphQL compability layer and type-safety primitives for any TypeScript project
+Garph is a fullstack GraphQL framework for TypeScript, that aims to deliver the best GraphQL Developer-Experience.
+
+> **Garph 0.5 was just released!** 🙌
+> Changelog:
+> - *Updated the React-client*
+> - *Added GraphQL Subscriptions*
+> - *Cursor-based pagination*
+> - *Included Relay building blocks (nodes, edges, connections)*
+> - *Additional type-safety for resolvers*
+> - *Updated Documentation*
 
 ## Get started
 
