@@ -12,6 +12,7 @@ export function getEnumProperties(enumValue: TSEnumType) {
 
 export type ObjectToUnion<T> = T[keyof T]
 export type MaybePromise<T> = T | Promise<T>
+export type MaybeFunction<T> = T | (() => T) | (() => Promise<T>)
 
 // Taken from Kysely
 // See the tweet: https://twitter.com/Riyaadh_Abr/status/1622736576303312899

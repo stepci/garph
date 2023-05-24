@@ -1,5 +1,5 @@
 import type { GraphQLResolveInfo } from 'graphql'
-import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively, MaybePromise } from './utils'
+import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively, MaybePromise, MaybeFunction } from './utils'
 import { buildSchema } from './schema'
 
 type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
@@ -121,7 +121,7 @@ export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = 
       resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
     }
   } : {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]>[G]>>
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
     __resolveType?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<InferUnionNames<T[K]>>
@@ -135,7 +135,7 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
       resolve?: (value: Infer<T[K]>[G], args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
     }
   } : {
-    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]>[G]>
+    [G in keyof Infer<T[K]> as G extends '__typename' ? never : G]: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]>[G]>>
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
     __resolveType?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<InferUnionNames<T[K]>>
