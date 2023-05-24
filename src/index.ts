@@ -629,7 +629,7 @@ class GOmitResolver<T extends AnyType> extends Type<T, 'OmitResolver'> {
     return this
   }
 
-  default(value: Infer<T>) {
+  default(value: InferRaw<T>) {
     this.typeDef.defaultValue = value
     return this
   }
