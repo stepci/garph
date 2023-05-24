@@ -6,7 +6,7 @@ GQty is a fundamentally new approach to a GraphQL client. It makes using your AP
 
 [→ Repository](https://github.com/stepci/garph-gqty)
 
-[→ Docs](https://gqty.dev/docs/getting-started)
+[→ Docs](https://gqty.dev/getting-started)
 
 ## Installation
 
@@ -52,19 +52,61 @@ Initializing the client:
 
 ::: code-group
 ```ts [client.ts]
-import { queryType, schema } from './schema.ts'
 import { InferClient, createClient } from '@garph/gqty'
+import { createScalarsEnumsHash, createGeneratedSchema } from '@garph/gqty/dist/utils'
+import { schema, queryType } from './schema.ts'
 
 type ClientTypes = InferClient<{ query: typeof queryType }>
 
 export const { useQuery, ... } = createClient<ClientTypes>({
-  schema,
+  generatedSchema: createGeneratedSchema(schema),
+  scalarsEnumsHash: createScalarsEnumsHash(schema),
   url: 'http://localhost:4000/graphql'
+})
+
+// Needed for the babel plugin
+export { schema as compiledSchema }
+```
+:::
+
+Adding subscriptions support
+
+```
+npm i graphql-sse
+```
+
+::: code-group
+```ts [client.ts]
+import { createClient as createSubscriptionsClient } from 'graphql-sse'
+
+export const { useSubscription, ... } = createClient<ClientTypes>({
+  generatedSchema: createGeneratedSchema(schema),
+  scalarsEnumsHash: createScalarsEnumsHash(schema),
+  url: 'http://localhost:4000/graphql',
+  subscriptionClient: createSubscriptionsClient({
+    url: 'http://localhost:4000/api/graphql/stream'
+  })
 })
 ```
 :::
 
-## Core Client
+## Babel Plugin
+
+In production, you might want to use the babel plugin in order to replace the runtime dependencies (such as `generatedSchema`, `scalarsEnumsHash`) in your client config with statically-generated artifacts.
+
+::: code-group
+```json [.babelrc]
+{
+  "plugins": [["@garph/gqty/dist/plugin", {
+    "clientConfig": "./utils/client.ts"
+  }]]
+}
+```
+:::
+
+## Usage
+
+### Core Client
 
 Example:
 
@@ -79,9 +121,9 @@ resolved(() => {
 })
 ```
 
-[→ GQty Docs: Core Client](https://gqty.dev/docs/client/fetching-data)
+[→ GQty Docs: Core Client](https://gqty.dev/guides/core/resolve)
 
-## React
+### React
 
 Example:
 
@@ -94,4 +136,4 @@ export default function Example() {
 }
 ```
 
-[→ GQty Docs: Usage with React](https://gqty.dev/docs/react/fetching-data)
+[→ GQty Docs: Usage with React](https://gqty.dev/guides/react/read)
