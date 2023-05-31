@@ -52,8 +52,8 @@ Create a new file called `index.ts` and paste the following contents:
 ::: code-group
 ```ts [index.ts]
 import { g, InferResolvers, buildSchema } from 'garph'
-import { createYoga } from 'graphql-yoga'
-import { createServer, YogaInitialContext } from 'http'
+import { createYoga, YogaInitialContext } from 'graphql-yoga'
+import { createServer } from 'http'
 
 const queryType = g.type('Query', {
   greet: g.string()
@@ -87,8 +87,8 @@ GraphQL resolvers are functions for fetching the data for a particular field in 
 ::: code-group
 ```ts{13-17} [index.ts]
 import { g, InferResolvers, buildSchema } from 'garph'
-import { createYoga } from 'graphql-yoga'
-import { createServer, YogaInitialContext } from 'http'
+import { createYoga, YogaInitialContext } from 'graphql-yoga'
+import { createServer } from 'http'
 
 const queryType = g.type('Query', {
   greet: g.string()
@@ -121,8 +121,8 @@ GraphQL Yoga can help simplify the process of building a GraphQL server, reduce 
 ::: code-group
 ```ts{19-24} [index.ts]
 import { g, InferResolvers, buildSchema } from 'garph'
-import { createYoga } from 'graphql-yoga'
-import { createServer, YogaInitialContext } from 'http'
+import { createYoga, YogaInitialContext } from 'graphql-yoga'
+import { createServer } from 'http'
 
 const queryType = g.type('Query', {
   greet: g.string()
