@@ -169,9 +169,10 @@ export function parseFields(fields: AnyType, config: ConverterConfig) {
     const field = fields[fieldName]
     fieldsObj[fieldName] = {
       type: getFieldType(field, config),
-      deprecationReason: field.typeDef.deprecated,
       args: parseArgs(field.typeDef.args, config),
-      description: field.typeDef.description
+      defaultValue: field.typeDef.defaultValue,
+      deprecationReason: field.typeDef.deprecated,
+      description: field.typeDef.description,
     }
   })
 
