@@ -413,6 +413,14 @@ Mark a field as deprecated. It is used to indicate that a schema element is no l
 g.string().deprecated("Deprecation reason")
 ```
 
+### Omit Resolver
+
+Omit returning a field in the resolver. Used when you want to skip returning a value in case the value is resolved elsewhere
+
+```ts
+g.string().omitResolver()
+```
+
 ## Utilities
 
 [→ `buildSchema`](/api/index.md#buildschema)

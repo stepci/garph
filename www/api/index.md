@@ -15,7 +15,7 @@ garph
 
 #### Defined in
 
-[index.ts:47](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L47)
+[index.ts:47](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L47)
 
 ___
 
@@ -25,7 +25,7 @@ ___
 
 #### Defined in
 
-[index.ts:35](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L35)
+[index.ts:35](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L35)
 
 ___
 
@@ -35,7 +35,7 @@ ___
 
 #### Defined in
 
-[index.ts:43](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L43)
+[index.ts:43](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L43)
 
 ___
 
@@ -45,7 +45,7 @@ ___
 
 #### Defined in
 
-[index.ts:38](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L38)
+[index.ts:38](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L38)
 
 ___
 
@@ -55,7 +55,7 @@ ___
 
 #### Defined in
 
-[index.ts:34](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L34)
+[index.ts:34](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L34)
 
 ___
 
@@ -65,7 +65,7 @@ ___
 
 #### Defined in
 
-[index.ts:45](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L45)
+[index.ts:45](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L45)
 
 ___
 
@@ -75,7 +75,7 @@ ___
 
 #### Defined in
 
-[index.ts:37](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L37)
+[index.ts:37](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L37)
 
 ___
 
@@ -85,7 +85,7 @@ ___
 
 #### Defined in
 
-[index.ts:46](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L46)
+[index.ts:46](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L46)
 
 ___
 
@@ -95,7 +95,7 @@ ___
 
 #### Defined in
 
-[index.ts:40](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L40)
+[index.ts:40](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L40)
 
 ___
 
@@ -105,7 +105,7 @@ ___
 
 #### Defined in
 
-[index.ts:36](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L36)
+[index.ts:36](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L36)
 
 ___
 
@@ -115,7 +115,7 @@ ___
 
 #### Defined in
 
-[index.ts:49](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L49)
+[index.ts:49](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L49)
 
 ___
 
@@ -129,7 +129,17 @@ ___
 
 #### Defined in
 
-[index.ts:59](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L59)
+[index.ts:60](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L60)
+
+___
+
+### AnyOmitResolver
+
+Ƭ **AnyOmitResolver**: [`Type`](classes/Type.md)<`any`, ``"OmitResolver"``\>
+
+#### Defined in
+
+[index.ts:50](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L50)
 
 ___
 
@@ -139,7 +149,7 @@ ___
 
 #### Defined in
 
-[index.ts:48](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L48)
+[index.ts:48](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L48)
 
 ___
 
@@ -149,7 +159,7 @@ ___
 
 #### Defined in
 
-[index.ts:41](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L41)
+[index.ts:41](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L41)
 
 ___
 
@@ -159,7 +169,7 @@ ___
 
 #### Defined in
 
-[index.ts:39](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L39)
+[index.ts:39](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L39)
 
 ___
 
@@ -169,7 +179,7 @@ ___
 
 #### Defined in
 
-[index.ts:44](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L44)
+[index.ts:44](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L44)
 
 ___
 
@@ -179,7 +189,7 @@ ___
 
 #### Defined in
 
-[index.ts:33](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L33)
+[index.ts:33](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L33)
 
 ___
 
@@ -189,7 +199,7 @@ ___
 
 #### Defined in
 
-[index.ts:32](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L32)
+[index.ts:32](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L32)
 
 ___
 
@@ -203,7 +213,7 @@ ___
 
 #### Defined in
 
-[index.ts:55](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L55)
+[index.ts:56](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L56)
 
 ___
 
@@ -213,7 +223,7 @@ ___
 
 #### Defined in
 
-[index.ts:42](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L42)
+[index.ts:42](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L42)
 
 ___
 
@@ -227,23 +237,24 @@ ___
 
 #### Defined in
 
-[index.ts:51](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L51)
+[index.ts:52](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L52)
 
 ___
 
 ### Infer
 
-Ƭ **Infer**<`T`\>: `ExpandRecursively`<[`InferRaw`](index.md#inferraw)<`T`\>\>
+Ƭ **Infer**<`T`, `options`\>: `ExpandRecursively`<[`InferRaw`](index.md#inferraw)<`T`, `options`\>\>
 
 #### Type parameters
 
-| Name |
-| :------ |
-| `T` |
+| Name | Type |
+| :------ | :------ |
+| `T` | `T` |
+| `options` | extends `InferOptions` = { `omitResolver`: `never`  } |
 
 #### Defined in
 
-[index.ts:77](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L77)
+[index.ts:82](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L82)
 
 ___
 
@@ -259,7 +270,7 @@ ___
 
 #### Defined in
 
-[index.ts:108](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L108)
+[index.ts:114](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L114)
 
 ___
 
@@ -275,7 +286,7 @@ ___
 
 #### Defined in
 
-[index.ts:109](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L109)
+[index.ts:115](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L115)
 
 ___
 
@@ -291,7 +302,7 @@ ___
 
 #### Defined in
 
-[index.ts:103](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L103)
+[index.ts:109](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L109)
 
 ___
 
@@ -307,29 +318,30 @@ ___
 
 #### Defined in
 
-[index.ts:104](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L104)
+[index.ts:110](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L110)
 
 ___
 
 ### InferRaw
 
-Ƭ **InferRaw**<`T`\>: `T` extends [`AnyInput`](index.md#anyinput) \| [`AnyObject`](index.md#anyobject) \| [`AnyInterface`](index.md#anyinterface) ? { `__typename?`: `T`[``"_name"``]  } & { [K in keyof T["\_shape"] as T["\_shape"][K] extends AnyOptional ? never : T["\_shape"][K] extends AnyArgs ? T["\_shape"][K]["\_shape"] extends AnyOptional ? never : K : K]: InferRaw<T["\_shape"][K]\> } & { [K in keyof T["\_shape"] as T["\_shape"][K] extends AnyOptional ? K : T["\_shape"][K] extends AnyArgs ? T["\_shape"][K]["\_shape"] extends AnyOptional ? K : never : never]?: InferRaw<T["\_shape"][K]\> } : [`InferShallow`](index.md#infershallow)<`T`\>
+Ƭ **InferRaw**<`T`, `options`\>: `T` extends [`AnyInput`](index.md#anyinput) \| [`AnyObject`](index.md#anyobject) \| [`AnyInterface`](index.md#anyinterface) ? { `__typename?`: `T`[``"_name"``]  } & { [K in keyof T["\_shape"] as T["\_shape"][K] extends AnyOptional \| options["omitResolver"] ? never : T["\_shape"][K] extends AnyArgs ? T["\_shape"][K]["\_shape"] extends AnyOptional \| options["omitResolver"] ? never : K : K]: InferRaw<T["\_shape"][K], options\> } & { [K in keyof T["\_shape"] as T["\_shape"][K] extends AnyOptional \| options["omitResolver"] ? K : T["\_shape"][K] extends AnyArgs ? T["\_shape"][K]["\_shape"] extends AnyOptional \| options["omitResolver"] ? K : never : never]?: InferRaw<T["\_shape"][K], options\> } : [`InferShallow`](index.md#infershallow)<`T`, `options`\>
 
 #### Type parameters
 
-| Name |
-| :------ |
-| `T` |
+| Name | Type |
+| :------ | :------ |
+| `T` | `T` |
+| `options` | extends `InferOptions` = { `omitResolver`: `never`  } |
 
 #### Defined in
 
-[index.ts:78](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L78)
+[index.ts:83](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L83)
 
 ___
 
 ### InferResolvers
 
-Ƭ **InferResolvers**<`T`, `X`\>: { [K in keyof T]: K extends "Subscription" ? { [G in keyof Infer<T[K]\> as G extends "\_\_typename" ? never : G]?: Object } : { [G in keyof Infer<T[K]\> as G extends "\_\_typename" ? never : G]?: Function } & Object }
+Ƭ **InferResolvers**<`T`, `X`\>: { [K in keyof T]: K extends "Subscription" ? { [G in keyof T[K]["\_shape"]]?: Object } : { [G in keyof T[K]["\_shape"]]?: Function } & Object }
 
 #### Type parameters
 
@@ -340,13 +352,13 @@ ___
 
 #### Defined in
 
-[index.ts:117](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L117)
+[index.ts:123](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L123)
 
 ___
 
 ### InferResolversStrict
 
-Ƭ **InferResolversStrict**<`T`, `X`\>: { [K in keyof T]: K extends "Subscription" ? { [G in keyof Infer<T[K]\> as G extends "\_\_typename" ? never : G]: Object } : { [G in keyof Infer<T[K]\> as G extends "\_\_typename" ? never : G]: Function } & Object }
+Ƭ **InferResolversStrict**<`T`, `X`\>: { [K in keyof T]: K extends "Subscription" ? { [G in keyof T[K]["\_shape"]]: Object } : { [G in keyof T[K]["\_shape"]]: Function } & Object }
 
 #### Type parameters
 
@@ -357,23 +369,24 @@ ___
 
 #### Defined in
 
-[index.ts:131](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L131)
+[index.ts:137](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L137)
 
 ___
 
 ### InferShallow
 
-Ƭ **InferShallow**<`T`\>: `T` extends [`AnyString`](index.md#anystring) \| [`AnyID`](index.md#anyid) \| [`AnyScalar`](index.md#anyscalar) \| [`AnyNumber`](index.md#anynumber) \| [`AnyBoolean`](index.md#anyboolean) ? `T`[``"_shape"``] : `T` extends [`AnyEnum`](index.md#anyenum) ? `T`[``"_inner"``] : `T` extends [`AnyUnion`](index.md#anyunion) ? [`InferRaw`](index.md#inferraw)<`ObjectToUnion`<`T`[``"_inner"``]\>\> : `T` extends [`AnyList`](index.md#anylist) ? [`InferRaw`](index.md#inferraw)<`T`[``"_shape"``]\>[] : `T` extends [`AnyPaginatedList`](index.md#anypaginatedlist) ? `T`[``"_inner"``] : `T` extends [`AnyOptional`](index.md#anyoptional) ? [`InferRaw`](index.md#inferraw)<`T`[``"_shape"``]\> \| ``null`` \| `undefined` : `T` extends [`AnyArgs`](index.md#anyargs) ? [`InferRaw`](index.md#inferraw)<`T`[``"_shape"``]\> : `T` extends [`AnyRef`](index.md#anyref) ? [`InferRaw`](index.md#inferraw)<`T`[``"_inner"``]\> : `T`
+Ƭ **InferShallow**<`T`, `options`\>: `T` extends [`AnyString`](index.md#anystring) \| [`AnyID`](index.md#anyid) \| [`AnyScalar`](index.md#anyscalar) \| [`AnyNumber`](index.md#anynumber) \| [`AnyBoolean`](index.md#anyboolean) ? `T`[``"_shape"``] : `T` extends [`AnyEnum`](index.md#anyenum) ? `T`[``"_inner"``] : `T` extends [`AnyUnion`](index.md#anyunion) ? [`InferRaw`](index.md#inferraw)<`ObjectToUnion`<`T`[``"_inner"``]\>, `options`\> : `T` extends [`AnyList`](index.md#anylist) ? [`InferRaw`](index.md#inferraw)<`T`[``"_shape"``], `options`\>[] : `T` extends [`AnyPaginatedList`](index.md#anypaginatedlist) ? `T`[``"_inner"``] : `T` extends [`AnyOptional`](index.md#anyoptional) ? [`InferRaw`](index.md#inferraw)<`T`[``"_shape"``], `options`\> \| ``null`` \| `undefined` : `T` extends [`AnyOmitResolver`](index.md#anyomitresolver) ? [`InferRaw`](index.md#inferraw)<`T`[``"_shape"``], `options`\> : `T` extends [`AnyArgs`](index.md#anyargs) ? [`InferRaw`](index.md#inferraw)<`T`[``"_shape"``], `options`\> : `T` extends [`AnyRef`](index.md#anyref) ? [`InferRaw`](index.md#inferraw)<`T`[``"_inner"``], `options`\> : `T`
 
 #### Type parameters
 
-| Name |
-| :------ |
-| `T` |
+| Name | Type |
+| :------ | :------ |
+| `T` | `T` |
+| `options` | extends `InferOptions` = { `omitResolver`: `never`  } |
 
 #### Defined in
 
-[index.ts:92](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L92)
+[index.ts:97](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L97)
 
 ___
 
@@ -389,7 +402,7 @@ ___
 
 #### Defined in
 
-[index.ts:115](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L115)
+[index.ts:121](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L121)
 
 ___
 
@@ -421,7 +434,7 @@ ___
 
 #### Defined in
 
-[index.ts:18](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L18)
+[index.ts:18](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L18)
 
 ## Variables
 
@@ -431,7 +444,7 @@ ___
 
 #### Defined in
 
-[index.ts:722](https://github.com/stepci/garph/blob/32a8c22/src/index.ts#L722)
+[index.ts:795](https://github.com/stepci/garph/blob/9b4fdc4/src/index.ts#L795)
 
 ## Functions
 
@@ -454,4 +467,4 @@ ___
 
 #### Defined in
 
-[schema.ts:13](https://github.com/stepci/garph/blob/32a8c22/src/schema.ts#L13)
+[schema.ts:13](https://github.com/stepci/garph/blob/9b4fdc4/src/schema.ts#L13)
