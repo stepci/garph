@@ -3,7 +3,7 @@ import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, Expa
 import { buildSchema } from './schema'
 
 type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
-type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Optional' | 'Args'
+type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Optional' | 'Args' | 'OmitResolver'
 
 export abstract class Type<T, X extends GarphType> {
   _name?: string
@@ -47,6 +47,7 @@ export type AnyInterface = Type<any, 'InterfaceType'>
 export type AnyArgs = Type<any, 'Args'>
 export type AnyOptional = Type<any, 'Optional'>
 export type AnyObject = Type<any, 'ObjectType'>
+export type AnyOmitResolver = Type<any, 'OmitResolver'>
 
 export type Args = {
   [key: string]: AnyType
@@ -71,33 +72,38 @@ type InferResolverConfig = {
   context?: any
 }
 
+type InferOptions = {
+  omitResolver?: AnyOmitResolver | never
+}
+
 type RefType = () => AnyType
 
 // TODO: Refactor Args to get rid of this mess
-export type Infer<T> = ExpandRecursively<InferRaw<T>>
-export type InferRaw<T> = T extends AnyInput | AnyObject | AnyInterface ? {
+export type Infer<T, options extends InferOptions = { omitResolver: never }> = ExpandRecursively<InferRaw<T, options>>
+export type InferRaw<T, options extends InferOptions = { omitResolver: never }> = T extends AnyInput | AnyObject | AnyInterface ? {
   __typename?: T['_name']
 } & {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? never :
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional | options['omitResolver'] ? never :
   T['_shape'][K] extends AnyArgs ?
-  T['_shape'][K]['_shape'] extends AnyOptional ? never : K :
-  K]: InferRaw<T['_shape'][K]>
+  T['_shape'][K]['_shape'] extends AnyOptional | options['omitResolver'] ? never : K :
+  K]: InferRaw<T['_shape'][K], options>
 } & {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional ? K :
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional | options['omitResolver'] ? K :
   T['_shape'][K] extends AnyArgs ?
-  T['_shape'][K]['_shape'] extends AnyOptional ? K : never :
-  never]?: InferRaw<T['_shape'][K]>
-} : InferShallow<T>
+  T['_shape'][K]['_shape'] extends AnyOptional | options['omitResolver'] ? K : never :
+  never]?: InferRaw<T['_shape'][K], options>
+} : InferShallow<T, options>
 
-export type InferShallow<T> =
+export type InferShallow<T, options extends InferOptions = { omitResolver: never }> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? InferRaw<ObjectToUnion<T['_inner']>> :
-  T extends AnyList ? InferRaw<T['_shape']>[] :
+  T extends AnyUnion ? InferRaw<ObjectToUnion<T['_inner']>, options> :
+  T extends AnyList ? InferRaw<T['_shape'], options>[] :
   T extends AnyPaginatedList ? T['_inner'] :
-  T extends AnyOptional ? InferRaw<T['_shape']> | null | undefined :
-  T extends AnyArgs ? InferRaw<T['_shape']> :
-  T extends AnyRef ? InferRaw<T['_inner']> :
+  T extends AnyOptional ? InferRaw<T['_shape'], options> | null | undefined :
+  T extends AnyOmitResolver ? InferRaw<T['_shape'], options> :
+  T extends AnyArgs ? InferRaw<T['_shape'], options> :
+  T extends AnyRef ? InferRaw<T['_inner'], options> :
   T
 
 export type InferArgs<T extends AnyType> = ExpandRecursively<InferArgsRaw<T>>
@@ -246,6 +252,10 @@ class GString<T extends GarphType> extends Type<string, T> {
     return this
   }
 
+  omitResolver () {
+    return new GOmitResolver<this>(this)
+  }
+
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
@@ -287,6 +297,10 @@ class GNumber<T extends GarphType> extends Type<number, T> {
     return this
   }
 
+  omitResolver () {
+    return new GOmitResolver<this>(this)
+  }
+
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
@@ -326,6 +340,10 @@ class GBoolean extends Type<boolean, 'Boolean'> {
   deprecated(reason: string) {
     this.typeDef.deprecated = reason
     return this
+  }
+
+  omitResolver () {
+    return new GOmitResolver<this>(this)
   }
 
   args<X extends Args>(args: X) {
@@ -422,6 +440,10 @@ class GRef<T> extends Type<T, 'Ref'> {
     return this
   }
 
+  omitResolver () {
+    return new GOmitResolver<this>(this)
+  }
+
   args<X extends Args>(x: X) {
     return new GArgs<this, X>(this, x)
   }
@@ -488,6 +510,10 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
     return this
   }
 
+  omitResolver () {
+    return new GOmitResolver<this>(this)
+  }
+
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
@@ -538,6 +564,10 @@ class GPaginatedList<T extends AnyType> extends Type<T, 'PaginatedList'> {
     return this
   }
 
+  omitResolver () {
+    return new GOmitResolver<this>(this)
+  }
+
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
   }
@@ -574,8 +604,51 @@ class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
     return this
   }
 
+  omitResolver () {
+    return new GOmitResolver<this>(this)
+  }
+
   args<X extends Args>(args: X) {
     return new GArgs<this, X>(this, args)
+  }
+}
+
+class GOmitResolver<T extends AnyType> extends Type<T, 'OmitResolver'> {
+  constructor(shape: T) {
+    super()
+    this.typeDef = shape.typeDef
+  }
+
+  optional() {
+    return new GOptional<this>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
+  }
+
+  description(text: string) {
+    this.typeDef.description = text
+    return this
+  }
+
+  default(value: InferRaw<T>) {
+    this.typeDef.defaultValue = value
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
+
+  args<X extends Args>(args: X) {
+    return new GArgs<this, X>(this, args)
+  }
+
+  list() {
+    return new GList<this>(this)
   }
 }
 
