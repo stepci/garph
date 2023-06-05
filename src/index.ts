@@ -13,6 +13,16 @@ export abstract class Type<T, X extends GarphType> {
   _args?: Args
   _shape: T
   typeDef: TypeDefinition<T>
+
+  description(text: string) {
+    this.typeDef.description = text
+    return this
+  }
+
+  deprecated(reason: string) {
+    this.typeDef.deprecated = reason
+    return this
+  }
 }
 
 export type TypeDefinition<T> = {
@@ -161,11 +171,6 @@ class GType<N extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> 
     }
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
@@ -184,11 +189,6 @@ class GInput<N extends string, T extends AnyTypes> extends Type<T, 'InputType'> 
       shape
     }
   }
-
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
 }
 
 class GInterface<N extends string, T extends AnyTypes> extends Type<T, 'InterfaceType'> {
@@ -202,11 +202,6 @@ class GInterface<N extends string, T extends AnyTypes> extends Type<T, 'Interfac
       shape,
       interfaces
     }
-  }
-
-  description(text: string) {
-    this.typeDef.description = text
-    return this
   }
 
   implements<D extends AnyInterface>(ref: D | D[]) {
@@ -237,18 +232,8 @@ class GString<T extends GarphType> extends Type<string, T> {
     return new GList<this>(this)
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   default(value: string) {
     this.typeDef.defaultValue = value
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
     return this
   }
 
@@ -282,18 +267,8 @@ class GNumber<T extends GarphType> extends Type<number, T> {
     return new GList<this>(this)
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   default(value: number) {
     this.typeDef.defaultValue = value
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
     return this
   }
 
@@ -327,18 +302,8 @@ class GBoolean extends Type<boolean, 'Boolean'> {
     return new GList<this>(this)
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   default(value: boolean) {
     this.typeDef.defaultValue = value
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
     return this
   }
 
@@ -371,11 +336,6 @@ class GEnum<N extends string, T extends readonly string[] | TSEnumType> extends 
       shape: enumShape
     }
   }
-
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
 }
 
 class GUnion<N extends string, T extends AnyObjects> extends Type<T, 'Union'> {
@@ -389,11 +349,6 @@ class GUnion<N extends string, T extends AnyObjects> extends Type<T, 'Union'> {
       type: 'Union',
       shape
     }
-  }
-
-  description(text: string) {
-    this.typeDef.description = text
-    return this
   }
 }
 
@@ -425,18 +380,8 @@ class GRef<T> extends Type<T, 'Ref'> {
     return new GPaginatedList<this>(this)
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   default(value: InferRaw<this['_inner']>) {
     this.typeDef.defaultValue = value
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
     return this
   }
 
@@ -459,16 +404,6 @@ class GScalar<I, O> extends Type<I, 'Scalar'> {
       type: 'Scalar',
       scalarOptions
     }
-  }
-
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
-    return this
   }
 
   specifiedByUrl(url: string) {
@@ -495,18 +430,8 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
     return this
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   default(value: typeof this._inner) {
     this.typeDef.defaultValue = value
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
     return this
   }
 
@@ -554,16 +479,6 @@ class GPaginatedList<T extends AnyType> extends Type<T, 'PaginatedList'> {
     return this
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
-    return this
-  }
-
   omitResolver () {
     return new GOmitResolver<this>(this)
   }
@@ -589,18 +504,8 @@ class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
     return new GList<this>(this)
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   default(value: InferRaw<T>) {
     this.typeDef.defaultValue = value
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
     return this
   }
 
@@ -628,18 +533,8 @@ class GOmitResolver<T extends AnyType> extends Type<T, 'OmitResolver'> {
     return this
   }
 
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
   default(value: InferRaw<T>) {
     this.typeDef.defaultValue = value
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
     return this
   }
 
@@ -659,16 +554,6 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.args = args
-  }
-
-  description(text: string) {
-    this.typeDef.description = text
-    return this
-  }
-
-  deprecated(reason: string) {
-    this.typeDef.deprecated = reason
-    return this
   }
 }
 
