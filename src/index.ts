@@ -72,34 +72,38 @@ type InferResolverConfig = {
   context?: any
 }
 
+type InferOptions = {
+  omitResolver?: AnyOmitResolver | never
+}
+
 type RefType = () => AnyType
 
 // TODO: Refactor Args to get rid of this mess
-export type Infer<T> = ExpandRecursively<InferRaw<T>>
-export type InferRaw<T> = T extends AnyInput | AnyObject | AnyInterface ? {
+export type Infer<T, options extends InferOptions = { omitResolver: never }> = ExpandRecursively<InferRaw<T, options>>
+export type InferRaw<T, options extends InferOptions = { omitResolver: never }> = T extends AnyInput | AnyObject | AnyInterface ? {
   __typename?: T['_name']
 } & {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional | AnyOmitResolver ? never :
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional | options['omitResolver'] ? never :
   T['_shape'][K] extends AnyArgs ?
-  T['_shape'][K]['_shape'] extends AnyOptional | AnyOmitResolver ? never : K :
-  K]: InferRaw<T['_shape'][K]>
+  T['_shape'][K]['_shape'] extends AnyOptional | options['omitResolver'] ? never : K :
+  K]: InferRaw<T['_shape'][K], options>
 } & {
-  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional | AnyOmitResolver ? K :
+  [K in keyof T['_shape'] as T['_shape'][K] extends AnyOptional | options['omitResolver'] ? K :
   T['_shape'][K] extends AnyArgs ?
-  T['_shape'][K]['_shape'] extends AnyOptional | AnyOmitResolver ? K : never :
-  never]?: InferRaw<T['_shape'][K]>
-} : InferShallow<T>
+  T['_shape'][K]['_shape'] extends AnyOptional | options['omitResolver'] ? K : never :
+  never]?: InferRaw<T['_shape'][K], options>
+} : InferShallow<T, options>
 
-export type InferShallow<T> =
+export type InferShallow<T, options extends InferOptions = { omitResolver: never }> =
   T extends AnyString | AnyID | AnyScalar | AnyNumber | AnyBoolean ? T['_shape'] :
   T extends AnyEnum ? T['_inner'] :
-  T extends AnyUnion ? InferRaw<ObjectToUnion<T['_inner']>> :
-  T extends AnyList ? InferRaw<T['_shape']>[] :
+  T extends AnyUnion ? InferRaw<ObjectToUnion<T['_inner']>, options> :
+  T extends AnyList ? InferRaw<T['_shape'], options>[] :
   T extends AnyPaginatedList ? T['_inner'] :
-  T extends AnyOptional ? InferRaw<T['_shape']> | null | undefined :
-  T extends AnyOmitResolver ? InferRaw<T['_shape']> :
-  T extends AnyArgs ? InferRaw<T['_shape']> :
-  T extends AnyRef ? InferRaw<T['_inner']> :
+  T extends AnyOptional ? InferRaw<T['_shape'], options> | null | undefined :
+  T extends AnyOmitResolver ? InferRaw<T['_shape'], options> :
+  T extends AnyArgs ? InferRaw<T['_shape'], options> :
+  T extends AnyRef ? InferRaw<T['_inner'], options> :
   T
 
 export type InferArgs<T extends AnyType> = ExpandRecursively<InferArgsRaw<T>>
@@ -119,11 +123,11 @@ export type InferUnionNames<T> = T extends AnyUnion ? ObjectToUnion<T['_inner']>
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: K extends 'Subscription' ? {
     [G in keyof T[K]['_shape'] as G extends '__typename' ? never : G]?: {
-      subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof T[K]['_shape']]: Infer<T[K]['_shape'][G]> }>>
-      resolve?: (value: Infer<T[K]['_shape'][G]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G]>>
+      subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof T[K]['_shape']]: Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }> }>>
+      resolve?: (value: Infer<T[K]['_shape'][G]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
     }
   } : {
-    [G in keyof T[K]['_shape'] as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G]>>>
+    [G in keyof T[K]['_shape'] as G extends '__typename' ? never : G]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>>
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
     __resolveType?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<InferUnionNames<T[K]>>
@@ -133,11 +137,11 @@ export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = 
 export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: K extends 'Subscription' ? {
     [G in keyof T[K]['_shape'] as G extends '__typename' ? never : G]: {
-      subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof T[K]['_shape']]: Infer<T[K]['_shape'][G]> }>>
-      resolve?: (value: Infer<T[K]['_shape'][G]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G]>>
+      subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof T[K]['_shape']]: Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }> }>>
+      resolve?: (value: Infer<T[K]['_shape'][G]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
     }
   } : {
-    [G in keyof T[K]['_shape'] as G extends '__typename' ? never : G]: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G]>>>
+    [G in keyof T[K]['_shape'] as G extends '__typename' ? never : G]: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>>
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
     __resolveType?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<InferUnionNames<T[K]>>
