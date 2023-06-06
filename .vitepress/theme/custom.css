@@ -58,3 +58,15 @@ code.nav {
   color: var(--vp-c-text-code);
   background-color: var(--vp-c-divider);
 }
+
+.badge-new {
+  margin-left: 2px;
+  box-sizing: border-box;
+  padding: 2px 6px;
+  background-color: var(--vp-c-brand);
+  font-size: 10px;
+  color: #fff;
+  border-radius: 20px;
+  font-weight: 700;
+  text-transform: uppercase;
+}

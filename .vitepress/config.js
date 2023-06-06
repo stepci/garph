@@ -48,6 +48,7 @@ export default defineConfig({
             { text: 'Schemas', link: '/docs/guide/schemas.md' },
             { text: 'Resolvers', link: '/docs/guide/resolvers.md' },
             { text: 'Inferring Types', link: '/docs/guide/inferring-types.md' },
+            { text: 'Migrate <span class="badge-new">New</span>', link: '/docs/guide/migrate.md' }
           ]
         },
         {

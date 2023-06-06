@@ -23,7 +23,7 @@
     "typescript": "^4.9.5",
     "typedoc": "^0.23.27",
     "typedoc-plugin-markdown": "^3.14.0",
-    "vitepress": "^1.0.0-alpha.61"
+    "vitepress": "^1.0.0-beta.1"
   },
   "dependencies": {
     "graphql-compose": "^9.0.10"
