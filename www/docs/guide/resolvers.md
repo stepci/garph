@@ -17,12 +17,6 @@ Resolver functions receive four arguments:
 
 ## Specifying resolver functions
 
-### In the Schema
-
-See: https://github.com/stepci/garph/issues/42
-
-### Separately
-
 ```ts{13-17} [Example]
 import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga } from 'graphql-yoga'

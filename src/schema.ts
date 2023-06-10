@@ -1,5 +1,8 @@
 import { AnyType, Args, GarphSchema } from './index'
 import { schemaComposer } from 'graphql-compose'
+import { Factory } from 'single-user-cache'
+const factory = new Factory()
+const dataLoader = factory.create()
 
 export type ConverterConfig = {
   defaultNullability?: boolean
@@ -11,28 +14,7 @@ export function printSchema(g: GarphSchema, config: ConverterConfig = { defaultN
 }
 
 export function buildSchema({ g, resolvers }: { g: GarphSchema, resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
-  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
-
-  if (resolvers) {
-    if (resolvers['Subscription']) {
-      Object.entries(resolvers['Subscription'])
-        .forEach(([key, value]: [string, any]) => {
-          schemaComposer.Subscription.addFields({
-            [key]: {
-              type: schemaComposer.getOTC('Subscription').getField(key).type,
-              args: schemaComposer.getOTC('Subscription').getField(key).args,
-              resolve: value.resolve,
-              subscribe: value.subscribe
-            }
-          })
-      })
-
-      delete resolvers['Subscription']
-    }
-
-    schemaComposer.addResolveMethods(resolvers)
-  }
-
+  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config, resolvers[type.typeDef.name])))
   return schemaComposer.buildSchema()
 }
 
@@ -98,18 +80,18 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
   }
 }
 
-export function convertToGraphqlType(name: string, type: AnyType, config: ConverterConfig) {
+export function convertToGraphqlType(name: string, type: AnyType, config: ConverterConfig, resolvers?: any) {
   switch (type.typeDef.type) {
     case 'ObjectType':
       const objType = schemaComposer.createObjectTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(type.typeDef.shape, config)
+        fields: parseFields(name, type.typeDef.shape, config, resolvers),
       })
 
       if (type.typeDef.interfaces) {
         type.typeDef.interfaces.forEach(i => {
-          objType.addFields(parseFields(i.typeDef.shape, config))
+          objType.addFields(parseFields(name, i.typeDef.shape, config, resolvers))
           objType.addInterface(i.typeDef.name)
         })
       }
@@ -128,13 +110,14 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
       return schemaComposer.createUnionTC({
         name,
         description: type.typeDef.description,
-        types: Object.values(type.typeDef.shape).map((t: AnyType) => t.typeDef.name)
+        types: Object.values(type.typeDef.shape).map((t: AnyType) => t.typeDef.name),
+        resolveType: resolvers?.resolveType
       })
     case 'InputType':
       return schemaComposer.createInputTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(type.typeDef.shape, config),
+        fields: parseFields(name, type.typeDef.shape, config),
       })
     case 'Scalar':
       return schemaComposer.createScalarTC({
@@ -149,12 +132,13 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
       const interfaceType = schemaComposer.createInterfaceTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(type.typeDef.shape, config)
+        fields: parseFields(name, type.typeDef.shape, config),
+        resolveType: resolvers?.resolveType
       })
 
       if (type.typeDef.interfaces) {
         type.typeDef.interfaces.forEach(i => {
-          interfaceType.addFields(parseFields(i.typeDef.shape, config))
+          interfaceType.addFields(parseFields(name, i.typeDef.shape, config))
           interfaceType.addInterface(i.typeDef.name)
         })
       }
@@ -163,7 +147,7 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
   }
 }
 
-export function parseFields(fields: AnyType, config: ConverterConfig) {
+export function parseFields(name: string, fields: AnyType, config: ConverterConfig, resolvers?: any) {
   const fieldsObj = {}
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName]
@@ -173,10 +157,37 @@ export function parseFields(fields: AnyType, config: ConverterConfig) {
       defaultValue: field.typeDef.defaultValue,
       deprecationReason: field.typeDef.deprecated,
       description: field.typeDef.description,
+      resolve: addResolver(resolvers?.[fieldName], name + '.' + fieldName),
+      subscribe: resolvers?.[fieldName]?.subscribe
     }
   })
 
   return fieldsObj
+}
+
+function addResolver (resolver, cacheKey: string) {
+  if (!resolver) return
+  if (resolver.resolve) return resolver.resolve
+
+  // Loader
+  if (resolver.load) {
+    factory.add(cacheKey, { cache: true }, async (queries) => resolver.load(queries))
+
+    return (parent, args, context, info) => {
+      return dataLoader[cacheKey]({ parent, args, context, info })
+    }
+  }
+
+  // Loader (no cache)
+  if (resolver.loadBatch) {
+    factory.add(cacheKey, { cache: false }, async (queries) => resolver.loadBatch(queries))
+
+    return (parent, args, context, info) => {
+      return dataLoader[cacheKey]({ parent, args, context, info })
+    }
+  }
+
+  return resolver
 }
 
 export function parseArgs(anyArgs: Args, config) {

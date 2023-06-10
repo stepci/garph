@@ -5,7 +5,7 @@
     "type": "git",
     "url": "https://github.com/stepci/garph"
   },
-  "version": "0.5.4",
+  "version": "0.5.6",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
@@ -20,12 +20,13 @@
     "graphql": "^16.6.0",
     "graphql-yoga": "^3.7.1",
     "ts-node": "^10.9.1",
-    "typescript": "^4.9.5",
     "typedoc": "^0.23.27",
     "typedoc-plugin-markdown": "^3.14.0",
+    "typescript": "^4.9.5",
     "vitepress": "^1.0.0-beta.1"
   },
   "dependencies": {
-    "graphql-compose": "^9.0.10"
+    "graphql-compose": "^9.0.10",
+    "single-user-cache": "^0.6.0"
   }
 }
