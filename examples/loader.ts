@@ -34,7 +34,11 @@ const resolvers: resolverTypes = {
   Dog: {
     owner: {
       load (queries) {
-        return queries.map(q => owners[q.parent.name])
+        return queries.map(q => new Promise(resolve => {
+          setTimeout(() => {
+            resolve(owners[q.parent.name])
+          }, 1000)
+        }))
       }
     }
   }

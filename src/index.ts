@@ -142,9 +142,9 @@ export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = 
     [G in keyof T[K]['_shape']]?: {
       resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
     } | {
-      load: (query: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
+      load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     } | {
-      loadBatch: (query: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
+      loadBatch: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     }
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
@@ -164,9 +164,9 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
     [G in keyof T[K]['_shape']]: {
       resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
     } | {
-      load: (query: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
+      load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     } | {
-      loadBatch: (query: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
+      loadBatch: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     }
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>

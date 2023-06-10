@@ -2,6 +2,7 @@ import { AnyType, Args, GarphSchema } from './index'
 import { schemaComposer } from 'graphql-compose'
 import { Factory } from 'single-user-cache'
 const factory = new Factory()
+const dataLoader = factory.create()
 
 export type ConverterConfig = {
   defaultNullability?: boolean
@@ -167,8 +168,6 @@ export function parseFields(name: string, fields: AnyType, config: ConverterConf
 function addResolver (resolver, cacheKey: string) {
   if (!resolver) return
   if (resolver.resolve) return resolver.resolve
-
-  const dataLoader = factory.create()
 
   // Loader
   if (resolver.load) {

@@ -47,6 +47,7 @@ export default defineConfig({
             { text: 'Quickstart', link: '/docs/index.md' },
             { text: 'Schemas', link: '/docs/guide/schemas.md' },
             { text: 'Resolvers', link: '/docs/guide/resolvers.md' },
+            { text: 'Data Loader', link: '/docs/guide/data-loader.md' },
             { text: 'Inferring Types', link: '/docs/guide/inferring-types.md' },
             { text: 'Migrate <span class="badge-new">New</span>', link: '/docs/guide/migrate.md' }
           ]
@@ -65,7 +66,6 @@ export default defineConfig({
             { text: 'Federation', link: '/docs/advanced/federation.md' },
             { text: 'Errors', link: '/docs/advanced/errors.md' },
             { text: 'Testing', link: '/docs/advanced/testing.md' },
-            { text: 'Default Nullability', link: '/docs/advanced/default-nullability.md' },
             { text: 'Extending Garph', link: '/docs/advanced/extending-garph.md' },
           ]
         },
@@ -94,7 +94,7 @@ export default defineConfig({
                 { text: 'Fetch API', link:'/docs/integration/client/fetch.md' },
               ]
             },
-            { text: 'ChatGPT', link:'/docs/integration/chatgpt.md' },
+            // { text: 'ChatGPT', link:'/docs/integration/chatgpt.md' },
           ]
         },
         {
