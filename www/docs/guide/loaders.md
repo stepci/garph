@@ -1,10 +1,10 @@
-# Data Loader
+# Loaders
 
-GraphQL Data Loaders are used to batch and load data from a data source. They help address the N+1 problem, which is a common performance issue in GraphQL APIs.
+In GraphQL, Data Loaders are used to batch and load data from a data source. They help address the N+1 problem, which is a common performance issue in GraphQL APIs.
 
 The N+1 problem occurs when a GraphQL query involves fetching a list of entities (e.g., users) along with a related field (e.g., their posts), and for each entity, an additional query is made to fetch the related data. This leads to multiple (database) queries, causing inefficiencies and potential performance bottlenecks.
 
-In Garph, you can add a data loader to the field by making a field resolver return an object with `load` or `loadBatch` (no cache) function, which accepts a batch of queries that you can use to map to your data
+In Garph, you can add loaders to fields by making a field resolver return an object with `load` or `loadBatch` (no cache) function, which accepts a batch of queries that you can use to map to your data
 
 ## Parameters
 

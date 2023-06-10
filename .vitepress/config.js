@@ -47,7 +47,7 @@ export default defineConfig({
             { text: 'Quickstart', link: '/docs/index.md' },
             { text: 'Schemas', link: '/docs/guide/schemas.md' },
             { text: 'Resolvers', link: '/docs/guide/resolvers.md' },
-            { text: 'Data Loader', link: '/docs/guide/data-loader.md' },
+            { text: 'Loaders', link: '/docs/guide/loaders.md' },
             { text: 'Inferring Types', link: '/docs/guide/inferring-types.md' },
             { text: 'Migrate <span class="badge-new">New</span>', link: '/docs/guide/migrate.md' }
           ]
