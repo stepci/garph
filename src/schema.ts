@@ -157,8 +157,11 @@ export function parseFields(name: string, fields: AnyType, config: ConverterConf
       defaultValue: field.typeDef.defaultValue,
       deprecationReason: field.typeDef.deprecated,
       description: field.typeDef.description,
-      resolve: addResolver(resolvers?.[fieldName], name + '.' + fieldName),
       subscribe: resolvers?.[fieldName]?.subscribe
+    }
+
+    if (resolvers?.[fieldName]) {
+      fieldsObj[fieldName].resolve = addResolver(resolvers[fieldName], `${name}.${fieldName}`)
     }
   })
 
