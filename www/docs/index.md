@@ -8,6 +8,10 @@ outline: [2, 3]
 
 Garph is a tool for building GraphQL APIs without codegen. It provides a fullstack TypeScript experience and makes it easy to create and maintain GraphQL APIs. This guide will show you how to install and set up Garph and create a simple GraphQL API.
 
+**Check out a video introduction to Garph by Jamie Barton**
+
+<iframe width="560" height="315" src="https://www.youtube-nocookie.com/embed/a6oEbe0-6zU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
 ## Prerequisites
 
 Before you begin, make sure you have the following installed:
