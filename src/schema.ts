@@ -156,12 +156,11 @@ export function parseFields(name: string, fields: AnyType, config: ConverterConf
       args: parseArgs(field.typeDef.args, config),
       defaultValue: field.typeDef.defaultValue,
       deprecationReason: field.typeDef.deprecated,
-      description: field.typeDef.description,
-      subscribe: resolvers?.[fieldName]?.subscribe
+      description: field.typeDef.description
     }
 
     if (resolvers?.[fieldName]) {
-      fieldsObj[fieldName].resolve = addResolver(resolvers[fieldName], `${name}.${fieldName}`)
+      Object.assign(fieldsObj[fieldName], addResolver(resolvers[fieldName], `${name}.${fieldName}`))
     }
   })
 
@@ -170,14 +169,16 @@ export function parseFields(name: string, fields: AnyType, config: ConverterConf
 
 function addResolver (resolver, cacheKey: string) {
   if (!resolver) return
-  if (resolver.resolve) return resolver.resolve
+  if (resolver.resolve || resolver.subscribe) return resolver
 
   // Loader
   if (resolver.load) {
     factory.add(cacheKey, { cache: true }, async (queries) => resolver.load(queries))
 
-    return (parent, args, context, info) => {
-      return dataLoader[cacheKey]({ parent, args, context, info })
+    return {
+      resolve: (parent, args, context, info) => {
+        return dataLoader[cacheKey]({ parent, args, context, info })
+      }
     }
   }
 
@@ -185,12 +186,14 @@ function addResolver (resolver, cacheKey: string) {
   if (resolver.loadBatch) {
     factory.add(cacheKey, { cache: false }, async (queries) => resolver.loadBatch(queries))
 
-    return (parent, args, context, info) => {
-      return dataLoader[cacheKey]({ parent, args, context, info })
+    return {
+      resolve: (parent, args, context, info) => {
+        return dataLoader[cacheKey]({ parent, args, context, info })
+      }
     }
   }
 
-  return resolver
+  return { resolve: resolver }
 }
 
 export function parseArgs(anyArgs: Args, config) {
