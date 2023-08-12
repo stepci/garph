@@ -6,8 +6,8 @@ const user = g.node('UserNode', {
   name: g.string().description('User name'),
 })
 
-const userEdge = g.edge('UserEdge', user)
-const userConnection = g.connection('UserConnection', userEdge)
+const userEdge = g.edge('UserEdge', g.ref(() => user))
+const userConnection = g.connection('UserConnection', g.ref(() => userEdge))
 
 const queryType = g.type('Query', {
   users: g.ref(userConnection).args({ ...g.pageInfoArgs })

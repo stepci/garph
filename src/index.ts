@@ -605,7 +605,7 @@ export class GarphSchema {
     return t
   }
 
-  connection<N extends string, T extends AnyObject>(name: N, shape: T) {
+  connection<N extends string, T extends AnyRef>(name: N, shape: T) {
     const t = new GType(name, {
       edges: new GList(shape),
       pageInfo: this.pageInfoType
@@ -615,7 +615,7 @@ export class GarphSchema {
     return t
   }
 
-  edge<N extends string, T extends AnyObject>(name: N, shape: T) {
+  edge<N extends string, T extends AnyRef>(name: N, shape: T) {
     const t = new GType<N, {
       node: T
       cursor: AnyString
