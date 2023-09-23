@@ -1,6 +1,6 @@
 import type { GraphQLResolveInfo } from 'graphql'
 import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively, MaybePromise, MaybeFunction } from './utils'
-import { buildSchema, printSchema } from './schema'
+import { buildSchema, buildSchemaFromTypes, printSchema } from './schema'
 
 type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Optional' | 'Args' | 'OmitResolver'
@@ -695,4 +695,4 @@ export class GarphSchema {
 
 export const g = new GarphSchema()
 
-export { buildSchema, printSchema }
+export { buildSchema, buildSchemaFromTypes, printSchema }

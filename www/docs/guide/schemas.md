@@ -435,4 +435,6 @@ g.string().omitResolver()
 
 [→ `buildSchema`](/api/index.md#buildschema)
 
+[→ `buildSchemaFromTypes`](/api/index.md#buildSchemaFromTypes)
+
 [→ `printSchema`](/api/index.md#printschema)

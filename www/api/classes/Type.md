@@ -30,7 +30,7 @@
 
 #### Defined in
 
-[index.ts:13](https://github.com/stepci/garph/blob/a698263/src/index.ts#L13)
+[index.ts:13](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L13)
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 #### Defined in
 
-[index.ts:11](https://github.com/stepci/garph/blob/a698263/src/index.ts#L11)
+[index.ts:11](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L11)
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 #### Defined in
 
-[index.ts:10](https://github.com/stepci/garph/blob/a698263/src/index.ts#L10)
+[index.ts:10](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L10)
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 #### Defined in
 
-[index.ts:9](https://github.com/stepci/garph/blob/a698263/src/index.ts#L9)
+[index.ts:9](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L9)
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 #### Defined in
 
-[index.ts:12](https://github.com/stepci/garph/blob/a698263/src/index.ts#L12)
+[index.ts:12](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L12)
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-[index.ts:14](https://github.com/stepci/garph/blob/a698263/src/index.ts#L14)
+[index.ts:14](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L14)
 
 ___
 
@@ -90,7 +90,7 @@ ___
 
 #### Defined in
 
-[index.ts:15](https://github.com/stepci/garph/blob/a698263/src/index.ts#L15)
+[index.ts:15](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L15)
 
 ## Methods
 
@@ -110,7 +110,7 @@ ___
 
 #### Defined in
 
-[index.ts:22](https://github.com/stepci/garph/blob/a698263/src/index.ts#L22)
+[index.ts:22](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L22)
 
 ___
 
@@ -130,4 +130,4 @@ ___
 
 #### Defined in
 
-[index.ts:17](https://github.com/stepci/garph/blob/a698263/src/index.ts#L17)
+[index.ts:17](https://github.com/stepci/garph/blob/1256b62/src/index.ts#L17)
