@@ -1,5 +1,5 @@
 import { AnyType, Args, GarphSchema } from './index'
-import { schemaComposer } from 'graphql-compose'
+import { SchemaComposer } from 'graphql-compose'
 import { Factory } from 'single-user-cache'
 const factory = new Factory()
 const dataLoader = factory.create()
@@ -9,12 +9,14 @@ export type ConverterConfig = {
 }
 
 export function printSchema(g: GarphSchema, config: ConverterConfig = { defaultNullability: false }) {
-  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config)))
+  const schemaComposer = new SchemaComposer();
+  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(schemaComposer, type.typeDef.name, type, config)))
   return schemaComposer.toSDL()
 }
 
 export function buildSchema({ g, resolvers }: { g: GarphSchema, resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
-  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(type.typeDef.name, type, config, resolvers[type.typeDef.name])))
+  const schemaComposer = new SchemaComposer();
+  g.types.forEach(type => schemaComposer.add(convertToGraphqlType(schemaComposer, type.typeDef.name, type, config, resolvers[type.typeDef.name])))
   return schemaComposer.buildSchema()
 }
 
@@ -22,7 +24,7 @@ function isOptional(target: string, type: AnyType, config: ConverterConfig) {
   return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }
 
-export function getFieldType(type: AnyType, config: ConverterConfig) {
+export function getFieldType(schemaComposer: SchemaComposer, type: AnyType, config: ConverterConfig) {
   switch (type.typeDef.type) {
     case 'String':
       return isOptional('String', type, config)
@@ -35,7 +37,7 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
     case 'ID':
       return isOptional('ID', type, config)
     case 'List':
-      return isOptional(`[${getFieldType(type.typeDef.shape, config)}]`, type, config)
+      return isOptional(`[${getFieldType(schemaComposer, type.typeDef.shape, config)}]`, type, config)
     case 'PaginatedList':
       schemaComposer.createObjectTC({
         name: `${type.typeDef.shape.typeDef.shape.typeDef.name}Edge`,
@@ -80,18 +82,18 @@ export function getFieldType(type: AnyType, config: ConverterConfig) {
   }
 }
 
-export function convertToGraphqlType(name: string, type: AnyType, config: ConverterConfig, resolvers?: any) {
+export function convertToGraphqlType(schemaComposer: SchemaComposer, name: string, type: AnyType, config: ConverterConfig, resolvers?: any) {
   switch (type.typeDef.type) {
     case 'ObjectType':
       const objType = schemaComposer.createObjectTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(name, type.typeDef.shape, config, resolvers),
+        fields: parseFields(schemaComposer, name, type.typeDef.shape, config, resolvers),
       })
 
       if (type.typeDef.interfaces) {
         type.typeDef.interfaces.forEach(i => {
-          objType.addFields(parseFields(name, i.typeDef.shape, config, resolvers))
+          objType.addFields(parseFields(schemaComposer, name, i.typeDef.shape, config, resolvers))
           objType.addInterface(i.typeDef.name)
         })
       }
@@ -117,7 +119,7 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
       return schemaComposer.createInputTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(name, type.typeDef.shape, config),
+        fields: parseFields(schemaComposer, name, type.typeDef.shape, config),
       })
     case 'Scalar':
       return schemaComposer.createScalarTC({
@@ -132,13 +134,13 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
       const interfaceType = schemaComposer.createInterfaceTC({
         name,
         description: type.typeDef.description,
-        fields: parseFields(name, type.typeDef.shape, config),
+        fields: parseFields(schemaComposer, name, type.typeDef.shape, config),
         resolveType: resolvers?.resolveType
       })
 
       if (type.typeDef.interfaces) {
         type.typeDef.interfaces.forEach(i => {
-          interfaceType.addFields(parseFields(name, i.typeDef.shape, config))
+          interfaceType.addFields(parseFields(schemaComposer, name, i.typeDef.shape, config))
           interfaceType.addInterface(i.typeDef.name)
         })
       }
@@ -147,13 +149,14 @@ export function convertToGraphqlType(name: string, type: AnyType, config: Conver
   }
 }
 
-export function parseFields(name: string, fields: AnyType, config: ConverterConfig, resolvers?: any) {
+export function parseFields(schemaComposer: SchemaComposer, name: string, fields: AnyType, config: ConverterConfig, resolvers?: any) {
   const fieldsObj = {}
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName]
+
     fieldsObj[fieldName] = {
-      type: getFieldType(field, config),
-      args: parseArgs(field.typeDef.args, config),
+      type: getFieldType(schemaComposer, field, config),
+      args: parseArgs(schemaComposer, field.typeDef.args, config),
       defaultValue: field.typeDef.defaultValue,
       deprecationReason: field.typeDef.deprecated,
       description: field.typeDef.description
@@ -196,14 +199,15 @@ function addResolver (resolver, cacheKey: string) {
   return { resolve: resolver }
 }
 
-export function parseArgs(anyArgs: Args, config) {
+export function parseArgs(schemaComposer: SchemaComposer, anyArgs: Args, config) {
   if (!anyArgs) return
 
   const args = {}
+
   Object.keys(anyArgs).forEach(argName => {
     const arg = anyArgs[argName]
     args[argName] = {
-      type: getFieldType(arg, config),
+      type: getFieldType(schemaComposer, arg, config),
       defaultValue: arg.typeDef.defaultValue,
       deprecationReason: arg.typeDef.deprecated,
       description: arg.typeDef.description
