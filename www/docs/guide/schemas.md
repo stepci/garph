@@ -8,12 +8,20 @@ In GraphQL, a schema is a collection of types that define the structure of data 
 
 ## Constructors
 
-Create a new Garph schema
+Create new Garph schema
 
 ```ts
 import { GarphSchema } from 'garph'
 
 const g = new GarphSchema()
+```
+
+Create new Garph schema with types
+
+```ts
+import { GarphSchema } from 'garph'
+
+const g = new GarphSchema({ types: [type1, type2, type3] })
 ```
 
 ## Types
@@ -434,7 +442,5 @@ g.string().omitResolver()
 ## Utilities
 
 [→ `buildSchema`](/api/index.md#buildschema)
-
-[→ `buildSchemaFromTypes`](/api/index.md#buildSchemaFromTypes)
 
 [→ `printSchema`](/api/index.md#printschema)
