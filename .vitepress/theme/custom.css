@@ -1,5 +1,5 @@
 :root {
-  --vp-c-brand: #3230df;
+  --vp-c-brand-1: #3230df;
   --vp-c-brand-dark: #3230df;
   --vp-code-block-bg: #f6f8fa;
   --vp-c-text-1: #3f3f46;
@@ -9,10 +9,11 @@
   --vp-code-tab-active-text-color: var(--vp-c-text-1);
   --vp-code-tab-hover-text-color: var(--vp-c-text-1);
   --vp-code-line-highlight-color: rgba(0,0,0,.05);
+  --vp-code-color: inherit
 }
 
 .dark {
-  --vp-c-brand: rgb(94,92,230);
+  --vp-c-brand-1: rgb(94,92,230);
   --vp-c-brand-dark: rgb(94,92,230);
   --vp-c-bg-alt: #131316;
   --vp-c-bg: #18181B;
@@ -69,4 +70,8 @@ code.nav {
   border-radius: 20px;
   font-weight: 700;
   text-transform: uppercase;
+}
+
+.vp-doc a {
+  text-decoration: none;
 }

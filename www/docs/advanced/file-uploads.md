@@ -1,10 +1,12 @@
 # File Uploads
 
+::: warning
+The feature only works with compatible GraphQL servers and clients that have implemented the Multipart Request Specification.
+:::
+
 Garph supports the GraphQL [Multipart Request Specification](https://github.com/jaydenseric/graphql-multipart-request-spec), allowing you to upload files and consume the binary data inside GraphQL Resolvers via HTTP. All you need to do is adding a `File` scalar to your schema.
 
 You can consume uploaded files or blobs as WHATWG standard [`File`](https://developer.mozilla.org/en-US/docs/Web/API/File) or [`Blob`](https://developer.mozilla.org/en-US/docs/Web/API/Blob) objects you might be familiar from the browser's API.
-
-> The feature only works with compatible GraphQL servers and clients that have implemented the Multipart Request Specification
 
 ```ts
 import { g, InferResolvers, buildSchema } from 'garph'

@@ -20,6 +20,12 @@ export function buildSchema({ g, resolvers }: { g: GarphSchema, resolvers?: any 
   return schemaComposer.buildSchema()
 }
 
+export function buildSchemaFromTypes({ types, resolvers }: { types: GarphSchema['types'], resolvers?: any }, config: ConverterConfig = { defaultNullability: false }) {
+  const schemaComposer = new SchemaComposer();
+  types.forEach(type => schemaComposer.add(convertToGraphqlType(schemaComposer, type.typeDef.name, type, config, resolvers[type.typeDef.name])))
+  return schemaComposer.buildSchema()
+}
+
 function isOptional(target: string, type: AnyType, config: ConverterConfig) {
   return type.typeDef.isRequired ? `${target}!` : type.typeDef.isOptional ? `${target}` : config.defaultNullability ? `${target}` : `${target}!`
 }

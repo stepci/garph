@@ -283,7 +283,7 @@ layout: page
       <div class="hero-actions">
         <a href="https://github.com/stepci/garph/stargazers" class="hero-action primary">
           <img src="/icons/star.svg" width="20" height="20" />
-          <span style="padding-left: 8px">Star <span style="font-weight:800;">1000+</span></span>
+          <span style="padding-left: 8px">Star <span style="font-weight:800;">1200+</span></span>
         </a>
         <a href="/docs" class="hero-action secondary">
           <span style="padding-right: 8px">Get started</span>

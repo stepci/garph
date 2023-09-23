@@ -6,6 +6,16 @@ outline: [2, 3]
 
 In GraphQL, a schema is a collection of types that define the structure of data that can be queried or mutated in a GraphQL API. The schema acts as a contract between the client and server, specifying what types of data can be queried, what types of mutations can be performed, and how the data will be structured and returned.
 
+## Constructors
+
+Create a new Garph schema
+
+```ts
+import { GarphSchema } from 'garph'
+
+const g = new GarphSchema()
+```
+
 ## Types
 
 ### Object Type

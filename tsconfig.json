@@ -5,7 +5,7 @@
     "lib": ["ESNext", "DOM"],
     "module": "NodeNext",
     "target": "ESNext",
-    "moduleResolution": "Node"
+    "moduleResolution": "NodeNext"
   },
   "include": ["src/**/*.ts"],
 }

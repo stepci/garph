@@ -16,12 +16,12 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     logo: {
-      light: 'logo/r6N.svg',
-      dark: 'logo/r5m.svg',
+      light: '/logo/r6N.svg',
+      dark: '/logo/r5m.svg',
     },
     // logo: {
-    //   light: 'logo/r6p.svg',
-    //   dark: 'logo/r5y.svg'
+    //   light: '/logo/r6p.svg',
+    //   dark: '/logo/r5y.svg'
     // },
     siteTitle: false,
     nav: [

@@ -1,6 +1,6 @@
 import type { GraphQLResolveInfo } from 'graphql'
 import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, ExpandRecursively, MaybePromise, MaybeFunction } from './utils'
-import { buildSchema } from './schema'
+import { buildSchema, printSchema } from './schema'
 
 type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Optional' | 'Args' | 'OmitResolver'
@@ -137,10 +137,10 @@ export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = 
       resolve?: (value: Infer<T[K]['_shape'][G]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
     }
   } : {
-    [G in keyof T[K]['_shape']]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>>
+    [G in keyof T[K]['_shape']]?: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>> | AsyncGenerator<Infer<T[K]['_shape'][G]['_shape'], { omitResolver: AnyOmitResolver }>>
   } | {
     [G in keyof T[K]['_shape']]?: {
-      resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
+      resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>> | AsyncGenerator<Infer<T[K]['_shape'][G]['_shape'], { omitResolver: AnyOmitResolver }>>
     } | {
       load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     } | {
@@ -159,10 +159,10 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
       resolve?: (value: Infer<T[K]['_shape'][G]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
     }
   } : {
-    [G in keyof T[K]['_shape']]: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>>
+    [G in keyof T[K]['_shape']]: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<MaybeFunction<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>> | AsyncGenerator<Infer<T[K]['_shape'][G]['_shape'], { omitResolver: AnyOmitResolver }>>
   } | {
     [G in keyof T[K]['_shape']]: {
-      resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
+      resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>> | AsyncGenerator<Infer<T[K]['_shape'][G]['_shape'], { omitResolver: AnyOmitResolver }>>
     } | {
       load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     } | {
@@ -695,4 +695,4 @@ export class GarphSchema {
 
 export const g = new GarphSchema()
 
-export { buildSchema }
+export { buildSchema, printSchema }
