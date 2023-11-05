@@ -36,7 +36,8 @@ export type TypeDefinition<T> = {
   deprecated?: string
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
-  interfaces?: AnyType[]
+  interfaces?: AnyInterface[]
+  extend?: AnyTypes[]
 }
 
 export type AnyType = Type<any, any>
@@ -177,53 +178,74 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
 class GType<N extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> {
   declare _name: N
 
-  constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
+  constructor(name: string, shape: T, interfaces?: AnyInterface[], extend?: AnyTypes[]) {
     super()
     this.typeDef = {
       name,
       type: 'ObjectType',
       shape,
-      interfaces
+      interfaces,
+      extend
     }
   }
 
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GType<N, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
+    return new GType<N, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref], this.typeDef.extend)
+  }
+
+  extend<D extends AnyTypes>(ref: D | D[]) {
+    // This is temporary construct, until we figure out how to properly manage to shared schema
+    this.typeDef.extend = Array.isArray(ref) ? ref : [ref]
+    return new GType<N, T & UnionToIntersection<D>>(this.typeDef.name, this.typeDef.shape as any, this.typeDef.interfaces, Array.isArray(ref) ? ref : [ref])
   }
 }
 
 class GInput<N extends string, T extends AnyTypes> extends Type<T, 'InputType'> {
   declare _name: N
 
-  constructor(name: string, shape: T) {
+  constructor(name: string, shape: T, extend?: AnyTypes[]) {
     super()
     this.typeDef = {
       name,
       type: 'InputType',
-      shape
+      shape,
+      extend
     }
+  }
+
+  extend<D extends AnyTypes>(ref: D | D[]) {
+    // This is temporary construct, until we figure out how to properly manage to shared schema
+    this.typeDef.extend = Array.isArray(ref) ? ref : [ref]
+    return new GInput<N, T & UnionToIntersection<D>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
   }
 }
 
 class GInterface<N extends string, T extends AnyTypes> extends Type<T, 'InterfaceType'> {
   declare _name: N
 
-  constructor(name: string, shape: T, interfaces?: AnyInterface[]) {
+  constructor(name: string, shape: T, interfaces?: AnyInterface[], extend?: AnyTypes[]) {
     super()
     this.typeDef = {
       name,
       type: 'InterfaceType',
       shape,
-      interfaces
+      interfaces,
+      extend
     }
   }
 
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GInterface<N ,T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
+    return new GInterface<N ,T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref], this.typeDef.extend)
+  }
+
+  extend<D extends AnyTypes>(ref: D | D[]) {
+    // This is temporary construct, until we figure out how to properly manage to shared schema
+    this.typeDef.extend = Array.isArray(ref) ? ref : [ref]
+    return new GInterface<N, T & UnionToIntersection<D>>(this.typeDef.name, this.typeDef.shape as any, this.typeDef.interfaces, Array.isArray(ref) ? ref : [ref])
   }
 }
 

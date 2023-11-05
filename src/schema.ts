@@ -98,6 +98,12 @@ export function convertToGraphqlType(schemaComposer: SchemaComposer, name: strin
         })
       }
 
+      if (type.typeDef.extend) {
+        type.typeDef.extend.forEach(i => {
+          objType.addFields(parseFields(schemaComposer, name, i as any, config, resolvers))
+        })
+      }
+
       return objType
     case 'Enum':
       return schemaComposer.createEnumTC({
@@ -116,11 +122,19 @@ export function convertToGraphqlType(schemaComposer: SchemaComposer, name: strin
         resolveType: resolvers?.resolveType
       })
     case 'InputType':
-      return schemaComposer.createInputTC({
+      const inputType = schemaComposer.createInputTC({
         name,
         description: type.typeDef.description,
         fields: parseFields(schemaComposer, name, type.typeDef.shape, config),
       })
+
+      if (type.typeDef.extend) {
+        type.typeDef.extend.forEach(i => {
+          inputType.addFields(parseFields(schemaComposer, name, i as any, config, resolvers))
+        })
+      }
+
+      return inputType
     case 'Scalar':
       return schemaComposer.createScalarTC({
         name,
@@ -142,6 +156,12 @@ export function convertToGraphqlType(schemaComposer: SchemaComposer, name: strin
         type.typeDef.interfaces.forEach(i => {
           interfaceType.addFields(parseFields(schemaComposer, name, i.typeDef.shape, config))
           interfaceType.addInterface(i.typeDef.name)
+        })
+      }
+
+      if (type.typeDef.extend) {
+        type.typeDef.extend.forEach(i => {
+          interfaceType.addFields(parseFields(schemaComposer, name, i as any, config, resolvers))
         })
       }
 

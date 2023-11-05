@@ -375,6 +375,32 @@ type Test implements interface {
 }
 ```
 
+### Extend
+
+Define a set of properties that extends an input, interface or object type
+
+```ts
+const name = {
+  name: g.string()
+}
+
+const test = g.type('Test', {}).extend(name)
+```
+
+Or array of properties:
+
+```ts
+const test = g.type('Test', {}).extend([firstname, lastname])
+```
+
+GraphQL Type:
+
+```graphql
+extend type Test {
+  name: String!
+}
+```
+
 ### List
 
 Turns a particular type into a list
