@@ -396,7 +396,7 @@ const test = g.type('Test', {}).extend([firstname, lastname])
 GraphQL Type:
 
 ```graphql
-extend type Test {
+type Test {
   name: String!
 }
 ```
