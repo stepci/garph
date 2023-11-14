@@ -616,7 +616,7 @@ export class GarphSchema {
   }
 
   constructor ({ types }: { types: AnyType[] } = { types: [] }) {
-    this.types = types
+    this.types.push(...types)
   }
 
   type<N extends string, T extends AnyTypes>(name: N, shape: T) {

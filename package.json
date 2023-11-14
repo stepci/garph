@@ -5,7 +5,7 @@
     "type": "git",
     "url": "https://github.com/stepci/garph"
   },
-  "version": "0.6.3",
+  "version": "0.6.4",
   "license": "MIT",
   "main": "dist/index.js",
   "scripts": {
@@ -14,7 +14,7 @@
     "docs:preview": "vitepress preview",
     "build": "tsc -p tsconfig.json",
     "postbuild": "typedoc --readme none --entryDocument index.md --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --hideInPageTOC true --out www/api src/index.ts",
-    "test": "ts-node examples/promo.ts"
+    "test": "ts-node examples/relay.ts"
   },
   "devDependencies": {
     "@graphql-yoga/plugin-defer-stream": "^2.0.4",
