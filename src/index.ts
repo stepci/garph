@@ -597,6 +597,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 
 export class GarphSchema {
   types: AnyType[] = []
+
   nodeType = this.interface('Node', {
     id: this.id()
   })
@@ -615,19 +616,29 @@ export class GarphSchema {
     after: this.id().optional()
   }
 
+  registerType(type: AnyType) {
+    const name = type.typeDef.name
+    if (name) {
+      if (this.types.find(t => t.typeDef.name === name)) {
+        throw new Error(`Detected multiple types with name: ${name}`)
+      }
+    }
+    this.types.push(type)
+  }
+
   constructor ({ types }: { types: AnyType[] } = { types: [] }) {
-    this.types.push(...types)
+    types.forEach(t => this.registerType(t))
   }
 
   type<N extends string, T extends AnyTypes>(name: N, shape: T) {
     const t = new GType<N, T>(name, shape)
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
   node<N extends string, T extends AnyTypes>(name: N, shape: T) {
     const t = new GType<N, T>(name, shape).implements(this.nodeType)
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
@@ -637,7 +648,7 @@ export class GarphSchema {
       pageInfo: this.pageInfoType
     })
 
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
@@ -650,37 +661,37 @@ export class GarphSchema {
       cursor: g.string()
     })
 
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
   inputType<N extends string, T extends AnyTypes>(name: N, shape: T) {
     const t = new GInput<N, T>(name, shape)
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
   enumType<N extends string, T extends readonly string[] | TSEnumType>(name: N, args: T) {
     const t = new GEnum<N, T>(name, args)
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
   unionType<N extends string, T extends AnyObjects>(name: N, args: T) {
     const t = new GUnion<N, T>(name, args)
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
   scalarType<I, O>(name: string, options?: ScalarOptions<I, O>) {
     const t = new GScalar<I, O>(name, options)
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
   interface<N extends string, T extends AnyTypes>(name: N, shape: T) {
     const t = new GInterface<N, T>(name, shape)
-    this.types.push(t)
+    this.registerType(t)
     return t
   }
 
