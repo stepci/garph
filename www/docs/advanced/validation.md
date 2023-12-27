@@ -9,24 +9,26 @@ import { g, InferResolvers, buildSchema } from 'garph'
 import { GraphQLError } from 'graphql'
 
 const username = g.scalarType<string, string>('Username', {
-  serialize: (username) => username,
-  parseValue: (username) => {
-    if (username.length < 3) {
-      throw new GraphQLError('Username must be at least 3 characters long')
-    }
+    serialize: (username) => username,
+    parseValue: (username) => {
+        if (username.length < 3) {
+            throw new GraphQLError(
+                'Username must be at least 3 characters long'
+            )
+        }
 
-    return username
-  }
+        return username
+    },
 })
 
 const queryType = g.type('Query', {
-  login: g.string().args({ username }),
+    login: g.string().args({ username }),
 })
 
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
-  Query: {
-    login: (parent, args) => `Welcome back, ${args.username}!`
-  }
+    Query: {
+        login: (parent, args) => `Welcome back, ${args.username}!`,
+    },
 }
 
 const schema = buildSchema({ g, resolvers })
@@ -46,24 +48,26 @@ import { GraphQLError } from 'graphql'
 const usernameValidator = z.string().min(3)
 
 const username = g.scalarType<string, string>('Username', {
-  serialize: (username) => username,
-  parseValue: (username) => {
-    if (!usernameValidator.safeParse(username).success) {
-      throw new GraphQLError('Username must be at least 3 characters long')
-    }
+    serialize: (username) => username,
+    parseValue: (username) => {
+        if (!usernameValidator.safeParse(username).success) {
+            throw new GraphQLError(
+                'Username must be at least 3 characters long'
+            )
+        }
 
-    return username
-  }
+        return username
+    },
 })
 
 const queryType = g.type('Query', {
-  login: g.string().args({ username }),
+    login: g.string().args({ username }),
 })
 
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
-  Query: {
-    login: (parent, args) => `Welcome back, ${args.username}!`
-  }
+    Query: {
+        login: (parent, args) => `Welcome back, ${args.username}!`,
+    },
 }
 
 const schema = buildSchema({ g, resolvers })

@@ -26,24 +26,25 @@ Garph is a fullstack GraphQL framework for TypeScript, that aims to deliver the 
     import { createServer } from 'http'
 
     const queryType = g.type('Query', {
-      greet: g.string()
-        .args({
-          name: g.string().optional().default('Max')
-        })
-        .description('Greets a person')
+        greet: g
+            .string()
+            .args({
+                name: g.string().optional().default('Max'),
+            })
+            .description('Greets a person'),
     })
 
     const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
-      Query: {
-        greet: (parent, args, context, info) => `Hello, ${args.name}`
-      }
+        Query: {
+            greet: (parent, args, context, info) => `Hello, ${args.name}`,
+        },
     }
 
     const schema = buildSchema({ g, resolvers })
     const yoga = createYoga({ schema })
     const server = createServer(yoga)
     server.listen(4000, () => {
-      console.info('Server is running on http://localhost:4000/graphql')
+        console.info('Server is running on http://localhost:4000/graphql')
     })
     ```
 
@@ -61,7 +62,7 @@ Garph is a fullstack GraphQL framework for TypeScript, that aims to deliver the 
 
     ```graphql
     {
-      greet(name: "Max")
+        greet(name: "Max")
     }
     ```
 

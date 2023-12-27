@@ -11,6 +11,7 @@ GraphQL Yoga is a batteries-included cross-platform, spec-compliant GraphQL serv
 ## Installation
 
 ::: code-group
+
 ```sh [npm]
 $ npm i graphql-yoga
 ```
@@ -26,6 +27,7 @@ $ yarn add graphql-yoga
 ```sh [bun]
 $ bun i graphql-yoga
 ```
+
 :::
 
 ## Serving Garph schema
@@ -35,13 +37,16 @@ import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga, YogaInitialContext } from 'graphql-yoga'
 
 const queryType = g.type('Query', {
-  greet: g.string()
+    greet: g.string(),
 })
 
-const resolvers: InferResolvers<{ Query: typeof queryType }, { context: YogaInitialContext }> = {
-  Query: {
-    greet: () => `Hello, World!`
-  }
+const resolvers: InferResolvers<
+    { Query: typeof queryType },
+    { context: YogaInitialContext }
+> = {
+    Query: {
+        greet: () => `Hello, World!`,
+    },
 }
 
 const schema = buildSchema({ g, resolvers })
@@ -50,4 +55,4 @@ const yoga = createYoga({ schema })
 
 ## Types
 
-- Context: `YogaInitialContext`
+-   Context: `YogaInitialContext`

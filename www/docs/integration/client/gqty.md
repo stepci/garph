@@ -11,6 +11,7 @@ GQty is a fundamentally new approach to a GraphQL client. It makes using your AP
 ## Installation
 
 ::: code-group
+
 ```sh [npm]
 $ npm i @garph/gqty
 ```
@@ -26,6 +27,7 @@ $ yarn add @garph/gqty
 ```sh [bun]
 $ bun i @garph/gqty
 ```
+
 :::
 
 ## Initialization
@@ -33,24 +35,28 @@ $ bun i @garph/gqty
 Example Schema:
 
 ::: code-group
+
 ```ts [schema.ts]
 import { g, buildSchema } from 'garph'
 
 export const queryType = g.type('Query', {
-  greet: g.string()
-    .args({
-      name: g.string().optional().default('Max'),
-    })
-    .description('Greets a person')
+    greet: g
+        .string()
+        .args({
+            name: g.string().optional().default('Max'),
+        })
+        .description('Greets a person'),
 })
 
 const schema = buildSchema({ g })
 ```
+
 :::
 
 Initializing the client:
 
 ::: code-group
+
 ```ts [client.ts]
 import { InferClient, createClient } from '@garph/gqty'
 import { createScalarsEnumsHash, createGeneratedSchema } from '@garph/gqty/dist/utils'
@@ -67,6 +73,7 @@ export const { useQuery, ... } = createClient<ClientTypes>({
 // Needed for the babel plugin
 export { schema as compiledSchema }
 ```
+
 :::
 
 Adding subscriptions support
@@ -76,6 +83,7 @@ npm i graphql-sse
 ```
 
 ::: code-group
+
 ```ts [client.ts]
 import { createClient as createSubscriptionsClient } from 'graphql-sse'
 
@@ -88,6 +96,7 @@ export const { useSubscription, ... } = createClient<ClientTypes>({
   })
 })
 ```
+
 :::
 
 ## Babel Plugin
@@ -95,13 +104,20 @@ export const { useSubscription, ... } = createClient<ClientTypes>({
 In production, you might want to use the babel plugin in order to replace the runtime dependencies (such as `generatedSchema`, `scalarsEnumsHash`) in your client config with statically-generated artefacts.
 
 ::: code-group
+
 ```json [.babelrc]
 {
-  "plugins": [["@garph/gqty/dist/plugin", {
-    "clientConfig": "./utils/client.ts"
-  }]]
+    "plugins": [
+        [
+            "@garph/gqty/dist/plugin",
+            {
+                "clientConfig": "./utils/client.ts"
+            }
+        ]
+    ]
 }
 ```
+
 :::
 
 ## Usage
@@ -114,10 +130,9 @@ Example:
 import { resolved, query } from './client'
 
 resolved(() => {
-  return query.greet({ name: 'Mish' })
-})
-.then(data => {
-  console.log(data)
+    return query.greet({ name: 'Mish' })
+}).then((data) => {
+    console.log(data)
 })
 ```
 
@@ -131,8 +146,8 @@ Example:
 import { useQuery } from './client'
 
 export default function Example() {
-  const query = useQuery()
-  return <p>{ query.greet({ name: 'Mish' }) }</p>
+    const query = useQuery()
+    return <p>{query.greet({ name: 'Mish' })}</p>
 }
 ```
 

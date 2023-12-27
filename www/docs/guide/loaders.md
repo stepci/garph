@@ -10,16 +10,16 @@ In Garph, you can add loaders to fields by making a field resolver return an obj
 
 Loader functions receive one argument:
 
-- `queries`
-  Array of query objects:
-    - `parent`
-      The object that contains the result returned by the parent resolver. This argument is not used for root-level resolvers.
-    - `args`
-      The arguments provided to the field in the GraphQL query or mutation.
-    - `context`
-      An object containing any data that is shared across all resolvers for a single request. This can include information such as the currently authenticated user or a database connection.
-    - `info`
-      An object that contains information about the execution state of the query, such as the name of the field being resolved and the selection set.
+-   `queries`
+    Array of query objects:
+    -   `parent`
+        The object that contains the result returned by the parent resolver. This argument is not used for root-level resolvers.
+    -   `args`
+        The arguments provided to the field in the GraphQL query or mutation.
+    -   `context`
+        An object containing any data that is shared across all resolvers for a single request. This can include information such as the currently authenticated user or a database connection.
+    -   `info`
+        An object that contains information about the execution state of the query, such as the name of the field being resolved and the selection set.
 
 ## Specifying resolver functions
 
@@ -27,46 +27,52 @@ Loader functions receive one argument:
 import { g, InferResolvers, buildSchema, Infer } from 'garph'
 
 const Dog = g.type('Dog', {
-  name: g.string(),
-  owner: g.string().omitResolver()
+    name: g.string(),
+    owner: g.string().omitResolver(),
 })
 
 const queryType = g.type('Query', {
-  dogs: g.ref(() => Dog).list()
+    dogs: g.ref(() => Dog).list(),
 })
 
 const owners = {
-  Apollo: 'Mish',
-  Buddy: 'Sebastian'
+    Apollo: 'Mish',
+    Buddy: 'Sebastian',
 }
 
-type resolverTypes = InferResolvers<{ Query: typeof queryType, Dog: typeof Dog }, {}>
+type resolverTypes = InferResolvers<
+    { Query: typeof queryType; Dog: typeof Dog },
+    {}
+>
 
 const resolvers: resolverTypes = {
-  Query: {
-    dogs: (parent, args, context, info) => {
-      return [
-        {
-          name: 'Apollo',
+    Query: {
+        dogs: (parent, args, context, info) => {
+            return [
+                {
+                    name: 'Apollo',
+                },
+                {
+                    name: 'Buddy',
+                },
+            ]
         },
-        {
-          name: 'Buddy',
-        }
-      ]
-    }
-  },
-  Dog: {
-    owner: {
-      load (queries) {
-        // Promise with timeout added to demonstrate caching
-        return queries.map(q => new Promise(resolve => {
-          setTimeout(() => {
-            resolve(owners[q.parent.name])
-          }, 1000)
-        }))
-      }
-    }
-  }
+    },
+    Dog: {
+        owner: {
+            load(queries) {
+                // Promise with timeout added to demonstrate caching
+                return queries.map(
+                    (q) =>
+                        new Promise((resolve) => {
+                            setTimeout(() => {
+                                resolve(owners[q.parent.name])
+                            }, 1000)
+                        })
+                )
+            },
+        },
+    },
 }
 
 const schema = buildSchema({ g, resolvers })

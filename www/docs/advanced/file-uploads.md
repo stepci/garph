@@ -14,19 +14,18 @@ import { g, InferResolvers, buildSchema } from 'garph'
 const file = g.scalarType<File, never>('File')
 
 const mutationType = g.type('Mutation', {
-  readTextFile: g.string()
-    .args({
-      file: g.ref(file),
-    })
+    readTextFile: g.string().args({
+        file: g.ref(file),
+    }),
 })
 
 const resolvers: InferResolvers<{ Mutation: typeof mutationType }, {}> = {
-  Mutation: {
-    readTextFile: async (parent, { file }, context, info) => {
-      const textContent = await file.text()
-      return textContent
-    }
-  }
+    Mutation: {
+        readTextFile: async (parent, { file }, context, info) => {
+            const textContent = await file.text()
+            return textContent
+        },
+    },
 }
 
 const schema = buildSchema({ g, resolvers })

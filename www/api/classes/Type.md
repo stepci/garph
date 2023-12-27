@@ -4,10 +4,10 @@
 
 ## Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `T` | `T` |
-| `X` | extends `GarphType` |
+| Name | Type                |
+| :--- | :------------------ |
+| `T`  | `T`                 |
+| `X`  | extends `GarphType` |
 
 ## Constructors
 
@@ -17,10 +17,10 @@
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `T` | `T` |
-| `X` | extends `GarphType` |
+| Name | Type                |
+| :--- | :------------------ |
+| `T`  | `T`                 |
+| `X`  | extends `GarphType` |
 
 ## Properties
 
@@ -32,7 +32,7 @@
 
 [index.ts:13](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L13)
 
-___
+---
 
 ### \_inner
 
@@ -42,7 +42,7 @@ ___
 
 [index.ts:11](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L11)
 
-___
+---
 
 ### \_is
 
@@ -52,7 +52,7 @@ ___
 
 [index.ts:10](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L10)
 
-___
+---
 
 ### \_name
 
@@ -62,7 +62,7 @@ ___
 
 [index.ts:9](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L9)
 
-___
+---
 
 ### \_output
 
@@ -72,7 +72,7 @@ ___
 
 [index.ts:12](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L12)
 
-___
+---
 
 ### \_shape
 
@@ -82,7 +82,7 @@ ___
 
 [index.ts:14](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L14)
 
-___
+---
 
 ### typeDef
 
@@ -100,8 +100,8 @@ ___
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Name     | Type     |
+| :------- | :------- |
 | `reason` | `string` |
 
 #### Returns
@@ -112,7 +112,7 @@ ___
 
 [index.ts:22](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L22)
 
-___
+---
 
 ### description
 
@@ -120,8 +120,8 @@ ___
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
+| Name   | Type     |
+| :----- | :------- |
 | `text` | `string` |
 
 #### Returns

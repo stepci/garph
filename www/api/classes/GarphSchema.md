@@ -10,10 +10,10 @@
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `«destructured»` | `Object` |
-| › `types` | [`AnyType`](../index.md#anytype)[] |
+| Name             | Type                               |
+| :--------------- | :--------------------------------- |
+| `«destructured»` | `Object`                           |
+| › `types`        | [`AnyType`](../index.md#anytype)[] |
 
 #### Defined in
 
@@ -23,13 +23,13 @@
 
 ### nodeType
 
-• **nodeType**: `GInterface`<``"Node"``, { `id`: `GString`<``"ID"``\>  }\>
+• **nodeType**: `GInterface`<`"Node"`, { `id`: `GString`<`"ID"`\> }\>
 
 #### Defined in
 
 [index.ts:600](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L600)
 
-___
+---
 
 ### pageInfoArgs
 
@@ -37,28 +37,28 @@ ___
 
 #### Type declaration
 
-| Name | Type |
-| :------ | :------ |
-| `after` | `GOptional`<`GString`<``"ID"``\>\> |
-| `before` | `GOptional`<`GString`<``"ID"``\>\> |
-| `first` | `GOptional`<`GNumber`<``"Int"``\>\> |
-| `last` | `GOptional`<`GNumber`<``"Int"``\>\> |
+| Name     | Type                              |
+| :------- | :-------------------------------- |
+| `after`  | `GOptional`<`GString`<`"ID"`\>\>  |
+| `before` | `GOptional`<`GString`<`"ID"`\>\>  |
+| `first`  | `GOptional`<`GNumber`<`"Int"`\>\> |
+| `last`   | `GOptional`<`GNumber`<`"Int"`\>\> |
 
 #### Defined in
 
 [index.ts:611](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L611)
 
-___
+---
 
 ### pageInfoType
 
-• **pageInfoType**: `GType`<``"PageInfo"``, { `endCursor`: `GOptional`<`GString`<``"String"``\>\> ; `hasNextPage`: `GBoolean` ; `hasPreviousPage`: `GBoolean` ; `startCursor`: `GOptional`<`GString`<``"String"``\>\>  }\>
+• **pageInfoType**: `GType`<`"PageInfo"`, { `endCursor`: `GOptional`<`GString`<`"String"`\>\> ; `hasNextPage`: `GBoolean` ; `hasPreviousPage`: `GBoolean` ; `startCursor`: `GOptional`<`GString`<`"String"`\>\> }\>
 
 #### Defined in
 
 [index.ts:604](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L604)
 
-___
+---
 
 ### types
 
@@ -82,63 +82,63 @@ ___
 
 [index.ts:703](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L703)
 
-___
+---
 
 ### connection
 
-▸ **connection**<`N`, `T`\>(`name`, `shape`): `GType`<`string`, { `edges`: `GList`<`T`\> ; `pageInfo`: `GType`<``"PageInfo"``, { `endCursor`: `GOptional`<`GString`<``"String"``\>\> ; `hasNextPage`: `GBoolean` ; `hasPreviousPage`: `GBoolean` ; `startCursor`: `GOptional`<`GString`<``"String"``\>\>  }\>  }\>
+▸ **connection**<`N`, `T`\>(`name`, `shape`): `GType`<`string`, { `edges`: `GList`<`T`\> ; `pageInfo`: `GType`<`"PageInfo"`, { `endCursor`: `GOptional`<`GString`<`"String"`\>\> ; `hasNextPage`: `GBoolean` ; `hasPreviousPage`: `GBoolean` ; `startCursor`: `GOptional`<`GString`<`"String"`\>\> }\> }\>
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends [`Type`](Type.md)<`any`, ``"Ref"``, `T`\> |
+| Name | Type                                            |
+| :--- | :---------------------------------------------- |
+| `N`  | extends `string`                                |
+| `T`  | extends [`Type`](Type.md)<`any`, `"Ref"`, `T`\> |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `shape` | `T` |
+| Name    | Type |
+| :------ | :--- |
+| `name`  | `N`  |
+| `shape` | `T`  |
 
 #### Returns
 
-`GType`<`string`, { `edges`: `GList`<`T`\> ; `pageInfo`: `GType`<``"PageInfo"``, { `endCursor`: `GOptional`<`GString`<``"String"``\>\> ; `hasNextPage`: `GBoolean` ; `hasPreviousPage`: `GBoolean` ; `startCursor`: `GOptional`<`GString`<``"String"``\>\>  }\>  }\>
+`GType`<`string`, { `edges`: `GList`<`T`\> ; `pageInfo`: `GType`<`"PageInfo"`, { `endCursor`: `GOptional`<`GString`<`"String"`\>\> ; `hasNextPage`: `GBoolean` ; `hasPreviousPage`: `GBoolean` ; `startCursor`: `GOptional`<`GString`<`"String"`\>\> }\> }\>
 
 #### Defined in
 
 [index.ts:634](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L634)
 
-___
+---
 
 ### edge
 
-▸ **edge**<`N`, `T`\>(`name`, `shape`): `GType`<`N`, { `cursor`: [`AnyString`](../index.md#anystring) ; `node`: `T`  }\>
+▸ **edge**<`N`, `T`\>(`name`, `shape`): `GType`<`N`, { `cursor`: [`AnyString`](../index.md#anystring) ; `node`: `T` }\>
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends [`Type`](Type.md)<`any`, ``"Ref"``, `T`\> |
+| Name | Type                                            |
+| :--- | :---------------------------------------------- |
+| `N`  | extends `string`                                |
+| `T`  | extends [`Type`](Type.md)<`any`, `"Ref"`, `T`\> |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `shape` | `T` |
+| Name    | Type |
+| :------ | :--- |
+| `name`  | `N`  |
+| `shape` | `T`  |
 
 #### Returns
 
-`GType`<`N`, { `cursor`: [`AnyString`](../index.md#anystring) ; `node`: `T`  }\>
+`GType`<`N`, { `cursor`: [`AnyString`](../index.md#anystring) ; `node`: `T` }\>
 
 #### Defined in
 
 [index.ts:644](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L644)
 
-___
+---
 
 ### enumType
 
@@ -146,17 +146,17 @@ ___
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends readonly `string`[] \| `TSEnumType` |
+| Name | Type                                        |
+| :--- | :------------------------------------------ |
+| `N`  | extends `string`                            |
+| `T`  | extends readonly `string`[] \| `TSEnumType` |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `args` | `T` |
+| Name   | Type |
+| :----- | :--- |
+| `name` | `N`  |
+| `args` | `T`  |
 
 #### Returns
 
@@ -166,35 +166,35 @@ ___
 
 [index.ts:663](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L663)
 
-___
+---
 
 ### float
 
-▸ **float**(): `GNumber`<``"Float"``\>
+▸ **float**(): `GNumber`<`"Float"`\>
 
 #### Returns
 
-`GNumber`<``"Float"``\>
+`GNumber`<`"Float"`\>
 
 #### Defined in
 
 [index.ts:699](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L699)
 
-___
+---
 
 ### id
 
-▸ **id**(): `GString`<``"ID"``\>
+▸ **id**(): `GString`<`"ID"`\>
 
 #### Returns
 
-`GString`<``"ID"``\>
+`GString`<`"ID"`\>
 
 #### Defined in
 
 [index.ts:691](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L691)
 
-___
+---
 
 ### inputType
 
@@ -202,17 +202,17 @@ ___
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends [`AnyTypes`](../index.md#anytypes) |
+| Name | Type                                       |
+| :--- | :----------------------------------------- |
+| `N`  | extends `string`                           |
+| `T`  | extends [`AnyTypes`](../index.md#anytypes) |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `shape` | `T` |
+| Name    | Type |
+| :------ | :--- |
+| `name`  | `N`  |
+| `shape` | `T`  |
 
 #### Returns
 
@@ -222,21 +222,21 @@ ___
 
 [index.ts:657](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L657)
 
-___
+---
 
 ### int
 
-▸ **int**(): `GNumber`<``"Int"``\>
+▸ **int**(): `GNumber`<`"Int"`\>
 
 #### Returns
 
-`GNumber`<``"Int"``\>
+`GNumber`<`"Int"`\>
 
 #### Defined in
 
 [index.ts:695](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L695)
 
-___
+---
 
 ### interface
 
@@ -244,17 +244,17 @@ ___
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends [`AnyTypes`](../index.md#anytypes) |
+| Name | Type                                       |
+| :--- | :----------------------------------------- |
+| `N`  | extends `string`                           |
+| `T`  | extends [`AnyTypes`](../index.md#anytypes) |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `shape` | `T` |
+| Name    | Type |
+| :------ | :--- |
+| `name`  | `N`  |
+| `shape` | `T`  |
 
 #### Returns
 
@@ -264,35 +264,35 @@ ___
 
 [index.ts:681](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L681)
 
-___
+---
 
 ### node
 
-▸ **node**<`N`, `T`\>(`name`, `shape`): `GType`<`N`, `T` & { `id`: `GString`<``"ID"``\>  }\>
+▸ **node**<`N`, `T`\>(`name`, `shape`): `GType`<`N`, `T` & { `id`: `GString`<`"ID"`\> }\>
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends [`AnyTypes`](../index.md#anytypes) |
+| Name | Type                                       |
+| :--- | :----------------------------------------- |
+| `N`  | extends `string`                           |
+| `T`  | extends [`AnyTypes`](../index.md#anytypes) |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `shape` | `T` |
+| Name    | Type |
+| :------ | :--- |
+| `name`  | `N`  |
+| `shape` | `T`  |
 
 #### Returns
 
-`GType`<`N`, `T` & { `id`: `GString`<``"ID"``\>  }\>
+`GType`<`N`, `T` & { `id`: `GString`<`"ID"`\> }\>
 
 #### Defined in
 
 [index.ts:628](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L628)
 
-___
+---
 
 ### ref
 
@@ -301,14 +301,14 @@ ___
 #### Type parameters
 
 | Name |
-| :------ |
-| `T` |
+| :--- |
+| `T`  |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `ref` | `T` |
+| Name  | Type |
+| :---- | :--- |
+| `ref` | `T`  |
 
 #### Returns
 
@@ -318,7 +318,7 @@ ___
 
 [index.ts:709](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L709)
 
-___
+---
 
 ### scalarType
 
@@ -327,15 +327,15 @@ ___
 #### Type parameters
 
 | Name |
-| :------ |
-| `I` |
-| `O` |
+| :--- |
+| `I`  |
+| `O`  |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `string` |
+| Name       | Type                       |
+| :--------- | :------------------------- |
+| `name`     | `string`                   |
 | `options?` | `ScalarOptions`<`I`, `O`\> |
 
 #### Returns
@@ -346,21 +346,21 @@ ___
 
 [index.ts:675](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L675)
 
-___
+---
 
 ### string
 
-▸ **string**(): `GString`<``"String"``\>
+▸ **string**(): `GString`<`"String"`\>
 
 #### Returns
 
-`GString`<``"String"``\>
+`GString`<`"String"`\>
 
 #### Defined in
 
 [index.ts:687](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L687)
 
-___
+---
 
 ### type
 
@@ -368,17 +368,17 @@ ___
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends [`AnyTypes`](../index.md#anytypes) |
+| Name | Type                                       |
+| :--- | :----------------------------------------- |
+| `N`  | extends `string`                           |
+| `T`  | extends [`AnyTypes`](../index.md#anytypes) |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `shape` | `T` |
+| Name    | Type |
+| :------ | :--- |
+| `name`  | `N`  |
+| `shape` | `T`  |
 
 #### Returns
 
@@ -388,7 +388,7 @@ ___
 
 [index.ts:622](https://github.com/stepci/garph/blob/3c68aab/src/index.ts#L622)
 
-___
+---
 
 ### unionType
 
@@ -396,17 +396,17 @@ ___
 
 #### Type parameters
 
-| Name | Type |
-| :------ | :------ |
-| `N` | extends `string` |
-| `T` | extends [`AnyObjects`](../index.md#anyobjects) |
+| Name | Type                                           |
+| :--- | :--------------------------------------------- |
+| `N`  | extends `string`                               |
+| `T`  | extends [`AnyObjects`](../index.md#anyobjects) |
 
 #### Parameters
 
-| Name | Type |
-| :------ | :------ |
-| `name` | `N` |
-| `args` | `T` |
+| Name   | Type |
+| :----- | :--- |
+| `name` | `N`  |
+| `args` | `T`  |
 
 #### Returns
 

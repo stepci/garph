@@ -16,8 +16,8 @@ Garph is a tool for building GraphQL APIs without codegen. It provides a fullsta
 
 Before you begin, make sure you have the following installed:
 
-- [Node.js](https://nodejs.org/) (LTS and above)
-- npm (included with Node)
+-   [Node.js](https://nodejs.org/) (LTS and above)
+-   npm (included with Node)
 
 ## Tutorial
 
@@ -26,6 +26,7 @@ Before you begin, make sure you have the following installed:
 To install Garph, run the following command in your terminal:
 
 ::: code-group
+
 ```sh [npm]
 $ npm i garph graphql-yoga
 ```
@@ -41,6 +42,7 @@ $ yarn add garph graphql-yoga
 ```sh [bun]
 $ bun i garph graphql-yoga
 ```
+
 :::
 
 This will install Garph and [Yoga](https://the-guild.dev/graphql/yoga-server) in your project.
@@ -54,19 +56,22 @@ The "Query" type is the entry point for queries in a GraphQL schema. It defines 
 Create a new file called `index.ts` and paste the following contents:
 
 ::: code-group
+
 ```ts [index.ts]
 import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga, YogaInitialContext } from 'graphql-yoga'
 import { createServer } from 'http'
 
 const queryType = g.type('Query', {
-  greet: g.string()
-    .args({
-      name: g.string().optional().default('Max')
-    })
-    .description('Greets a person')
+    greet: g
+        .string()
+        .args({
+            name: g.string().optional().default('Max'),
+        })
+        .description('Greets a person'),
 })
 ```
+
 :::
 
 This will import the required packages and create a new GraphQL schema a Query type, that has a field "greet", that takes an optional "name" argument of type string with the default value "Max".
@@ -75,10 +80,10 @@ The example above produces the following GraphQL schema:
 
 ```graphql
 type Query {
-  """
-  Greets a person
-  """
-  greet(name: String = "Max"): String!
+    """
+    Greets a person
+    """
+    greet(name: String = "Max"): String!
 }
 ```
 
@@ -89,6 +94,7 @@ type Query {
 GraphQL resolvers are functions for fetching the data for a particular field in a GraphQL query or mutation. When a client makes a GraphQL request, the GraphQL server invokes the corresponding resolver functions to retrieve the data for the requested fields.
 
 ::: code-group
+
 ```ts{13-17} [index.ts]
 import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga, YogaInitialContext } from 'graphql-yoga'
@@ -108,6 +114,7 @@ const resolvers: InferResolvers<{ Query: typeof queryType }, { context: YogaInit
   }
 }
 ```
+
 :::
 
 The above code defines a resolver function for a "greet" field on the "Query" type in a GraphQL schema. When a client sends a query requesting the "greet" field, this resolver function will be invoked by the GraphQL server to fetch and return the data for the field.
@@ -123,6 +130,7 @@ Although Garph holds no opinions of which server is being used to serve the Grap
 GraphQL Yoga can help simplify the process of building a GraphQL server, reduce boilerplate code, and provide useful features and tools to help you develop and debug your server more efficiently
 
 ::: code-group
+
 ```ts{19-24} [index.ts]
 import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga, YogaInitialContext } from 'graphql-yoga'
@@ -149,6 +157,7 @@ server.listen(4000, () => {
   console.info('Server is running on http://localhost:4000/graphql')
 })
 ```
+
 :::
 
 In the above code, we create a new GraphQL schema from our Garph schema and resolvers. After that, we create a new Yoga instance with the schema provided and serve Yoga using a http server included in Node.js on port 4000
@@ -175,7 +184,7 @@ To test the "greet" query, enter the following in the left pane:
 
 ```graphql
 query {
-  greet(name: "Max")
+    greet(name: "Max")
 }
 ```
 
@@ -183,9 +192,9 @@ Then, click the "Play" button to run the query. You should see the following res
 
 ```json
 {
-  "data": {
-    "greet": "Hello, Max"
-  }
+    "data": {
+        "greet": "Hello, Max"
+    }
 }
 ```
 

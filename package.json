@@ -1,33 +1,35 @@
 {
-  "name": "garph",
-  "description": "A tRPC-like schema-builder for GraphQL",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/stepci/garph"
-  },
-  "version": "0.6.4",
-  "license": "MIT",
-  "main": "dist/index.js",
-  "scripts": {
-    "docs:dev": "vitepress dev",
-    "docs:build": "vitepress build",
-    "docs:preview": "vitepress preview",
-    "build": "tsc -p tsconfig.json",
-    "postbuild": "typedoc --readme none --entryDocument index.md --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --hideInPageTOC true --out www/api src/index.ts",
-    "test": "ts-node examples/relay.ts"
-  },
-  "devDependencies": {
-    "@graphql-yoga/plugin-defer-stream": "^2.0.4",
-    "graphql": "^16.6.0",
-    "graphql-yoga": "^4.0.4",
-    "ts-node": "^10.9.1",
-    "typedoc": "^0.23.27",
-    "typedoc-plugin-markdown": "^3.14.0",
-    "typescript": "^4.9.5",
-    "vitepress": "^1.0.0-rc.15"
-  },
-  "dependencies": {
-    "graphql-compose": "^9.0.10",
-    "single-user-cache": "^0.6.0"
-  }
+    "name": "garph",
+    "description": "A tRPC-like schema-builder for GraphQL",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/stepci/garph"
+    },
+    "version": "0.6.4",
+    "license": "MIT",
+    "main": "dist/index.js",
+    "scripts": {
+        "docs:dev": "vitepress dev",
+        "docs:build": "vitepress build",
+        "docs:preview": "vitepress preview",
+        "build": "tsc -p tsconfig.json",
+        "format": "prettier -w .",
+        "postbuild": "typedoc --readme none --entryDocument index.md --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --hideInPageTOC true --out www/api src/index.ts",
+        "test": "ts-node examples/relay.ts"
+    },
+    "devDependencies": {
+        "@graphql-yoga/plugin-defer-stream": "^2.0.4",
+        "graphql": "^16.6.0",
+        "graphql-yoga": "^4.0.4",
+        "ts-node": "^10.9.1",
+        "typedoc": "^0.23.27",
+        "typedoc-plugin-markdown": "^3.14.0",
+        "typescript": "^4.9.5",
+        "vitepress": "^1.0.0-rc.15",
+        "prettier": "^3.1.1"
+    },
+    "dependencies": {
+        "graphql-compose": "^9.0.10",
+        "single-user-cache": "^0.6.0"
+    }
 }

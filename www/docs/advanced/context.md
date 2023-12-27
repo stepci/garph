@@ -11,13 +11,16 @@ import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga, YogaInitialContext } from 'graphql-yoga'
 
 const queryType = g.type('Query', {
-  context: g.string()
+    context: g.string(),
 })
 
-const resolvers: InferResolvers<{ Query: typeof queryType }, { context: YogaInitialContext }> = {
-  Query: {
-    context: (parent, args, context, info) => `Context: ${context}`
-  }
+const resolvers: InferResolvers<
+    { Query: typeof queryType },
+    { context: YogaInitialContext }
+> = {
+    Query: {
+        context: (parent, args, context, info) => `Context: ${context}`,
+    },
 }
 
 const schema = buildSchema({ g, resolvers })
@@ -32,19 +35,22 @@ import { g, InferResolvers, buildSchema } from 'garph'
 import { createYoga, YogaInitialContext } from 'graphql-yoga'
 
 const queryType = g.type('Query', {
-  context: g.string()
+    context: g.string(),
 })
 
 const context = () => {
-  return {
-    hello: 'world'
-  }
+    return {
+        hello: 'world',
+    }
 }
 
-const resolvers: InferResolvers<{ Query: typeof queryType }, { context: YogaInitialContext & ReturnType<typeof context> }> = {
-  Query: {
-    context: (parent, args, context, info) => `Context: ${context.hello}`
-  }
+const resolvers: InferResolvers<
+    { Query: typeof queryType },
+    { context: YogaInitialContext & ReturnType<typeof context> }
+> = {
+    Query: {
+        context: (parent, args, context, info) => `Context: ${context.hello}`,
+    },
 }
 
 const schema = buildSchema({ g, resolvers })

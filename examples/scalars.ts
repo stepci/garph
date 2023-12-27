@@ -5,18 +5,18 @@ import { createServer } from 'http'
 const date = g.scalarType<Date, string>('Test')
 
 const queryType = g.type('Query', {
-  today: date
+    today: date,
 })
 
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
-  Query: {
-    today: () => new Date()
-  }
+    Query: {
+        today: () => new Date(),
+    },
 }
 
 const schema = buildSchema({ g, resolvers })
 const yoga = createYoga({ schema })
 const server = createServer(yoga)
 server.listen(4000, () => {
-  console.info('Server is running on http://localhost:4000/graphql')
+    console.info('Server is running on http://localhost:4000/graphql')
 })

@@ -11,15 +11,15 @@ import { g, InferResolvers, buildSchema } from 'garph'
 import { GraphQLError } from 'graphql'
 
 const queryType = g.type('Query', {
-  error: g.string(),
+    error: g.string(),
 })
 
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
-  Query: {
-    error: () => {
-      throw new GraphQLError('Expected error')
-    }
-  }
+    Query: {
+        error: () => {
+            throw new GraphQLError('Expected error')
+        },
+    },
 }
 
 const schema = buildSchema({ g, resolvers })
@@ -34,15 +34,17 @@ import { g, InferResolvers, buildSchema } from 'garph'
 import { GraphQLError } from 'graphql'
 
 const queryType = g.type('Query', {
-  error: g.string(),
+    error: g.string(),
 })
 
 const resolvers: InferResolvers<{ Query: typeof queryType }, {}> = {
-  Query: {
-    error: () => {
-      throw new GraphQLError('Expected error with extensions', { extensions: { code: 'EXPECTED_ERROR' } })
-    }
-  }
+    Query: {
+        error: () => {
+            throw new GraphQLError('Expected error with extensions', {
+                extensions: { code: 'EXPECTED_ERROR' },
+            })
+        },
+    },
 }
 
 const schema = buildSchema({ g, resolvers })

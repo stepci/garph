@@ -6,14 +6,14 @@ GraphQL resolvers are functions for fetching the data for a particular field in 
 
 Resolver functions receive four arguments:
 
-- `parent`
-  The object that contains the result returned by the parent resolver. This argument is not used for root-level resolvers.
-- `args`
-  The arguments provided to the field in the GraphQL query or mutation.
-- `context`
-  An object containing any data that is shared across all resolvers for a single request. This can include information such as the currently authenticated user or a database connection.
-- `info`
-  An object that contains information about the execution state of the query, such as the name of the field being resolved and the selection set.
+-   `parent`
+    The object that contains the result returned by the parent resolver. This argument is not used for root-level resolvers.
+-   `args`
+    The arguments provided to the field in the GraphQL query or mutation.
+-   `context`
+    An object containing any data that is shared across all resolvers for a single request. This can include information such as the currently authenticated user or a database connection.
+-   `info`
+    An object that contains information about the execution state of the query, such as the name of the field being resolved and the selection set.
 
 ## Specifying resolver functions
 

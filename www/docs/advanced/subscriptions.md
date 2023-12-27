@@ -8,7 +8,7 @@ You can execute the following query in GraphQL playground to subscribe to the up
 
 ```graphql
 subscription {
-  counter
+    counter
 }
 ```
 
@@ -16,25 +16,28 @@ subscription {
 import { g, InferResolvers, buildSchema, Infer } from 'garph'
 
 const queryType = g.type('Query', {
-  greet: g.string()
+    greet: g.string(),
 })
 
 const subscriptionType = g.type('Subscription', {
-  counter: g.int()
+    counter: g.int(),
 })
 
-const resolvers: InferResolvers<{ Subscription: typeof subscriptionType }, {}> = {
-  Subscription: {
-    counter: {
-      subscribe: async function* (parent, args, context, info) {
-        for (let i = 100; i >= 0; i--) {
-          await new Promise((resolve) => setTimeout(resolve, 1000))
-          yield { counter: i }
-        }
-      }
+const resolvers: InferResolvers<{ Subscription: typeof subscriptionType }, {}> =
+    {
+        Subscription: {
+            counter: {
+                subscribe: async function* (parent, args, context, info) {
+                    for (let i = 100; i >= 0; i--) {
+                        await new Promise((resolve) =>
+                            setTimeout(resolve, 1000)
+                        )
+                        yield { counter: i }
+                    }
+                },
+            },
+        },
     }
-  }
-}
 
 const schema = buildSchema({ g, resolvers })
 ```

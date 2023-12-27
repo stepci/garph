@@ -8,7 +8,7 @@ Garph types can be inferred into TypeScript using the [`Infer`](/api/index.md#in
 import { g, Infer } from 'garph'
 
 const nameType = g.type('Name', {
-  greet: g.string()
+    greet: g.string(),
 })
 
 type NameType = Infer<typeof nameType>
@@ -18,7 +18,7 @@ Inferred type:
 
 ```ts
 type NameType = {
-  greet: string
+    greet: string
 }
 ```
 
@@ -30,7 +30,7 @@ Arguments on Garph types can be inferred into TypeScript using the [`InferArgs`]
 import { g, InferArgs } from 'garph'
 
 const nameType = g.type('Name', {
-  greet: g.string().args({ name: g.string().optional() })
+    greet: g.string().args({ name: g.string().optional() }),
 })
 
 type NameType = InferArgs<typeof nameType>
@@ -40,9 +40,9 @@ Inferred type:
 
 ```ts
 type NameType = {
-  greet: {
-    name: string | null | undefined
-  }
+    greet: {
+        name: string | null | undefined
+    }
 }
 ```
 
@@ -54,17 +54,21 @@ Resolver types can be inferred into TypeScript using the [`InferResolvers`](/api
 import { g, InferResolvers } from 'garph'
 
 const queryType = g.type('Query', {
-  greet: g.string()
-    .args({
-      name: g.string().optional().default('Max'),
-    })
-    .description('Greets a person')
+    greet: g
+        .string()
+        .args({
+            name: g.string().optional().default('Max'),
+        })
+        .description('Greets a person'),
 })
 
-const resolvers: InferResolvers<{ Query: typeof queryType }, { context: any, info: any }> = {
-  Query: {
-    greet: (parent, args, context, info) => `Hello, ${args.name}`
-  }
+const resolvers: InferResolvers<
+    { Query: typeof queryType },
+    { context: any; info: any }
+> = {
+    Query: {
+        greet: (parent, args, context, info) => `Hello, ${args.name}`,
+    },
 }
 ```
 

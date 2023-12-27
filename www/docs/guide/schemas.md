@@ -32,7 +32,7 @@ An object type is a type in GraphQL that represents an object with a set of name
 
 ```ts
 g.type('User', {
-  name: g.string()
+    name: g.string(),
 })
 ```
 
@@ -40,7 +40,7 @@ GraphQL Type:
 
 ```graphql
 type User {
-  name: String!
+    name: String!
 }
 ```
 
@@ -130,8 +130,8 @@ From TypeScript Enum:
 
 ```ts
 enum Fruits {
-  Apples,
-  Oranges
+    Apples,
+    Oranges,
 }
 
 g.enumType('Fruits', Fruits)
@@ -141,8 +141,8 @@ GraphQL Type:
 
 ```graphql
 enum Fruits {
-  Apples
-  Oranges
+    Apples
+    Oranges
 }
 ```
 
@@ -166,7 +166,7 @@ Reference:
 
 ```ts
 const name = g.type('Name', {
-  greet: g.ref(otherType)
+    greet: g.ref(otherType),
 })
 ```
 
@@ -174,7 +174,7 @@ Circular Reference:
 
 ```ts
 const name = g.type('Name', {
-  greet: g.ref(() => name)
+    greet: g.ref(() => name),
 })
 ```
 
@@ -184,7 +184,7 @@ An interface is a type in GraphQL that defines a set of fields that can be imple
 
 ```ts
 g.interface('Name', {
-  greet: g.string()
+    greet: g.string(),
 })
 ```
 
@@ -192,7 +192,7 @@ GraphQL Type:
 
 ```graphql
 interface Name {
-  greet: String!
+    greet: String!
 }
 ```
 
@@ -216,7 +216,7 @@ An input type is a type in GraphQL that represents the input data for a mutation
 
 ```ts
 g.inputType('Name', {
-  greet: g.string()
+    greet: g.string(),
 })
 ```
 
@@ -224,7 +224,7 @@ GraphQL Type:
 
 ```graphql
 input Name {
-  greet: String!
+    greet: String!
 }
 ```
 
@@ -234,8 +234,8 @@ Custom scalars can be useful for handling specific data types that are not nativ
 
 ```ts
 g.scalarType<Date, number>('Date', {
-  serialize: (value) => value.getTime(),
-  parseValue: (value) => new Date(value)
+    serialize: (value) => value.getTime(),
+    parseValue: (value) => new Date(value),
 })
 ```
 
@@ -259,7 +259,7 @@ See: https://github.com/stepci/garph/issues/40
 
 ```ts
 g.node('User', {
-  name: g.string()
+    name: g.string(),
 })
 ```
 
@@ -267,8 +267,8 @@ GraphQL Type:
 
 ```graphql
 type User {
-  id: ID!
-  name: String!
+    id: ID!
+    name: String!
 }
 ```
 
@@ -282,8 +282,8 @@ GraphQL Type:
 
 ```graphql
 type UserEdge {
-  cursor: String!
-  node: User
+    cursor: String!
+    node: User
 }
 ```
 
@@ -297,8 +297,8 @@ GraphQL Type:
 
 ```graphql
 type UserConnection {
-  edges: [UserEdge]
-  pageInfo: PageInfo!
+    edges: [UserEdge]
+    pageInfo: PageInfo!
 }
 ```
 
@@ -312,10 +312,10 @@ GraphQL Type:
 
 ```graphql
 type PageInfo {
-  hasNextPage: Boolean!
-  hasPreviousPage: Boolean!
-  startCursor: String
-  endCursor: String
+    hasNextPage: Boolean!
+    hasPreviousPage: Boolean!
+    startCursor: String
+    endCursor: String
 }
 ```
 
@@ -341,7 +341,7 @@ Used to pass additional parameters to a query or a mutation. They can be used to
 
 ```ts
 g.type('Query', {
-  greet: g.string().args({ name: g.string() })
+    greet: g.string().args({ name: g.string() }),
 })
 ```
 
@@ -349,7 +349,7 @@ GraphQL Type:
 
 ```graphql
 type Query {
-  greet(name: String!): String!
+    greet(name: String!): String!
 }
 ```
 
@@ -381,7 +381,7 @@ Define a set of properties that extends an input, interface or object type
 
 ```ts
 const name = {
-  name: g.string()
+    name: g.string(),
 }
 
 const test = g.type('Test', {}).extend(name)
@@ -397,7 +397,7 @@ GraphQL Type:
 
 ```graphql
 type Test {
-  name: String!
+    name: String!
 }
 ```
 
@@ -438,7 +438,7 @@ g.string().required()
 Default values can be used to provide a fallback value if a requested value is not available. They can be specified for arguments, query variables, and input objects
 
 ```ts
-g.string().default("Default string")
+g.string().default('Default string')
 ```
 
 ### Description
@@ -446,7 +446,7 @@ g.string().default("Default string")
 A string that can be used to describe a schema element such as a field or an argument
 
 ```ts
-g.string().description("Description")
+g.string().description('Description')
 ```
 
 ### Deprecated
@@ -454,7 +454,7 @@ g.string().description("Description")
 Mark a field as deprecated. It is used to indicate that a schema element is no longer supported or recommended and should not be used in new code. When a deprecated schema element is used, a warning is generated to alert developers
 
 ```ts
-g.string().deprecated("Deprecation reason")
+g.string().deprecated('Deprecation reason')
 ```
 
 ### Omit Resolver
