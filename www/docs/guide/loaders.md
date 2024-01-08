@@ -57,7 +57,7 @@ const resolvers: resolverTypes = {
   },
   Dog: {
     owner: {
-      load(queries) {
+      load (queries) {
         // Promise with timeout added to demonstrate caching
         return new Promise(resolve => {
           setTimeout(() => {
