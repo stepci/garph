@@ -14,6 +14,7 @@
     "docs:preview": "vitepress preview",
     "build": "tsc -p tsconfig.json",
     "postbuild": "typedoc --readme none --entryDocument index.md --plugin typedoc-plugin-markdown --tsconfig tsconfig.json --hideInPageTOC true --out www/api src/index.ts",
+    "ts:check": "tsc -p tsconfig.test.json",
     "test": "ts-node examples/relay.ts"
   },
   "devDependencies": {

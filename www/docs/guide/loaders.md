@@ -57,13 +57,13 @@ const resolvers: resolverTypes = {
   },
   Dog: {
     owner: {
-      load (queries) {
+      load(queries) {
         // Promise with timeout added to demonstrate caching
-        return queries.map(q => new Promise(resolve => {
+        return new Promise(resolve => {
           setTimeout(() => {
-            resolve(owners[q.parent.name])
+            resolve(queries.map(q => owners[q.parent.name]))
           }, 1000)
-        }))
+        })
       }
     }
   }
