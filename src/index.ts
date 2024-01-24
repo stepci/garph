@@ -596,7 +596,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 }
 
 export class GarphSchema {
-  types: AnyType[] = []
+  types: Map<string, AnyType> = new Map()
 
   nodeType = this.interface('Node', {
     id: this.id()
@@ -618,12 +618,8 @@ export class GarphSchema {
 
   registerType(type: AnyType) {
     const name = type.typeDef.name
-    if (name) {
-      if (this.types.find(t => t.typeDef.name === name)) {
-        throw new Error(`Detected multiple types with name: ${name}`)
-      }
-    }
-    this.types.push(type)
+    if (this.types.has(name)) throw new Error(`Type with name "${name}" already exists`)
+    this.types.set(name, type)
   }
 
   constructor ({ types }: { types: AnyType[] } = { types: [] }) {
