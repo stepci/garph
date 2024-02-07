@@ -5,16 +5,15 @@ import { createServer } from 'http'
 const Dog = g.type('Dog', {
   name: g.string(),
   owner: g.string().omitResolver()
-})
+}).augment<{
+  id: number 
+}>()
 
 const queryType = g.type('Query', {
   dogs: g.ref(() => Dog).list()
 })
 
-const owners = {
-  Apollo: 'Mish',
-  Buddy: 'Sebastian'
-}
+const owners = ['Mish', 'Sebastian']
 
 type resolverTypes = InferResolvers<{ Query: typeof queryType, Dog: typeof Dog }, {}>
 
@@ -23,9 +22,11 @@ const resolvers: resolverTypes = {
     dogs: (parent, args, context, info) => {
       return [
         {
+          id: 0,
           name: 'Apollo',
         },
         {
+          id: 1,
           name: 'Buddy',
         }
       ]
@@ -36,7 +37,7 @@ const resolvers: resolverTypes = {
       load (queries) {
         return new Promise(resolve => {
           setTimeout(() => {
-            resolve(queries.map(q => owners[q.parent.name]))
+            resolve(queries.map(q => owners[q.parent.id]))
           }, 1000)
         })
       }
