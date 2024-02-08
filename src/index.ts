@@ -5,14 +5,15 @@ import { buildSchema, printSchema } from './schema'
 type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
 type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Internal' | 'Optional' | 'Args' | 'OmitResolver'
 
-export abstract class Type<T, X extends GarphType> {
+export abstract class Type<TShape, TId extends GarphType, TInternal extends boolean = false> {
   _name?: string
-  _is: X
+  _is: TId
   _inner?: any
   _output?: any
   _args?: Args
-  _shape: T
-  typeDef: TypeDefinition<T>
+  _shape: TShape
+  _internal: TInternal
+  typeDef: TypeDefinition<TShape>
 
   description(text: string) {
     this.typeDef.description = text
@@ -24,6 +25,7 @@ export abstract class Type<T, X extends GarphType> {
     return this
   }
 }
+
 
 export type TypeDefinition<T> = {
   name?: string
@@ -37,10 +39,11 @@ export type TypeDefinition<T> = {
   scalarOptions?: ScalarOptions<any, any>
   defaultValue?: any
   interfaces?: AnyInterface[]
-  extend?: AnyTypes[]
+  extend?: AnyExposedTypes[]
 }
 
-export type AnyType = Type<any, any>
+export type AnyType<TInternal extends boolean = boolean> = Type<any, any, TInternal>
+export type AnyExposedType = AnyType<false>
 export type AnyString = Type<string, 'String'>
 export type AnyID = Type<string, 'ID'>
 export type AnyBoolean = Type<boolean, 'Boolean'>
@@ -48,7 +51,7 @@ export type AnyNumber = Type<number, any>
 export type AnyInt = Type<number, 'Int'>
 export type AnyFloat = Type<number, 'Float'>
 export type AnyRef = Type<any, 'Ref'>
-export type AnyInternal = Type<any, 'Internal'>
+export type AnyInternal = Type<any, 'Internal', true>
 export type AnyList = Type<any, 'List'>
 export type AnyPaginatedList = Type<any, 'PaginatedList'>
 export type AnyUnion = Type<any, 'Union'>
@@ -62,12 +65,14 @@ export type AnyObject = Type<any, 'ObjectType'>
 export type AnyOmitResolver = Type<any, 'OmitResolver'>
 
 export type Args = {
-  [key: string]: AnyType
+  [key: string]: AnyExposedType
 }
 
-export type AnyTypes = {
-  [key: string]: AnyType
+export type AnyTypes<TInternal extends boolean = boolean> = {
+  [key: string]: AnyType<TInternal>
 }
+
+export type AnyExposedTypes = AnyTypes<false>
 
 export type AnyObjects = {
   [key: string]: AnyObject
@@ -88,10 +93,11 @@ type InferOptions = {
   omitResolver?: AnyOmitResolver | never
 }
 
-type RefType = () => AnyType
+type RefType = () => AnyExposedType
 
 // TODO: Refactor Args to get rid of this mess
 export type Infer<T, options extends InferOptions = { omitResolver: never }> = ExpandRecursively<InferRaw<T, options>>
+
 export type InferRaw<T, options extends InferOptions = { omitResolver: never }> = T extends AnyInput | AnyObject | AnyInterface ? {
   __typename?: T['_name']
 } & {
@@ -119,21 +125,21 @@ export type InferShallow<T, options extends InferOptions = { omitResolver: never
   T extends AnyInternal ? T['_shape'] :
   T
 
-export type InferArgs<T extends AnyType> = ExpandRecursively<InferArgsRaw<T>>
-export type InferArgsRaw<T extends AnyType> = T extends AnyObject | AnyInterface ? {
+export type InferArgs<T extends AnyExposedType> = ExpandRecursively<InferArgsRaw<T>>
+export type InferArgsRaw<T extends AnyExposedType> = T extends AnyObject | AnyInterface ? {
   [K in keyof T['_shape']]: InferArgRaw<T['_shape'][K]>
 } : never
 
 export type InferArg<T> = ExpandRecursively<InferArgRaw<T>>
 export type InferArgRaw<T> = T extends AnyArgs ? {
-  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? never : K]: InferRaw<T['_args'][K]>
+  [K in keyof T['_args']as T['_args'][K] extends AnyOptional ? never : K]: InferRaw<T['_args'][K]>
 } & {
-  [K in keyof T['_args'] as T['_args'][K] extends AnyOptional ? K : never]?: InferRaw<T['_args'][K]>
-}: never
+    [K in keyof T['_args']as T['_args'][K] extends AnyOptional ? K : never]?: InferRaw<T['_args'][K]>
+  } : never
 
 export type InferUnionNames<T> = T extends AnyUnion ? ObjectToUnion<T['_inner']>['_name'] : never
 
-export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
+export type InferResolvers<T extends AnyExposedTypes, X extends InferResolverConfig> = {
   [K in keyof T]: K extends 'Subscription' ? {
     [G in keyof T[K]['_shape']]?: {
       subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof T[K]['_shape']]: Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }> }>>
@@ -145,9 +151,9 @@ export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = 
     [G in keyof T[K]['_shape']]?: {
       resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>> | AsyncGenerator<Infer<T[K]['_shape'][G]['_shape'], { omitResolver: AnyOmitResolver }>>
     } | {
-      load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>[]>
+      load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo }[]) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>[]>
     } | {
-      loadBatch: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>[]>
+      loadBatch: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo }[]) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>[]>
     }
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
@@ -155,7 +161,7 @@ export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = 
   }
 }
 
-export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConfig> = {
+export type InferResolversStrict<T extends AnyExposedTypes, X extends InferResolverConfig> = {
   [K in keyof T]: K extends 'Subscription' ? {
     [G in keyof T[K]['_shape']]: {
       subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof T[K]['_shape']]: Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }> }>>
@@ -167,9 +173,9 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
     [G in keyof T[K]['_shape']]: {
       resolve: (parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>> | AsyncGenerator<Infer<T[K]['_shape'][G]['_shape'], { omitResolver: AnyOmitResolver }>>
     } | {
-      load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
+      load: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo }[]) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     } | {
-      loadBatch: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo } []) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
+      loadBatch: (queries: { parent: K extends GraphQLRootType ? {} : Infer<T[K]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo }[]) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>[]
     }
   } & {
     __isTypeOf?: (parent: Infer<T[K]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<boolean>
@@ -180,7 +186,7 @@ export type InferResolversStrict<T extends AnyTypes, X extends InferResolverConf
 class GType<N extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> {
   declare _name: N
 
-  constructor(name: string, shape: T, interfaces?: AnyInterface[], extend?: AnyTypes[]) {
+  constructor(name: string, shape: T, interfaces?: AnyInterface[], extend?: AnyExposedTypes[]) {
     super()
     this.typeDef = {
       name,
@@ -197,17 +203,17 @@ class GType<N extends string, T extends AnyTypes> extends Type<T, 'ObjectType'> 
     return new GType<N, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref], this.typeDef.extend)
   }
 
-  extend<D extends AnyTypes>(ref: D | D[]) {
+  extend<D extends AnyExposedTypes>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.extend = Array.isArray(ref) ? ref : [ref]
     return new GType<N, T & UnionToIntersection<D>>(this.typeDef.name, this.typeDef.shape as any, this.typeDef.interfaces, Array.isArray(ref) ? ref : [ref])
   }
 }
 
-class GInput<N extends string, T extends AnyTypes> extends Type<T, 'InputType'> {
+class GInput<N extends string, T extends AnyExposedTypes> extends Type<T, 'InputType'> {
   declare _name: N
 
-  constructor(name: string, shape: T, extend?: AnyTypes[]) {
+  constructor(name: string, shape: T, extend?: AnyExposedTypes[]) {
     super()
     this.typeDef = {
       name,
@@ -217,17 +223,17 @@ class GInput<N extends string, T extends AnyTypes> extends Type<T, 'InputType'> 
     }
   }
 
-  extend<D extends AnyTypes>(ref: D | D[]) {
+  extend<D extends AnyExposedTypes>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.extend = Array.isArray(ref) ? ref : [ref]
     return new GInput<N, T & UnionToIntersection<D>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref])
   }
 }
 
-class GInterface<N extends string, T extends AnyTypes> extends Type<T, 'InterfaceType'> {
+class GInterface<N extends string, T extends AnyExposedTypes> extends Type<T, 'InterfaceType'> {
   declare _name: N
 
-  constructor(name: string, shape: T, interfaces?: AnyInterface[], extend?: AnyTypes[]) {
+  constructor(name: string, shape: T, interfaces?: AnyInterface[], extend?: AnyExposedTypes[]) {
     super()
     this.typeDef = {
       name,
@@ -241,10 +247,10 @@ class GInterface<N extends string, T extends AnyTypes> extends Type<T, 'Interfac
   implements<D extends AnyInterface>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.interfaces = Array.isArray(ref) ? ref : [ref]
-    return new GInterface<N ,T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref], this.typeDef.extend)
+    return new GInterface<N, T & UnionToIntersection<D['_shape']>>(this.typeDef.name, this.typeDef.shape as any, Array.isArray(ref) ? ref : [ref], this.typeDef.extend)
   }
 
-  extend<D extends AnyTypes>(ref: D | D[]) {
+  extend<D extends AnyExposedTypes>(ref: D | D[]) {
     // This is temporary construct, until we figure out how to properly manage to shared schema
     this.typeDef.extend = Array.isArray(ref) ? ref : [ref]
     return new GInterface<N, T & UnionToIntersection<D>>(this.typeDef.name, this.typeDef.shape as any, this.typeDef.interfaces, Array.isArray(ref) ? ref : [ref])
@@ -434,7 +440,7 @@ class GRef<T> extends Type<T, 'Ref'> {
   }
 }
 
-class GInternal<T> extends Type<T, 'Internal'> {
+class GInternal<T> extends Type<T, 'Internal', true> {
   constructor() {
     super()
     this.typeDef = {
@@ -443,16 +449,12 @@ class GInternal<T> extends Type<T, 'Internal'> {
   }
 
   optional() {
-    return new GOptional<this>(this)
+    return new GOptionalBase<this>(this);
   }
 
   required() {
     this.typeDef.isRequired = true
     return this
-  }
-
-  omitResolver () {
-    return new GOmitResolver<this>(this)
   }
 }
 
@@ -497,7 +499,7 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
     return this
   }
 
-  omitResolver () {
+  omitResolver() {
     return new GOmitResolver<this>(this)
   }
 
@@ -510,7 +512,7 @@ class GList<T extends AnyType> extends Type<T, 'List'> {
   }
 }
 
-class GPaginatedList<T extends AnyType> extends Type<T, 'PaginatedList'> {
+class GPaginatedList<T extends AnyExposedType> extends Type<T, 'PaginatedList'> {
   declare _inner: {
     edges: {
       node: InferRaw<T>
@@ -541,7 +543,7 @@ class GPaginatedList<T extends AnyType> extends Type<T, 'PaginatedList'> {
     return this
   }
 
-  omitResolver () {
+  omitResolver() {
     return new GOmitResolver<this>(this)
   }
 
@@ -554,12 +556,13 @@ class GPaginatedList<T extends AnyType> extends Type<T, 'PaginatedList'> {
   // }
 }
 
-class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
+class GOptionalBase<T extends AnyType> extends Type<T, 'Optional', T["_internal"]> {
   constructor(shape: T) {
     super()
     this.typeDef = shape.typeDef
     this.typeDef.isOptional = true
     this.typeDef.isRequired = false
+    this._internal = shape._internal
   }
 
   list() {
@@ -570,8 +573,10 @@ class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
     this.typeDef.defaultValue = value
     return this
   }
+}
 
-  omitResolver () {
+class GOptional<T extends AnyExposedType> extends GOptionalBase<T> {
+  omitResolver() {
     return new GOmitResolver<this>(this)
   }
 
@@ -580,7 +585,7 @@ class GOptional<T extends AnyType> extends Type<T, 'Optional'> {
   }
 }
 
-class GOmitResolver<T extends AnyType> extends Type<T, 'OmitResolver'> {
+class GOmitResolver<T extends AnyExposedType> extends Type<T, 'OmitResolver'> {
   constructor(shape: T) {
     super()
     this.typeDef = shape.typeDef
@@ -609,7 +614,7 @@ class GOmitResolver<T extends AnyType> extends Type<T, 'OmitResolver'> {
   }
 }
 
-class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
+class GArgs<T extends AnyExposedType, X extends Args> extends Type<T, 'Args'> {
   declare _args: X
 
   constructor(shape: T, args: X) {
@@ -620,7 +625,7 @@ class GArgs<T extends AnyType, X extends Args> extends Type<T, 'Args'> {
 }
 
 export class GarphSchema {
-  types: Map<string, AnyType> = new Map()
+  types: Map<string, AnyExposedType> = new Map()
 
   nodeType = this.interface('Node', {
     id: this.id()
@@ -640,13 +645,13 @@ export class GarphSchema {
     after: this.id().optional()
   }
 
-  registerType(type: AnyType) {
+  registerType(type: AnyExposedType) {
     const name = type.typeDef.name
     if (this.types.has(name)) throw new Error(`Type with name "${name}" already exists`)
     this.types.set(name, type)
   }
 
-  constructor ({ types }: { types: AnyType[] } = { types: [] }) {
+  constructor({ types }: { types: AnyExposedType[] } = { types: [] }) {
     types.forEach(t => this.registerType(t))
   }
 
@@ -656,7 +661,7 @@ export class GarphSchema {
     return t
   }
 
-  node<N extends string, T extends AnyTypes>(name: N, shape: T) {
+  node<N extends string, T extends AnyExposedTypes>(name: N, shape: T) {
     const t = new GType<N, T>(name, shape).implements(this.nodeType)
     this.registerType(t)
     return t
@@ -685,7 +690,7 @@ export class GarphSchema {
     return t
   }
 
-  inputType<N extends string, T extends AnyTypes>(name: N, shape: T) {
+  inputType<N extends string, T extends AnyExposedTypes>(name: N, shape: T) {
     const t = new GInput<N, T>(name, shape)
     this.registerType(t)
     return t
@@ -709,7 +714,7 @@ export class GarphSchema {
     return t
   }
 
-  interface<N extends string, T extends AnyTypes>(name: N, shape: T) {
+  interface<N extends string, T extends AnyExposedTypes>(name: N, shape: T) {
     const t = new GInterface<N, T>(name, shape)
     this.registerType(t)
     return t
@@ -741,7 +746,7 @@ export class GarphSchema {
     return new GRef<T>(ref)
   }
 
-  internal<T>(){
+  internal<T>() {
     return new GInternal<T>()
   }
 
