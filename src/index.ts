@@ -134,7 +134,9 @@ export type InferUnionNames<T> = T extends AnyUnion ? ObjectToUnion<T['_inner']>
 export type InferResolvers<T extends AnyTypes, X extends InferResolverConfig> = {
   [K in keyof T]: K extends 'Subscription' ? {
     [G in keyof T[K]['_shape']]?: {
-      subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{ [G in keyof T[K]['_shape']]: Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }> }>>
+      subscribe: (parent: {}, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<AsyncIterator<{
+        [key in G]: Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }> 
+      }>>
       resolve?: (value: Infer<T[K]['_shape'][G]>, args: InferArg<T[K]['_shape'][G]>, context: X['context'], info: GraphQLResolveInfo) => MaybePromise<Infer<T[K]['_shape'][G], { omitResolver: AnyOmitResolver }>>
     }
   } : {
