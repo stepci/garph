@@ -618,7 +618,7 @@ export class GarphSchema {
 
   registerType(type: AnyType) {
     const name = type.typeDef.name
-    if (this.types.has(name)) throw new Error(`Type with name "${name}" already exists`)
+    if (!['Node', 'PageInfo'].includes(name) && this.types.has(name)) throw new Error(`Type with name "${name}" already exists`)
     this.types.set(name, type)
   }
 
