@@ -7,7 +7,8 @@ const queryType = g.type('Query', {
 })
 
 const subscriptionType = g.type('Subscription', {
-  counter: g.int()
+  counter: g.int(),
+  winner: g.string()
 })
 
 const resolvers: InferResolvers<{ Subscription: typeof subscriptionType }, {}> = {
@@ -17,6 +18,14 @@ const resolvers: InferResolvers<{ Subscription: typeof subscriptionType }, {}> =
         for (let i = 100; i >= 0; i--) {
           await new Promise((resolve) => setTimeout(resolve, 1000))
           yield { counter: i }
+        }
+      }
+    },
+    winner: {
+      subscribe: async function* (parent, args, context, info) {
+        for (let i = 100; i >= 0; i--) {
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+          yield { winner: `User ${i}` }
         }
       }
     }
