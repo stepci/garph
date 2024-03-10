@@ -3,7 +3,7 @@ import { TSEnumType, UnionToIntersection, getEnumProperties, ObjectToUnion, Expa
 import { buildSchema, printSchema } from './schema'
 
 type GraphQLRootType = 'Query' | 'Mutation' | 'Subscription'
-type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Optional' | 'Args' | 'OmitResolver'
+type GarphType = 'String' | 'Int' | 'Float' | 'Boolean' | 'ID' | 'ObjectType' | 'InterfaceType' | 'InputType' | 'Scalar' | 'Enum' | 'List' | 'PaginatedList' | 'Union' | 'Ref' | 'Internal' | 'Optional' | 'Args' | 'OmitResolver'
 
 export abstract class Type<T, X extends GarphType> {
   _name?: string
@@ -48,6 +48,7 @@ export type AnyNumber = Type<number, any>
 export type AnyInt = Type<number, 'Int'>
 export type AnyFloat = Type<number, 'Float'>
 export type AnyRef = Type<any, 'Ref'>
+export type AnyInternal = Type<any, 'Internal'>
 export type AnyList = Type<any, 'List'>
 export type AnyPaginatedList = Type<any, 'PaginatedList'>
 export type AnyUnion = Type<any, 'Union'>
@@ -115,6 +116,7 @@ export type InferShallow<T, options extends InferOptions = { omitResolver: never
   T extends AnyOmitResolver ? InferRaw<T['_shape'], options> :
   T extends AnyArgs ? InferRaw<T['_shape'], options> :
   T extends AnyRef ? InferRaw<T['_inner'], options> :
+  T extends AnyInternal ? T['_shape'] :
   T
 
 export type InferArgs<T extends AnyType> = ExpandRecursively<InferArgsRaw<T>>
@@ -432,6 +434,28 @@ class GRef<T> extends Type<T, 'Ref'> {
   }
 }
 
+class GInternal<T> extends Type<T, 'Internal'> {
+  constructor() {
+    super()
+    this.typeDef = {
+      type: 'Internal'
+    }
+  }
+
+  optional() {
+    return new GOptional<this>(this)
+  }
+
+  required() {
+    this.typeDef.isRequired = true
+    return this
+  }
+
+  omitResolver () {
+    return new GOmitResolver<this>(this)
+  }
+}
+
 class GScalar<I, O> extends Type<I, 'Scalar'> {
   declare _output: O
 
@@ -715,6 +739,10 @@ export class GarphSchema {
   // This is a limitation of TypeScript
   ref<T>(ref: T) {
     return new GRef<T>(ref)
+  }
+
+  internal<T>(){
+    return new GInternal<T>()
   }
 
   // enum<T extends string>(args: T[]) {

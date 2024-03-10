@@ -77,6 +77,8 @@ export function getFieldType(schemaComposer: SchemaComposer, type: AnyType, conf
       }
 
       return isOptional(shape.typeDef.name, type, config)
+    case 'Internal':
+      break
     default:
       return isOptional(type.typeDef.name, type, config)
   }
@@ -173,6 +175,7 @@ export function parseFields(schemaComposer: SchemaComposer, name: string, fields
   const fieldsObj = {}
   Object.keys(fields).forEach(fieldName => {
     const field = fields[fieldName]
+    if (field.typeDef.type === 'Internal') return
 
     fieldsObj[fieldName] = {
       type: getFieldType(schemaComposer, field, config),
